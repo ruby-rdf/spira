@@ -136,6 +136,13 @@ describe Spira do
         Person.find('xyz').should == nil
       end
 
+      it "should save properties" do
+        puts "updating name"
+        @person.name = "steve"
+        @person.save!
+        @person.name.should == "steve"
+      end
+
     end
     
     context "as an RDF::Enumerable" do
