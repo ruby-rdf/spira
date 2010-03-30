@@ -1,6 +1,3 @@
-require 'rdf'
-require 'rdf/isomorphic'
-
 module Spira
  module Resource
   
@@ -23,7 +20,7 @@ module Spira
         @uri = identifier
       else
         if (self.class.base_uri)
-          @uri = URI.parse(self.class.base_uri + "/" + identifier)
+          @uri = URI.parse(self.class.base_uri.to_s + "/" + identifier)
         else
           raise ArgumentError, "#{self.class} has no base URI configured, and can thus only be created using RDF::URIs (got #{identifier.inspect})"
         end

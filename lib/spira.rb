@@ -1,4 +1,4 @@
-
+require 'rdf'
 
 module Spira
 

@@ -5,7 +5,9 @@ module Spira
  module Resource
 
    # This module contains all user-exposed methods for use in building a model class.
-   # @see a little bit of magic in Spira::Resource#included as well.
+   # It is used to extend classes that include Spira::Resource.
+   # @see a little bit of magic in Spira::Resource#included as well--some
+   # tricks need class_eval before this module is included.
    #
     module DSL  
       def repository=(repo)
@@ -35,8 +37,8 @@ module Spira
         @repository = Spira.repository(name)
       end
   
-      def base_path(string)
-        self.base_uri = string
+      def default_base_uri(string)
+        @base_uri = string
       end
   
       def property(name, predicate, type)
