@@ -23,6 +23,6 @@ end
 
 desc "Open an irb session with everything loaded, including test fixtures"
 task :console do
-  sh "irb -rubygems -I lib -r spira -I spec/fixtures -r person -r event -r cds -I spec -r spec_helper"
+  sh "irb -rubygems -I lib -r spira -I spec/fixtures -r person -r event -r cds -r cars -I spec -r spec_helper"
 end
 
