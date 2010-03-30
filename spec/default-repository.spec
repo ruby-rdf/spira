@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/spec_helper.rb"
 
 # This test is a simple model that uses the :default repository
 
-describe Spira do
+describe "The :default repository" do
 
   context "The event fixture" do
 
