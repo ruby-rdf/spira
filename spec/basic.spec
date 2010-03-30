@@ -1,15 +1,8 @@
-$:.unshift(File.join(File.dirname(__FILE__),'..','lib'))
-$:.unshift(File.join(File.dirname(__FILE__),'fixtures',''))
+require File.dirname(__FILE__) + "/spec_helper.rb"
 
-$:.unshift(File.join(File.dirname(__FILE__),'..','..','rdf-spec','lib'))
-$:.unshift(File.join(File.dirname(__FILE__),'..','..','rdf','lib'))
-require 'spira'
-require 'rdf/spec/enumerable'
-require 'rdf/spec'
+# Tests of basic functionality--getting, setting, creating, saving, when no
+# relations or anything fancy are involved.
 
-def fixture(filename)
-  File.join(File.dirname(__FILE__),'fixtures',filename)
-end
 
 describe Spira do
 

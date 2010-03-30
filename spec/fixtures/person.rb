@@ -1,18 +1,20 @@
 require 'spira'
 require 'rdf'
 
+Spira.add_repository(:person, ::RDF::Repository)
+
+
 class Person
 
-  include Spira
+  include Spira::Resource
 
-  # Find and create instances here
-  source ::RDF::Repository
+  default_source :person
 
-  # the base path to find Persons
+  # the default base path to find Persons
   base_path "http://example.org/example/people"
 
-  property :name, RDF::RDFS.label, String
-  property :age,  RDF::FOAF.age,   Integer
+  property :name, RDFS.label, String
+  property :age,  FOAF.age,   Integer
 
 
 end
