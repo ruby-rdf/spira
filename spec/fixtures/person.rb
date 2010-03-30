@@ -1,5 +1,4 @@
 require 'spira'
-require 'rdf'
 
 Spira.add_repository(:person, ::RDF::Repository)
 

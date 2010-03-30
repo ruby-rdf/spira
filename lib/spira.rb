@@ -2,15 +2,17 @@
 
 module Spira
 
-  @@repositories = {}
+  Thread.current[:spira] = {} 
+  Thread.current[:spira][:repositories] = {}
 
   def add_repository(name, klass, *args)
-    @@repositories[name] = klass.new(*args)
+    Thread.current[:spira][:repositories][name] = klass.new(*args)
   end
-  module_function :add_repository
+  alias_method :add_repository!, :add_repository
+  module_function :add_repository, :add_repository!
 
   def repository(name)
-    @@repositories[name]
+    Thread.current[:spira][:repositories][name]
   end
   module_function :repository
 
