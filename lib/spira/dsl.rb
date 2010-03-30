@@ -1,6 +1,3 @@
-require 'rdf'
-require 'rdf/isomorphic'
-
 module Spira
  module Resource
 
