@@ -12,6 +12,9 @@ module Spira
       else
         klass.new(*args)
      end
+     if (name == :default) && Thread.current[:spira][:repositories][name].nil?
+        warn "WARNING: Adding nil default repository"
+     end
   end
   alias_method :add_repository!, :add_repository
   module_function :add_repository, :add_repository!
