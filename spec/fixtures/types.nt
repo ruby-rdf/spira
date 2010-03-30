@@ -1,3 +1,9 @@
 <http://example.org/cars/car1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/cars/car> .
 <http://example.org/cars/car1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/cars/unrelated_type> .
 <http://example.org/cars/car1> <http://www.w3.org/2000/01/rdf-schema#label> "sedan" .
+<http://example.org/cars/van1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/cars/van> .
+<http://example.org/cars/van1> <http://www.w3.org/2000/01/rdf-schema#label> "minivan" .
+<http://example.org/cars/van2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/cars/van> .
+<http://example.org/cars/van2> <http://www.w3.org/2000/01/rdf-schema#label> "full-sized van" .
+<http://example.org/cars/van3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/cars/van> .
+<http://example.org/cars/van3> <http://www.w3.org/2000/01/rdf-schema#label> "some other van" .

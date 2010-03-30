@@ -15,7 +15,9 @@ describe 'finding based on types' do
       Car.count.should == 1
     end
 
-    it "should find 3 vans"
+    it "should find 3 vans" do
+      Van.count.should == 3
+    end
 
   end
 
@@ -51,7 +53,9 @@ describe 'finding based on types' do
   end
 
   context "examining types" do
-    it "should have a list of RDF.types"
+    it "should have a list of RDF.types" do
+      pending "Investigate if this will use the same has_many setup"
+    end
   end
 
 end
