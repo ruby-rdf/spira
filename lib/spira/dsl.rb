@@ -45,7 +45,7 @@ module Spira
   
           define_method(name_equals) do |arg|
             old = @repo.query(:subject => @uri, :predicate => predicate)
-            @repo.delete(old) unless old.empty?
+            @repo.delete(*old.to_a) unless old.empty?
             @repo.insert(RDF::Statement.new(@uri, predicate, arg))
           end
   
@@ -65,7 +65,19 @@ module Spira
   
         end
       end
-  
+
+      def type(uri = nil)
+        unless uri.nil?
+          @type = case uri
+            when RDF::URI
+              uri
+            else
+              raise TypeError, "Cannot assign type #{uri} (of type #{uri.class}) to #{self}, expected RDF::URI"
+          end
+        end
+        @type
+      end
+
       def find(identifier)
         uri = case identifier
           when RDF::URI
@@ -82,7 +94,13 @@ module Spira
           self.new(identifier, :statements => statements) 
         end
       end
-  
+ 
+      def count
+        raise TypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
+        result = repository.query(:predicate => RDF.type, :object => @type)
+        result.count
+      end
+
       def create(name, attributes = {})
         self.new(name, attributes)
       end
