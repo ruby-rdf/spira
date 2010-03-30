@@ -14,8 +14,8 @@ describe Spira do
       @person_repository = RDF::Repository.load(fixture('bob.nt'))
     end
 
-    it "should be instantiable" do
-      x = Person.create 'bob'
+    it "should be instantiable from a string" do
+      lambda {x = Person.create 'bob'}.should_not raise_error
     end
 
     it "should know its source" do
@@ -119,9 +119,15 @@ describe Spira do
         lambda { @person.save! }.should_not raise_error
       end
 
-      it "should be findable after saving" do
+      it "should be findable with a string after saving" do
         @person.save!
         bob = Person.find 'bob'
+        bob.should == @person
+      end
+
+      it "should be findable via an RDF::URI" do
+        @person.save!
+        bob = Person.find RDF::URI.new("http://example.org/example/people/bob")
         bob.should == @person
       end
 
