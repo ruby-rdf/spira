@@ -42,7 +42,15 @@ module Spira
       destroy!
       self.class.repository.insert(*@repo)
     end
-  
+
+    def type
+      self.class.type
+    end
+
+    def type=(type)
+      raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to #types"
+    end
+
     def each(*args, &block)
       @repo.each(*args, &block)
     end
