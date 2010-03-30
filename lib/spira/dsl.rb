@@ -59,6 +59,10 @@ module Spira
                 object.object.to_s
               when type == Integer
                 object.object
+              when type.is_a?(Symbol)
+                klass = Kernel.const_get(type.to_s.capitalize)
+                raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
+                klass.find object
             end
           end
   
@@ -66,7 +70,15 @@ module Spira
       end
   
       def find(identifier)
-        statements = self.repository.query(:subject => RDF::URI.parse(self.base_uri + "/" + identifier))
+        uri = case identifier
+          when RDF::URI
+            identifier
+          when String
+            RDF::URI.parse(self.base_uri.to_s + "/" + identifier)
+          else
+            raise ArgumentError, "Cannot instantiate #{self} from #{identifier}, expected RDF::URI or String"
+        end
+        statements = self.repository.query(:subject => uri)
         if statements.empty?
           nil
         else

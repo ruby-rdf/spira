@@ -1,0 +1,4 @@
+<http://example.org/artists/nirvana> <http://purl.org/dc/terms/title> "Nirvana" .
+
+<http://example.org/cds/nevermind> <http://purl.org/dc/terms/title> "Nevermind" .
+<http://example.org/cds/nevermind> <http://example.org/artist> <http://example.org/artists/nirvana> .
