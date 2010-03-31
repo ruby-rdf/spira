@@ -1,6 +1,9 @@
 module Spira
  module Resource
-  
+ 
+    autoload :DSL,              'spira/resource/dsl'
+    autoload :ClassMethods,     'spira/resource/class_methods'
+
     include RDF
   
     def self.included(child)

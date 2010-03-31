@@ -24,6 +24,5 @@ module Spira
   end
   module_function :repository
 
-  autoload :Resource, 'spira/resource'
-  autoload :DSL,      'spira/dsl'
+  autoload :Resource,         'spira/resource'
 end
