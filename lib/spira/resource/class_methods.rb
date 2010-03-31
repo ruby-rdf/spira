@@ -33,7 +33,8 @@ module Spira
             identifier
           when String
             raise ArgumentError, "Cannot find #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
-            RDF::URI.parse(self.base_uri.to_s + "/" + identifier)
+            separator = self.base_uri.to_s[-1,1] == "/" ? '' : '/'
+            RDF::URI.parse(self.base_uri.to_s + separator + identifier)
           else
             raise ArgumentError, "Cannot instantiate #{self} from #{identifier}, expected RDF::URI or String"
         end

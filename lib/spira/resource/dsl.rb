@@ -16,11 +16,11 @@ module Spira
         @repository = Spira.repository(name)
       end
   
-      def default_base_uri(string)
-        @base_uri = string
+      def default_base_uri(uri)
+        @base_uri = uri
       end
       
-      def default_vocabulary(string)
+      def default_vocabulary(uri)
         @default_vocabulary = uri
       end
 
@@ -68,9 +68,10 @@ module Spira
           when opts[:predicate]
             opts[:predicate]
           when @default_vocabulary.nil?
-            raise(ArgumentError, "A :predicate option is required for types without a default vocabulary")
+            raise TypeError, "A :predicate option is required for types without a default vocabulary"
           else @default_vocabulary
-            RDF::URI.new(@default_vocabulary.to_s + "/" + name.to_s)
+            separator = @default_vocabulary.to_s[-1,1] == "/" ? '' : '/'
+            RDF::URI.new(@default_vocabulary.to_s + separator + name.to_s)
         end
 
         type = opts[:type] || String
