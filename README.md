@@ -103,7 +103,7 @@ can always access classes with a full URI:
 
 A number of options are available for Spira classes.
 
-#### `default_base_uri`
+#### default_base_uri
 
 A class with a `default_base_uri` set (either an `RDF::URI` or a `String`) will
 use that URI as a base URI for non-absolute `create` and `find` calls.
@@ -112,7 +112,7 @@ Example
     CD.find 'queens-greatest-hits' # is the same as...
     CD.find RDF::URI.new('http://example.org/cds/queens-greatest-hits')
 
-#### `type`
+#### type
 
 A class with a `type` set is assigned an `RDF.type` on creation and saving.
 
@@ -131,15 +131,15 @@ In addition, one can count the members of a class with a `type` defined:
 
     Album.count  #=> 1 
 
-#### `property`
+#### property
 
 A class declares property members with the `property` function.  See `Property Options` for more information.
 
-#### `has_many`
+#### has_many
 
 A class declares list members with the `has_many` function.  See `Property Options` for more information.
 
-#### `default_vocabulary`
+#### default_vocabulary
 
 A class with a `default_vocabulary` set will transparently create predicates for defined properties:
 
@@ -157,7 +157,7 @@ A class with a `default_vocabulary` set will transparently create predicates for
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/title'))  #=> true
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=> true
 
-#### `default_source`
+#### default_source
 
 Provides this class with a default repository to use instead of the `:default`
 repository if one is not set.
