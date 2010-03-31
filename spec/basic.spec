@@ -180,7 +180,6 @@ describe Spira do
       end
 
       it "should save properties" do
-        puts "updating name"
         @person.name = "steve"
         @person.save!
         @person.name.should == "steve"

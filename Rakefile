@@ -7,7 +7,7 @@ task 'spec' do
   Spec::Rake::SpecTask.new("spec") do |t|
     t.spec_files = FileList["spec/*.spec","spec/*.rb"]
     t.rcov = true
-    t.spec_opts = ["-cfn"]
+    t.spec_opts = [""]
   end
 end
 
