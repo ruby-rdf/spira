@@ -44,7 +44,6 @@ describe Spira do
 
       before :each do
         @person = Person.create 'bob'
-        @alice = Person.create 'alice', :age => 30, :name => 'Alice'
       end
 
       after :each do
@@ -106,6 +105,17 @@ describe Spira do
         @person.age.should == 15
         @person.name.should == "Bob Smith"
       end
+
+      # Tests for a bug wherein the original repo to delete was not being updated on save!
+      it "should safely delete old repository information on updates" do
+        @repo = Person.repository
+        @person.age = 16
+        @person.save!
+        @person.age = 17
+        @person.save!
+        @repo.query(:predicate => RDF::FOAF.age).size.should == 1
+      end
+
 
     end
 
