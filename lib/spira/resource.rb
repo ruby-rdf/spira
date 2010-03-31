@@ -16,6 +16,7 @@ module Spira
     attr_reader :uri
   
     def initialize(identifier, attributes = {})
+      
       if identifier.is_a? URI
         @uri = identifier
       else
@@ -28,7 +29,13 @@ module Spira
 
       @repo = RDF::Repository.new
       @repo.insert(*(attributes[:statements])) unless attributes[:statements].nil?
+      @repo.insert(*[RDF::Statement.new(@uri, RDF.type, attributes[:type])]) if attributes[:type]
+
+      self.class.properties.each do |name, predicate|
+        send(((name.to_s)+"=").to_sym, attributes[name]) unless attributes[name].nil?
+      end
       @original_repo = @repo.dup
+      
     end
   
     def destroy!
@@ -49,6 +56,10 @@ module Spira
 
     def type=(type)
       raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to #types"
+    end
+
+    def inspect
+      "<#{self.class}:#{self.object_id} uri: #{@uri}>"
     end
 
     def each(*args, &block)

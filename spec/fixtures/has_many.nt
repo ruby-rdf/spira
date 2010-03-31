@@ -1,0 +1,18 @@
+<http://example.org/posts/post1> <http://purl.org/dc/terms/title> "Test post 1" .
+<http://example.org/posts/post1> <http://rdfs.org/sioc/ns#content> "some content" .
+<http://example.org/posts/post1> <http://rdfs.org/sioc/ns#has_reply> <http://example.org/comments/comment1>
+<http://example.org/posts/post1> <http://rdfs.org/sioc/ns#has_reply> <http://example.org/comments/comment2>
+
+
+<http://example.org/comments/comment1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/types#Comment> .
+<http://example.org/comments/comment1> <http://purl.org/dc/terms/title> "test comment 1" .
+<http://example.org/comments/comment1> <http://rdfs.org/sioc/ns#content> "some comment content" .
+<http://example.org/comments/comment1> <http://example.org/posts/predicates/rating> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/comments/comment1> <http://example.org/posts/predicates/rating> "3"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/comments/comment1> <http://example.org/posts/predicates/rating> "5"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/comments/comment1> <http://rdfs.org/sioc/ns#reply_of> <http://example.org/posts/post1> .
+
+
+<http://example.org/comments/comment2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/types#Comment> .
+<http://example.org/comments/comment2> <http://purl.org/dc/terms/title> "test comment 2" .
+<http://example.org/comments/comment2> <http://rdfs.org/sioc/ns#content> "some comment content" .

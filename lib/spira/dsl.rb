@@ -46,6 +46,7 @@ module Spira
           define_method(name_equals) do |arg|
             old = @repo.query(:subject => @uri, :predicate => predicate)
             @repo.delete(*old.to_a) unless old.empty?
+            arg = arg.uri if arg.class.ancestors.include?(Spira::Resource)
             @repo.insert(RDF::Statement.new(@uri, predicate, arg))
           end
   
@@ -78,26 +79,27 @@ module Spira
             @repo.delete(*old.to_a) unless old.empty?
             new = []
             arg.each do |value|
+              value = value.uri if value.class.ancestors.include?(Spira::Resource)
               new << RDF::Statement.new(@uri, predicate, value)
             end
             @repo.insert(*new)
           end
 
-          define_method(name) do |arg|
+          define_method(name) do
             values = []
-            values = @repo.query(:subject => @uri, :predicate => predicate)
-            values.each do |statement|
-              object = case
+            statements = @repo.query(:subject => @uri, :predicate => predicate)
+            statements.each do |statement|
+              value = case
                 when type == String
-                  object.object.to_s
+                  statement.object.object.to_s
                 when type == Integer
-                  object.object
+                  statement.object.object
                 when type.is_a?(Symbol)
                   klass = Kernel.const_get(type.to_s.capitalize)
                   raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
-                  klass.find object
+                  klass.find(statement.object) || klass.create(statement.object)
               end
-              values << object
+              values << value
             end
             values
           end
@@ -123,6 +125,7 @@ module Spira
           when RDF::URI
             identifier
           when String
+            raise ArgumentError, "Cannot find #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
             RDF::URI.parse(self.base_uri.to_s + "/" + identifier)
           else
             raise ArgumentError, "Cannot instantiate #{self} from #{identifier}, expected RDF::URI or String"
