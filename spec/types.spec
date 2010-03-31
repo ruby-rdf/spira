@@ -21,6 +21,24 @@ describe 'finding based on types' do
 
   end
 
+  context "when creating" do
+   
+    before :each do
+      @car = Car.create RDF::URI.new('http://example.org/cars/newcar')
+    end
+
+    it "should have a type on creation" do
+      @car.type.should == Car.type
+    end
+
+    it "should include a type statement on dump" do
+      @car.query(:predicate => RDF.type).count.should == 1
+      @car.query(:predicate => RDF.type).first.object.should == Car.type
+      @car.query(:predicate => RDF.type).first.subject.should == @car.uri
+    end
+
+  end
+
   context "When getting/setting" do
     before :each do
       @car = Car.find Cars.car1
