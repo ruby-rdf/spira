@@ -12,9 +12,9 @@ class CD
 
   default_base_uri CDs.cds
 
-  property :name, DC.title , XSD.string
+  property :name,   :predicate => DC.title,   :type => XSD.string
 
-  property :artist, CDs.artist, :artist
+  property :artist, :predicate => CDs.artist, :type => :artist
 
 end
 
@@ -24,7 +24,7 @@ class Artist
 
   default_base_uri CDs.artists
 
-  property :name, DC.title, XSD.string
+  property :name, :predicate => DC.title, :type => XSD.string
   
   #has_many :cds, CD
 

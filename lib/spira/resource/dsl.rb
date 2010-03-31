@@ -16,8 +16,22 @@ module Spira
       def default_base_uri(string)
         @base_uri = string
       end
-  
-      def property(name, predicate, type)
+      
+      def default_vocabulary(string)
+        @default_vocabulary = uri
+      end
+
+      def property(name, opts = {} )
+        predicate = case
+          when opts[:predicate]
+            opts[:predicate]
+          when @default_vocabulary.nil?
+            raise(ArgumentError, "A :predicate option is required for types without a default vocabulary")
+          else @default_vocabulary
+            RDF::URI.new(@default_vocabulary.to_s + "/" + name.to_s)
+        end
+
+        type = opts[:type] || String
         @properties[name] = predicate
         name_equals = (name.to_s + "=").to_sym
         self.class_eval do
@@ -48,7 +62,17 @@ module Spira
         end
       end
 
-      def has_many(name, predicate, type)
+      def has_many(name, opts = {})
+        predicate = case
+          when opts[:predicate]
+            opts[:predicate]
+          when @default_vocabulary.nil?
+            raise(ArgumentError, "A :predicate option is required for types without a default vocabulary")
+          else @default_vocabulary
+            RDF::URI.new(@default_vocabulary.to_s + "/" + name.to_s)
+        end
+
+        type = opts[:type] || String
         @properties[name] = predicate
         name_equals = (name.to_s + "=").to_sym
         self.class_eval do

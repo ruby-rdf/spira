@@ -6,14 +6,14 @@ Spira.add_repository(:default, ::RDF::Repository)
 class Event
   include Spira::Resource
 
-  property :name, DC.title, String
+  property :name, :predicate => DC.title
 
 end
 
 class Stadium
   include Spira::Resource
 
-  property :name, DC.title, String
+  property :name, :predicate => DC.title
 
   default_source :stadium
 

@@ -12,8 +12,8 @@ class Person
   # the default base path to find Persons
   default_base_uri "http://example.org/example/people"
 
-  property :name, RDFS.label, String
-  property :age,  FOAF.age,   Integer
+  property :name, :predicate => RDFS.label
+  property :age,  :predicate => FOAF.age,  :type => Integer
 
 
 end
@@ -24,7 +24,7 @@ class Employee
 
   default_source :person
 
-  property :name, RDFS.label, String
-  property :age, FOAF.age, Integer
+  property :name, :predicate => RDFS.label
+  property :age,  :predicate => FOAF.age, :type => Integer
 
 end

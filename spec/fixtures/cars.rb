@@ -18,7 +18,7 @@ class Car
 
   type Cars.car
 
-  property :name, RDFS.label, String
+  property :name, :predicate => RDFS.label
 
 end
 
@@ -28,6 +28,6 @@ class Van
 
   type Cars.van
 
-  property :name, RDFS.label, String
+  property :name, :predicate => RDFS.label
 
 end
