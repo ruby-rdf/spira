@@ -7,7 +7,7 @@ task 'spec' do
   Spec::Rake::SpecTask.new("spec") do |t|
     t.spec_files = FileList["spec/*.spec","spec/*.rb"]
     t.rcov = true
-    t.spec_opts = [""]
+    t.spec_opts = ["-c"]
   end
 end
 
@@ -26,3 +26,4 @@ task :console do
   sh "irb -rubygems -I lib -r spira -I spec/fixtures -r person -r event -r cds -r cars -r posts -I spec -r spec_helper"
 end
 
+task :default => [:spec]
