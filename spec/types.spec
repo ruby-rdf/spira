@@ -10,6 +10,18 @@ describe 'finding based on types' do
     Spira.add_repository(:default, @types_repository)
   end
 
+  context "when declaring types" do
+    it "should raise an error when declaring a non-uri type" do
+      lambda {
+        class XYZ
+          include Spira::Resource
+          type 'a string, for example'
+        end
+      }.should raise_error TypeError
+    end
+
+  end
+
   context "When finding by types" do
     it "should find 1 car" do
       Car.count.should == 1
@@ -35,6 +47,10 @@ describe 'finding based on types' do
       @car.query(:predicate => RDF.type).count.should == 1
       @car.query(:predicate => RDF.type).first.object.should == Car.type
       @car.query(:predicate => RDF.type).first.subject.should == @car.uri
+    end
+
+    it "should raise a type error to send a type attribute to a class with a type on instantiation" do
+      lambda { Car.create RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van }.should raise_error TypeError
     end
 
   end

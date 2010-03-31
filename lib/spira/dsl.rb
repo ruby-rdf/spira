@@ -18,7 +18,7 @@ module Spira
           when !@repository_name.nil?
             @repository = Spira.repository(@repository_name)
             if @repository.nil?
-              raise RuntimeError, "#{self} is configured to use #{self.repository_name} as a repository, but was unable to find it."
+              raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it."
             end
           else
             @repository = Spira.repository(:default)

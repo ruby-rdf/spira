@@ -17,5 +17,9 @@ describe "The :default repository" do
     it "should know its source" do
       Event.repository.should be_a RDF::Repository
     end
+
+    it "should raise an error to access a repository for a class with a defined default which does not exist" do
+      lambda { Stadium.repository }.should raise_error RuntimeError
+    end
   end
 end

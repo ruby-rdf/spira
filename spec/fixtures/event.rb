@@ -9,3 +9,12 @@ class Event
   property :name, DC.title, String
 
 end
+
+class Stadium
+  include Spira::Resource
+
+  property :name, DC.title, String
+
+  default_source :stadium
+
+end
