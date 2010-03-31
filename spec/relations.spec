@@ -30,7 +30,16 @@ describe "Spira Relations" do
       it "should find a model object for a uri" do
         @cd.artist.should == @artist
       end
-    
+
+      it "should make a valid statement referencing the an assigned objects URI" do
+        @kurt = Artist.new 'kurt cobain'
+        @cd.artist = @kurt
+        statement = @cd.query(:predicate => CDs.artist).first
+        statement.subject.should == @cd.uri
+        statement.predicate.should == CDs.artist
+        statement.object.should == @kurt.uri
+      end
+
     end
 
   end
