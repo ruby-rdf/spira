@@ -17,3 +17,14 @@ class Person
 
 
 end
+
+class Employee
+
+  include Spira::Resource
+
+  default_source :person
+
+  property :name, RDFS.label, String
+  property :age, FOAF.age, Integer
+
+end

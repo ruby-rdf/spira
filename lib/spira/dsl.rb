@@ -50,21 +50,61 @@ module Spira
           end
   
           define_method(name) do
-            object = @repo.query(:subject => @uri, :predicate => predicate).first.object
-            object = case
+            statement = @repo.query(:subject => @uri, :predicate => predicate).first
+            value = case
+              when statement.nil?
+                nil
               when type == String
-                object.object.to_s
+                statement.object.object.to_s
               when type == Integer
-                object.object
+                statement.object.object
               when type.is_a?(Symbol)
                 klass = Kernel.const_get(type.to_s.capitalize)
                 raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
-                klass.find object
+                klass.find statement.object
             end
           end
   
         end
       end
+
+      def has_many(name, predicate, type)
+        @properties[name] = predicate
+        name_equals = (name.to_s + "=").to_sym
+        self.class_eval do
+
+          define_method(name_equals) do |arg|
+            old = @repo.query(:subject => @uri, :predicate => predicate)
+            @repo.delete(*old.to_a) unless old.empty?
+            new = []
+            arg.each do |value|
+              new << RDF::Statement.new(@uri, predicate, value)
+            end
+            @repo.insert(*new)
+          end
+
+          define_method(name) do |arg|
+            values = []
+            values = @repo.query(:subject => @uri, :predicate => predicate)
+            values.each do |statement|
+              object = case
+                when type == String
+                  object.object.to_s
+                when type == Integer
+                  object.object
+                when type.is_a?(Symbol)
+                  klass = Kernel.const_get(type.to_s.capitalize)
+                  raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
+                  klass.find object
+              end
+              values << object
+            end
+            values
+          end
+        end
+      end
+
+
 
       def type(uri = nil)
         unless uri.nil?
@@ -102,7 +142,14 @@ module Spira
       end
 
       def create(name, attributes = {})
-        self.new(name, attributes)
+        # TODO: validate attributes
+        if !@type.nil?
+          if attributes[:type]
+            raise TypeError, "Cannot assign type to new instance of #{self}; type must be #{@type}"
+          end
+          attributes[:type] = @type
+        end
+        resource = self.new(name, attributes)
       end
   
     end

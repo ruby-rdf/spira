@@ -14,10 +14,6 @@ describe Spira do
       @person_repository = RDF::Repository.load(fixture('bob.nt'))
     end
 
-    it "should be instantiable from a string" do
-      lambda {x = Person.create 'bob'}.should_not raise_error
-    end
-
     it "should know its source" do
       Person.repository.should be_a RDF::Repository
     end
@@ -30,14 +26,25 @@ describe Spira do
       Person.should respond_to :find
     end
 
-    it "should return nil for a non-existent person" do
-      Person.find('nobody').should == nil
+    context "when creating" do
+      it "should be instantiable from a string" do
+        lambda {x = Person.create 'bob'}.should_not raise_error
+      end
+
+      it "should return nil for a non-existent person" do
+        Person.find('nobody').should == nil
+      end
+
+      it "should allow setting of attributes at creation" do
+        lambda {Person.create 'bob', :age => 15}.should_not raise_error
+      end
     end
 
     context "A newly-created person" do
 
       before :each do
         @person = Person.create 'bob'
+        @alice = Person.create 'alice', :age => 30, :name => 'Alice'
       end
 
       after :each do
@@ -59,6 +66,10 @@ describe Spira do
 
       it "should have an age method" do
         @person.should respond_to :age
+      end
+
+      it "should return nil for unset properties" do
+        @person.name.should == nil
       end
 
       it "should allow setting a name" do
@@ -96,6 +107,38 @@ describe Spira do
         @person.name.should == "Bob Smith"
       end
 
+    end
+
+    context "creating with attributes" do
+      before :each do
+        @alice = Person.create 'alice', :age => 30, :name => 'Alice'
+      end
+
+      after :each do
+        @alice.destroy!
+      end
+
+      it "should have properties if it had them as attributes on creation" do
+        @alice.age.should == 30
+        @alice.name.should == 'Alice'
+      end
+
+      it "should save updated properties" do
+        @alice.age = 16
+        @alice.age.should == 16
+      end
+     
+      it "should allow saving" do
+        @alice.save!
+        Person.find('alice').should == @alice
+      end
+
+    end
+
+    context "creating without a base URI" do
+      it "should raise an exception to create an object without a URI for a class without a base_uri" do
+        lambda {employee = Employee.create 'bob'}.should raise_error ArgumentError
+      end
     end
 
     context "getting, setting, and saving" do
