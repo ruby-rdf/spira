@@ -42,7 +42,7 @@ module Spira
           if errors.empty?
             _update!
           else
-            raise (ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.join(';'))
+            raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.join(';'))
           end
         else
           _update!
