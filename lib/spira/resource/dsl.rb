@@ -61,6 +61,19 @@ module Spira
         end
       end
 
+      def build_rdf_value(value, type)
+        case
+          when value.class.ancestors.include?(Spira::Resource)
+            value.uri
+          when type == nil
+            value
+          when type.is_a?(RDF::URI)
+            RDF::Literal.new(value, :datatype => type)
+          else
+            RDF::Literal.new(value)
+        end
+      end
+
       private
 
       def add_accessors(name, opts, accessors_method)
@@ -91,7 +104,7 @@ module Spira
           @repo.delete(*old.to_a) unless old.empty?
           new = []
           arg.each do |value|
-            value = value.uri if value.class.ancestors.include?(Spira::Resource)
+            value = self.class.build_rdf_value(value, type)
             new << RDF::Statement.new(@uri, predicate, value)
           end
           @repo.insert(*new)
@@ -113,7 +126,7 @@ module Spira
         setter = lambda do |arg|
           old = @repo.query(:subject => @uri, :predicate => predicate)
           @repo.delete(*old.to_a) unless old.empty?
-          arg = arg.uri if arg.class.ancestors.include?(Spira::Resource)
+          arg = self.class.build_rdf_value(arg, type)
           @repo.insert(RDF::Statement.new(@uri, predicate, arg))
         end
 
