@@ -4,6 +4,7 @@ module Spira
     autoload :DSL,              'spira/resource/dsl'
     autoload :ClassMethods,     'spira/resource/class_methods'
     autoload :InstanceMethods,  'spira/resource/instance_methods'
+    autoload :Validations,      'spira/resource/validations'
 
     def self.included(child)
       child.extend DSL

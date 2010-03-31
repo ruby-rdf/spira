@@ -25,4 +25,6 @@ module Spira
   module_function :repository
 
   autoload :Resource,         'spira/resource'
+
+  class ValidationError < StandardError; end
 end

@@ -10,7 +10,8 @@ module Spira
           @uri = identifier
         else
           if (self.class.base_uri)
-            @uri = RDF::URI.parse(self.class.base_uri.to_s + "/" + identifier)
+            separator = self.class.base_uri.to_s[-1,1] == "/" ? '' : '/'
+            @uri = RDF::URI.parse(self.class.base_uri.to_s + separator + identifier)
           else
             raise ArgumentError, "#{self.class} has no base URI configured, and can thus only be created using RDF::URIs (got #{identifier.inspect})"
           end
@@ -35,8 +36,23 @@ module Spira
       end
     
       def save!
+        if respond_to?(:validate)
+          errors.clear
+          validate
+          if errors.empty?
+            _update!
+          else
+            raise (ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.join(';'))
+          end
+        else
+          _update!
+        end
+      end
+
+      def _update!
         destroy!
         self.class.repository.insert(*@repo)
+        @original_repo = @repo.dup
       end
   
       def type
@@ -55,6 +71,8 @@ module Spira
         @repo.each(*args, &block)
       end
       include ::RDF::Enumerable, ::RDF::Queryable
+
+      include Spira::Resource::Validations
 
     end  
   end
