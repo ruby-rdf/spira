@@ -7,6 +7,7 @@ module Spira
 
     def self.included(child)
       child.extend DSL
+      child.extend ClassMethods
       child.instance_eval do
         class << self
           attr_accessor :base_uri, :properties
