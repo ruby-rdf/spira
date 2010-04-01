@@ -1,5 +1,25 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
+# Fixture to test :default repository loading
+
+Spira.add_repository(:default, ::RDF::Repository)
+
+class Event
+  include Spira::Resource
+
+  property :name, :predicate => DC.title
+
+end
+
+class Stadium
+  include Spira::Resource
+
+  property :name, :predicate => DC.title
+
+  default_source :stadium
+
+end
+
 # This test is a simple model that uses the :default repository
 
 describe "The :default repository" do
@@ -7,7 +27,6 @@ describe "The :default repository" do
   context "The event fixture" do
 
     before :all do
-      require 'event'
     end
 
     it "should be instantiable" do

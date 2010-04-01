@@ -1,10 +1,42 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
+# These classes are to test finding based on rdfs.type
+
+
+class Cars < RDF::Vocabulary('http://example.org/cars/')
+  property :car
+  property :van
+  property :car1
+  property :van
+  property :station_wagon
+  property :unrelated_type
+end
+
+
+class Car
+
+  include Spira::Resource
+
+  type Cars.car
+
+  property :name, :predicate => RDFS.label
+
+end
+
+class Van
+
+  include Spira::Resource
+
+  type Cars.van
+
+  property :name, :predicate => RDFS.label
+
+end
+
 
 describe 'finding based on types' do
 
 
   before :all do
-    require 'cars'
     require 'rdf/ntriples'
     @types_repository = RDF::Repository.load(fixture('types.nt'))
     Spira.add_repository(:default, @types_repository)
