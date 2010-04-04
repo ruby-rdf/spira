@@ -31,6 +31,7 @@ module Spira
 
       def has_many(name, opts = {})
         add_accessors(name,opts,:list_accessors)
+        @lists[name] = true
       end
 
       def type(uri = nil)

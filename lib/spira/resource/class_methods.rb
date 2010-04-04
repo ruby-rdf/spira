@@ -62,7 +62,11 @@ module Spira
         end
         resource = self.new(name, attributes)
       end
-  
+
+      def is_list?(property)
+        @lists.has_key?(property)
+      end
+
     end
   end
 end

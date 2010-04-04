@@ -11,9 +11,10 @@ module Spira
       child.extend ClassMethods
       child.instance_eval do
         class << self
-          attr_accessor :properties
+          attr_accessor :properties, :lists
         end
         @properties = {}
+        @lists      = {}
       end
     end
     
