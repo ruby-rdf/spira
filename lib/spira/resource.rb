@@ -11,7 +11,7 @@ module Spira
       child.extend ClassMethods
       child.instance_eval do
         class << self
-          attr_accessor :base_uri, :properties
+          attr_accessor :properties
         end
         @properties = {}
       end

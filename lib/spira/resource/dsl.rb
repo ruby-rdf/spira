@@ -16,8 +16,9 @@ module Spira
         @repository = Spira.repository(name)
       end
   
-      def default_base_uri(uri)
-        @base_uri = uri
+      def base_uri(uri = nil)
+        @base_uri = uri unless uri.nil?
+        @base_uri
       end
       
       def default_vocabulary(uri)

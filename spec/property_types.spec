@@ -5,7 +5,7 @@ class RubyProps
   include Spira::Resource
   
   default_vocabulary RDF::URI.new('http://example.org/vocab')
-  default_base_uri RDF::URI.new('http://example.org/props')
+  base_uri RDF::URI.new('http://example.org/props')
 
   property :integer, :type => Integer
   property :string,  :type => String
@@ -19,8 +19,9 @@ class XSDProps
   include Spira::Resource
   
   default_vocabulary RDF::URI.new('http://example.org/vocab')
-  default_base_uri RDF::URI.new('http://example.org/props')
+  base_uri RDF::URI.new('http://example.org/props')
 
+  property :boolean, :type => XSD.boolean
   property :integer, :type => XSD.integer
   property :string,  :type => XSD.string
   property :float,   :type => XSD.float

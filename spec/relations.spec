@@ -10,7 +10,7 @@ class CD
 
   include Spira::Resource
 
-  default_base_uri CDs.cds
+  base_uri CDs.cds
 
   property :name,   :predicate => DC.title,   :type => XSD.string
 
@@ -22,7 +22,7 @@ class Artist
 
   include Spira::Resource
 
-  default_base_uri CDs.artists
+  base_uri CDs.artists
 
   property :name, :predicate => DC.title, :type => XSD.string
   

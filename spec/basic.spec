@@ -10,7 +10,7 @@ class Person
   default_source :person
 
   # the default base path to find Persons
-  default_base_uri "http://example.org/example/people"
+  base_uri "http://example.org/example/people"
 
   property :name, :predicate => RDFS.label
   property :age,  :predicate => FOAF.age,  :type => Integer

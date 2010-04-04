@@ -7,7 +7,7 @@ class Bubble
 
   default_vocabulary RDF::URI.new 'http://example.org/vocab/'
 
-  default_base_uri "http://example.org/bubbles/"
+  base_uri "http://example.org/bubbles/"
 
   property :year, :type => Integer
   property :name
