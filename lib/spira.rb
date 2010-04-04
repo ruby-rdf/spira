@@ -2,17 +2,25 @@ require 'rdf'
 
 module Spira
 
-  Thread.current[:spira] = {} 
-  Thread.current[:spira][:repositories] = {}
+
+  def repositories
+    settings[:repositories] ||= {}
+  end
+  module_function :repositories
+
+  def settings
+    Thread.current[:spira] ||= {}
+  end
+  module_function :settings
 
   def add_repository(name, klass, *args)
-    Thread.current[:spira][:repositories][name] = case klass
+    repositories[name] = case klass
       when RDF::Repository
         klass
       else
         klass.new(*args)
      end
-     if (name == :default) && Thread.current[:spira][:repositories][name].nil?
+     if (name == :default) && settings[:repositories][name].nil?
         warn "WARNING: Adding nil default repository"
      end
   end
@@ -20,7 +28,7 @@ module Spira
   module_function :add_repository, :add_repository!
 
   def repository(name)
-    Thread.current[:spira][:repositories][name]
+    repositories[name]
   end
   module_function :repository
 
