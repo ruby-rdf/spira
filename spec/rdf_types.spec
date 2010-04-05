@@ -13,25 +13,26 @@ end
 
 
 class Car
-
   include Spira::Resource
 
   type Cars.car
 
   property :name, :predicate => RDFS.label
-
 end
 
 class Van
-
   include Spira::Resource
 
   type Cars.van
 
   property :name, :predicate => RDFS.label
-
 end
 
+class Wagon
+  include Spira::Resource
+
+  property :name, :predicate => RDFS.label
+end
 
 describe 'finding based on types' do
 
@@ -52,6 +53,17 @@ describe 'finding based on types' do
       }.should raise_error TypeError
     end
 
+    it "should provide a class method which returns the type" do
+      Car.should respond_to :type
+    end
+    
+    it "should return the correct type" do
+      Car.type.should == Cars.car
+    end
+
+    it "should return nil if no type is declared" do
+      Wagon.type.should == nil
+    end
   end
 
   context "When finding by types" do
@@ -109,7 +121,7 @@ describe 'finding based on types' do
     it "should maintain all triples related to this object on save" do
       @car.name = 'testing123'
       @car.save!
-      @types_repository.query(:subject => Cars.car1).should == @car
+      @car.should == @types_repository.query(:subject => Cars.car1)
     end
   end
 

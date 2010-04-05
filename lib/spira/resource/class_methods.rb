@@ -54,9 +54,9 @@ module Spira
 
       def create(name, attributes = {})
         # TODO: validate attributes
-        if !@type.nil?
+        unless @type.nil?
           if attributes[:type]
-            raise TypeError, "Cannot assign type to new instance of #{self}; type must be #{@type}"
+            raise TypeError, "Cannot assign type to new instance of #{self}; this class is associated with #{@type}"
           end
           attributes[:type] = @type
         end

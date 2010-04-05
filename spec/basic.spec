@@ -137,10 +137,16 @@ describe Spira do
       # Tests for a bug wherein the original repo to delete was not being updated on save!
       it "should safely delete old repository information on updates" do
         @repo = Person.repository
+        puts "setting 16"
         @person.age = 16
         @person.save!
+        puts "done, saved.\n\n"
         @person.age = 17
+        puts "before save\n\n"
         @person.save!
+        puts "done, saved as 17\n\n"
+        puts @person.to_a.inspect
+        puts @repo.to_a.inspect
         @repo.query(:predicate => RDF::FOAF.age).size.should == 1
       end
 
@@ -168,7 +174,7 @@ describe Spira do
      
       it "should allow saving" do
         @alice.save!
-        Person.find('alice').should == @alice
+        Person.find('alice').should be_isomorphic_with @alice
       end
 
     end

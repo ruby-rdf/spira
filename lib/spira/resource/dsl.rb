@@ -1,3 +1,5 @@
+require 'promise'
+
 module Spira
  module Resource
 
@@ -26,11 +28,11 @@ module Spira
       end
 
       def property(name, opts = {} )
-        add_accessors(name,opts,:single_accessors)
+        add_accessors(name,opts,:hash_accessors)
       end
 
       def has_many(name, opts = {})
-        add_accessors(name,opts,:list_accessors)
+        add_accessors(name,opts,:hash_accessors)
         @lists[name] = true
       end
 
@@ -59,7 +61,7 @@ module Spira
           when type.is_a?(Symbol)
             klass = Kernel.const_get(type.to_s.capitalize)
             raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
-            klass.find(statement.object) || klass.create(statement.object)
+            promise { klass.find(statement.object) || klass.create(statement.object) }
         end
       end
 
@@ -68,6 +70,8 @@ module Spira
           when value.class.ancestors.include?(Spira::Resource)
             value.uri
           when type == nil
+            value
+          when type == RDF::URI && value.is_a?(RDF::URI)
             value
           when type.is_a?(RDF::URI)
             RDF::Literal.new(value, :datatype => type)
@@ -90,16 +94,30 @@ module Spira
         end
 
         type = opts[:type] || String
-        @properties[name] = predicate
+        @properties[name] = {}
+        @properties[name][:predicate] = predicate
+        @properties[name][:type] = type
         name_equals = (name.to_s + "=").to_sym
 
-        (getter,setter) = self.send(accessors_method, predicate, type)
+        (getter,setter) = self.send(accessors_method, name, predicate, type)
         self.send(:define_method,name_equals, &setter) 
         self.send(:define_method,name, &getter) 
 
       end
 
-      def list_accessors(predicate, type)
+      def hash_accessors(name, predicate, type)
+        setter = lambda do |arg|
+          attribute_set(name,arg)
+        end
+
+        getter = lambda do
+          attribute_get(name)
+        end
+
+        [getter, setter]
+      end
+
+      def list_accessors(name, predicate, type)
 
         setter = lambda do |arg|
           old = @repo.query(:subject => @uri, :predicate => predicate)
@@ -124,7 +142,7 @@ module Spira
         [getter, setter]
       end
 
-      def single_accessors(predicate, type)
+      def single_accessors(name, predicate, type)
         setter = lambda do |arg|
           old = @repo.query(:subject => @uri, :predicate => predicate)
           @repo.delete(*old.to_a) unless old.empty?

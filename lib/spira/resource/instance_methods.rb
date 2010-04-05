@@ -1,3 +1,5 @@
+require 'rdf/isomorphic'
+
 module Spira
   module Resource
     module InstanceMethods 
@@ -21,55 +23,60 @@ module Spira
           end
         end
 
-        @repo = RDF::Repository.new
-        @repo.insert(*(opts[:statements])) unless opts[:statements].nil?
-        @repo.insert(*[RDF::Statement.new(@uri, RDF.type, opts[:type])]) if opts[:type]
+        #@repo = RDF::Repository.new
+        #@repo.insert(*(opts[:statements])) unless opts[:statements].nil?
+        #@repo.insert(*[RDF::Statement.new(@uri, RDF.type, opts[:type])]) if opts[:type]
 
         #  If we got statements, we are being loaded, not created
         if opts[:statements]
           # Set attributes for each statement corresponding to a predicate
-          self.class.properties.each do |name, predicate|
+          self.class.properties.each do |name, property|
             if self.class.is_list?(name)
               values = []
-              statements = @repo.query(:subject => @uri, :predicate => predicate)
+              statements = opts[:statements].query(:subject => @uri, :predicate => property[:predicate])
               unless statements.nil?
                 statements.each do |statement|
-                  values << self.class.build_value(statement,self.class.properties[name])
+                  values << self.class.build_value(statement,property[:type])
                 end
               end
               attribute_set(name, values)
             else
-              statement = @repo.query(:subject => @uri, :predicate => predicate)
-              unless statement.nil?
-                attribute_set(name, self.class.build_value(statement.first, self.class.properties[name]))
-              end
+              statement = opts[:statements].query(:subject => @uri, :predicate => property[:predicate]).first
+              attribute_set(name, self.class.build_value(statement, property[:type]))
             end
           end
         else
           self.class.properties.each do |name, predicate|
             attribute_set(name, opts[name]) unless opts[name].nil?
           end
+
         end
 
 
-        @repo = RDF::Repository.new
-        @repo.insert(*(opts[:statements])) unless opts[:statements].nil?
-        @repo.insert(*[RDF::Statement.new(@uri, RDF.type, opts[:type])]) if opts[:type]
+        #@repo = RDF::Repository.new
+        #@repo.insert(*(opts[:statements])) unless opts[:statements].nil?
+        #@repo.insert(*[RDF::Statement.new(@uri, RDF.type, opts[:type])]) if opts[:type]
   
-        self.class.properties.each do |name, predicate|
-          send(((name.to_s)+"=").to_sym, opts[name]) unless opts[name].nil?
+        #self.class.properties.each do |name, predicate|
+        #  send(((name.to_s)+"=").to_sym, opts[name]) unless opts[name].nil?
+        #end
+        @original_attributes = @attributes.dup
+        @original_attributes.each do | name, value |
+          @original_attributes[name] = value.dup if value.is_a?(Array)
         end
-        @original_repo = @repo.dup
-        
       end
     
+      def _destroy_attributes(attributes)
+        repository = repository_for_attributes(attributes)
+        puts "destroying attributes: #{attributes.inspect}"
+        puts "destroying #{repository.inspect}"
+        self.class.repository.delete(*repository)
+      end
+  
       def destroy!
-        self.class.properties.each do | name, predicate |
-          result = (self.class.repository.query(:subject => @uri, :predicate => predicate))
-          self.class.repository.delete(*result) unless result.empty?
-        end
+        _destroy_attributes(@attributes)
       end
-    
+
       def save!
         if respond_to?(:validate)
           errors.clear
@@ -85,9 +92,10 @@ module Spira
       end
 
       def _update!
-        destroy!
-        self.class.repository.insert(*@repo)
-        @original_repo = @repo.dup
+        _destroy_attributes(@original_attributes)
+        puts "inserting #{self.to_a.inspect}"
+        self.class.repository.insert(*self)
+        @original_attributes = @attributes.dup
       end
   
       def type
@@ -95,7 +103,7 @@ module Spira
       end
   
       def type=(type)
-        raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to #types"
+        raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
       end
   
       def inspect
@@ -103,7 +111,13 @@ module Spira
       end
   
       def each(*args, &block)
-        @repo.each(*args, &block)
+        repository = repository_for_attributes(@attributes)
+        repository.insert(RDF::Statement.new(@uri, RDF.type, type)) unless type.nil?
+        if block_given?
+          repository.each(*args, &block)
+        else
+          ::Enumerable::Enumerator.new(self, :each)
+        end
       end
 
       def attribute_set(name, value)
@@ -111,8 +125,45 @@ module Spira
       end
 
       def attribute_get(name)
-        @attributes[name]
+        case self.class.is_list?(name)
+          when true
+            @attributes[name] ||= []
+          when false   
+            @attributes[name]
+        end
       end
+
+      def repository_for_attributes(attributes)
+        repo = RDF::Repository.new
+        attributes.each do | name, attribute |
+          if self.class.is_list?(name)
+            #old = @repo.query(:subject => @uri, :predicate => predicate)
+            #@repo.delete(*old.to_a) unless old.empty?
+            new = []
+            attribute.each do |value|
+              value = self.class.build_rdf_value(value, self.class.properties[name][:type])
+              new << RDF::Statement.new(@uri, self.class.properties[name][:predicate], value)
+            end
+            repo.insert(*new)
+          else
+            value = self.class.build_rdf_value(attribute, self.class.properties[name][:type])
+            repo.insert(RDF::Statement.new(@uri, self.class.properties[name][:predicate], value))
+          end
+        end
+        repo
+      end
+
+      def ==(other)
+        case other
+          when Spira::Resource
+            @uri == other.uri 
+          when RDF::Enumerable
+            self.isomorphic_with?(other)
+          else
+            false
+        end
+      end
+
 
       include ::RDF::Enumerable, ::RDF::Queryable
 
