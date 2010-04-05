@@ -68,8 +68,6 @@ module Spira
     
       def _destroy_attributes(attributes)
         repository = repository_for_attributes(attributes)
-        puts "destroying attributes: #{attributes.inspect}"
-        puts "destroying #{repository.inspect}"
         self.class.repository.delete(*repository)
       end
   
@@ -93,7 +91,6 @@ module Spira
 
       def _update!
         _destroy_attributes(@original_attributes)
-        puts "inserting #{self.to_a.inspect}"
         self.class.repository.insert(*self)
         @original_attributes = @attributes.dup
       end
