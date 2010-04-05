@@ -17,8 +17,10 @@ module Spira
     repositories[name] = case klass
       when RDF::Repository
         klass
-      else
+      when Class
         klass.new(*args)
+      else
+        raise ArgumentError, "Could not add repository #{klass} as #{name}; expected an RDF::Repository or class name"
      end
      if (name == :default) && settings[:repositories][name].nil?
         warn "WARNING: Adding nil default repository"

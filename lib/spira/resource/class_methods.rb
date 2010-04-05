@@ -10,24 +10,39 @@ module Spira
       end
 
       def repository
+        case @repository_name
+          when nil
+            Spira.repository(:default)
+          else
+            Spira.repository(@repository_name)
+        end
+      end
+
+      def oldrepo
         case
-          when !@repository.nil?
-            @repository
+          #when !@repository.nil?
+          #  @repository
           when !@repository_name.nil?
-            @repository = Spira.repository(@repository_name)
-            if @repository.nil?
-              raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it."
-            end
+            Spira.repository(@repository_name) || raise(RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it.")
+            #@repository = Spira.repository(@repository_name)
+            #if @repository.nil?
+            #  raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it."
+            #end
+            #@repository
           else
             @repository = Spira.repository(:default)
             if @repository.nil? 
               raise RuntimeError, "#{self} has no configured repository and was unable to find a default repository."
             end
+            @repository
         end
-        @repository
+        #@repository
       end
 
       def find(identifier)
+        if repository.nil?
+          raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
+        end
         uri = case identifier
           when RDF::URI
             identifier

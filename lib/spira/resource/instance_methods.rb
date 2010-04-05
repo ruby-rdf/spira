@@ -76,6 +76,9 @@ module Spira
       end
 
       def save!
+        if self.class.repository.nil?
+          raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
+        end
         if respond_to?(:validate)
           errors.clear
           validate
