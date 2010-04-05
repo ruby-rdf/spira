@@ -155,7 +155,8 @@ module Spira
 
       def ==(other)
         case other
-          when Spira::Resource
+          # TODO: define behavior for equality on subclasses.  also subclasses.
+          when self.class
             @uri == other.uri 
           when RDF::Enumerable
             self.isomorphic_with?(other)
