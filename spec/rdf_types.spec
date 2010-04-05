@@ -119,9 +119,10 @@ describe 'finding based on types' do
     end
 
     it "should maintain all triples related to this object on save" do
+      original_triples = @types_repository.query(:subject => Cars.car1)
       @car.name = 'testing123'
       @car.save!
-      @car.should == @types_repository.query(:subject => Cars.car1)
+      @types_repository.query(:subject => Cars.car1).count.should == original_triples.size
     end
   end
 
