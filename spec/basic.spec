@@ -225,23 +225,5 @@ describe Spira do
 
     end
     
-    context "as an RDF::Enumerable" do
-
-      before :each do
-        @statements = @person_repository
-        @person = Person.create 'bob'
-        @person.name = "Bob Smith"
-        @person.age = 15
-        @enumerable = @person
-      end
-
-      it_should_behave_like RDF_Enumerable
-    end
-
   end
-
-
 end
-
-
-
