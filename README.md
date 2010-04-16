@@ -17,10 +17,10 @@ or to create a new store of RDF data based on simple defaults.
     
       include Spira::Resource
 
-      default_base_uri "http://example.org/example/people"
+      base_uri "http://example.org/example/people"
     
-      property :name, RDF::FOAF.name, String
-      property :age,  RDF::FOAF.age,  Integer
+      property :name, :predicate => RDF::FOAF.name, :type => String
+      property :age,  :predicate => RDF::FOAF.age,  :type => Integer
 
     end
 
@@ -29,9 +29,9 @@ or to create a new store of RDF data based on simple defaults.
     bob.name = "Bob Smith"
     bob.save!
 
-    bob.each_statement
-    #<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
-    #<http://example.org/example/people/bob> <http://www.w3.org/2000/01/rdf-schema#label> "Bob Smith" .
+    bob.each_statement {|s| puts s}
+    #<RDF::Statement:0x80abb80c(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .)>
+    #<RDF::Statement:0x80abb8fc(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .)>
    
 ### Features
 
@@ -60,14 +60,14 @@ without the `RDF::` prefix.  For example:
     
     class CD
       include Spira::Resource
-      default_base_uri 'http://example.org/cds'
+      base_uri 'http://example.org/cds'
       property :name,   :predicate => DC.title,   :type => XSD.string
       property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
     end
     
     class Artist
       include Spira::Resource
-      default_base_uri 'http://example.org/artists'
+      base_uri 'http://example.org/artists'
       property :name, :predicate => DC.title, :type => XSD.string
       has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
     end
@@ -103,9 +103,9 @@ can always access classes with a full URI:
 
 A number of options are available for Spira classes.
 
-#### default_base_uri
+#### base_uri
 
-A class with a `default_base_uri` set (either an `RDF::URI` or a `String`) will
+A class with a `base_uri` set (either an `RDF::URI` or a `String`) will
 use that URI as a base URI for non-absolute `create` and `find` calls.
 
 Example
@@ -146,7 +146,7 @@ A class with a `default_vocabulary` set will transparently create predicates for
     class Song
       include Spira::Resource
       default_vocabulary RDF::URI.new('http://example.org/vocab')
-      default_base_uri 'http://example.org/songs'
+      base_uri 'http://example.org/songs'
       property :title
       property :author, :type => :artist
     end
@@ -269,13 +269,3 @@ domain.  For more information, see the included UNLICENSE file.
 #### Contributing
 Fork it on Github and go.  Please make sure you're kosher with the UNLICENSE
 file before contributing.
-
-
-
-
-
-
-
-
-
-
