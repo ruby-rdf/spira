@@ -49,7 +49,7 @@ module Spira
       end
 
       #
-      # @nodoc
+      # @private
       def build_value(statement, type)
         case
           when statement == nil
@@ -65,6 +65,7 @@ module Spira
         end
       end
 
+      # @private
       def build_rdf_value(value, type)
         case
           when value.class.ancestors.include?(Spira::Resource)

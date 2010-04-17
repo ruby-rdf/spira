@@ -30,8 +30,8 @@ or to create a new store of RDF data based on simple defaults.
     bob.save!
 
     bob.each_statement {|s| puts s}
-    #<RDF::Statement:0x80abb80c(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .)>
-    #<RDF::Statement:0x80abb8fc(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .)>
+    #=> RDF::Statement:0x80abb80c(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .)
+    #=> RDF::Statement:0x80abb8fc(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .)
    
 ### Features
 
