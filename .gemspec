@@ -6,11 +6,11 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'spira'
-  gem.homepage           = 'http://rdf.rubyforge.org/spira/'
+  gem.homepage           = 'http://spira.rubyforge.org'
   gem.license            = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary            = 'A framework for using the information in RDF.rb repositories as model objects.'
   gem.description        = 'Spira is a framework for using the information in RDF.rb repositories as model objects.'
-  gem.rubyforge_project  = 'rdf'
+  gem.rubyforge_project  = 'spira'
 
   gem.authors            = ['Ben Lavender']
   gem.email              = 'blavender@gmail.com'
