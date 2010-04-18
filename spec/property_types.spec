@@ -31,6 +31,18 @@ describe 'types for properties' do
       }.should_not raise_error TypeError
     end
 
+    it "should not raise an error to use an included XSD type aliased to a Spira type" do
+      lambda {
+        class PropTypeD
+          include Spira::Resource
+          default_vocabulary RDF::URI.new('http://example.org/vocab')
+          base_uri RDF::URI.new('http://example.org/props')
+
+          property :test, :type => XSD.string
+        end
+      }.should_not raise_error TypeError
+    end
+
     it "should not raise an error to use an included Spira type" do
       lambda {
         class PropTypeC
@@ -43,17 +55,6 @@ describe 'types for properties' do
       }.should_not raise_error TypeError
     end
 
-    it "should not raise an error to use an included XSD type aliased to a Spira type" do
-      lambda {
-        class PropTypeD
-          include Spira::Resource
-          default_vocabulary RDF::URI.new('http://example.org/vocab')
-          base_uri RDF::URI.new('http://example.org/props')
-
-          property :test, :type => XSD.string
-        end
-      }.should_not raise_error TypeError
-    end
   end
 
   # These tests are to make sure that type declarations and mappings work

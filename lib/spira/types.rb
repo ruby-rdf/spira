@@ -1,10 +1,14 @@
 module Spira
   module Types
-    autoload :Integer,     'spira/types/integer'
-    autoload :Boolean,     'spira/types/boolean'
-    autoload :Any,         'spira/types/any'
-    autoload :String,      'spira/types/string'
-    autoload :Float,       'spira/types/float'
+
+    # No autoloading here--the associations to XSD types are made by the
+    # classes themselves, so we need to explicitly require them or XSD types
+    # will show up as not found.
+    require 'spira/types/integer'
+    require 'spira/types/boolean'
+    require 'spira/types/any'
+    require 'spira/types/string'
+    require 'spira/types/float'
 
 
   end
