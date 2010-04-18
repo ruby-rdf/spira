@@ -54,30 +54,29 @@ module Spira
         case
           when statement == nil
             nil
-          when type == String
-            statement.object.object.to_s
-          when type == Integer
-            statement.object.object
+          when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
+            type.unserialize(statement.object)
           when type.is_a?(Symbol)
             klass = Kernel.const_get(type.to_s.capitalize)
             raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
-            promise { klass.find(statement.object) || klass.create(statement.object) }
+            promise { klass.find(statement.object) || 
+                      klass.create(statement.object) }
+          else
+            raise TypeError, "Unable to unserialize #{statement.object} for #{type}"
         end
       end
 
       # @private
       def build_rdf_value(value, type)
         case
-          when value.class.ancestors.include?(Spira::Resource)
+          when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
+            type.serialize(value)
+          when value && value.class.ancestors.include?(Spira::Resource)
             value.uri
-          when type == nil
-            value
           when type == RDF::URI && value.is_a?(RDF::URI)
             value
-          when type.is_a?(RDF::URI)
-            RDF::Literal.new(value, :datatype => type)
           else
-            RDF::Literal.new(value)
+            raise TypeError, "Unable to serialize #{value} for #{type}"
         end
       end
 
@@ -93,11 +92,19 @@ module Spira
             separator = @default_vocabulary.to_s[-1,1] == "/" ? '' : '/'
             RDF::URI.new(@default_vocabulary.to_s + separator + name.to_s)
         end
-
-        type = opts[:type] || String
+        type = case
+            when opts[:type].nil?
+              Spira::Types::Any
+            when opts[:type].is_a?(Symbol)
+              opts[:type]
+            when !(Spira.types[opts[:type]].nil?)
+              Spira.types[opts[:type]]
+            else
+              raise TypeError, "Unrecognized type: #{opts[:type]}"
+          end
         @properties[name] = {}
         @properties[name][:predicate] = predicate
-        @properties[name][:type] = Spira.types[type]
+        @properties[name][:type] = type
         name_equals = (name.to_s + "=").to_sym
 
         (getter,setter) = self.send(accessors_method, name, predicate, type)
