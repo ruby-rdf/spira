@@ -36,6 +36,7 @@ or to create a new store of RDF data based on simple defaults.
 ### Features
 
  * Extensible validations system
+ * Extensible types system
  * Easy to use multiple data sources
  * Easy to adapt models to existing data
  * Objects are still RDF.rb-compatible enumerable objects
@@ -44,11 +45,11 @@ or to create a new store of RDF data based on simple defaults.
 
 ## Getting Started
 
-By far the easiest way to work with Spira is to install it via Rubygems:
+Spira is not yet ready, but if you want to play, by far the easiest way to work with Spira is to install it via Rubygems:
 
-    $ sudo gem install spira
+    $ sudo gem install spira --pre
 
-Nonetheless, downloads are available at the Github project page.
+Downloads will be available on the github project page for the first release, as well as on Rubyforge.
 
 ## Defining Model Classes
 
@@ -182,17 +183,88 @@ for `property` work for `has_many`.
 Property always takes a symbol name as a name, and a variable list of options.  The supported options are:
 
  * `:type`: The type for this property.  This can be a Ruby base class, an 
-   RDF::XSD entry, or another Spira model class, referenced as a symbol. Default: `String`
+   RDF::XSD entry, or another Spira model class, referenced as a symbol.  See
+   **Types** below.  Default: `Any`
  * `:predicate`: The predicate to use for this type.  This can be any RDF URI.
    This option is required unless the `default_vocabulary` has been used.
 
-### Relations
+### Types
+
+A property's type can be either a class which includes Spira::Type or a
+reference to another Spira model class, given as a symbol.
+
+#### Relations
 
 If the `:type` of a spira class is the name of another Spira class as a symbol,
 such as `:artist` for `Artist`, Spira will attempt to load the referenced
 object when the appropriate property is accessed.
 
 In the RDF store, this will be represented by the URI of the referenced object.
+
+#### Type Classes
+
+A type class includes Spira::Type, and can implement serialization and
+deserialization functions, and register aliases to themselves if their datatype
+is usually expressed as a URI.  Here is the built-in Spira Integer class:
+
+    module Spira::Types
+      class Integer
+    
+        include Spira::Type
+    
+        def self.unserialize(value)
+          value.object
+        end
+    
+        def self.serialize(value)
+          RDF::Literal.new(value)
+        end
+    
+        register_alias XSD.integer
+      end
+    end
+
+Classes can now use this particular type like so:
+
+    class Test
+      include Spira::Resource
+      property :test1, :type => Integer
+      property :test2, :type => XSD.integer
+    end
+
+Spira classes include the Spira::Types namespace, where several default types
+are implemented:
+
+  * `Integer`
+  * `Float`
+  * `Boolean`
+  * `String`
+  * `Any`
+
+The default type for a Spira property is `Spira::Types::Any`, which uses
+`RDF::Literal`'s automatic boxing/unboxing of XSD types as best it can.  See
+`[RDF::Literal](http://rdf.rubyforge.org/RDF/Literal.html)` for more information.
+
+You can implement your own types as well.  Your class' serialize method should
+turn an RDF::Value into a ruby object, and vice versa.
+
+    module MyModule
+      class MyType
+        include Spira::Type
+        def self.serialize(value)
+          ...
+        end
+
+        def self.unserialize(value)
+          ...
+        end
+      end
+    end
+
+    class MyClass
+      include Spira::Resource
+      property :property1, :type => MyModule::MyType
+    end
 
 ## Defining Repositories
 
