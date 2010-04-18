@@ -125,47 +125,6 @@ module Spira
         [getter, setter]
       end
 
-      def list_accessors(name, predicate, type)
-
-        setter = lambda do |arg|
-          old = @repo.query(:subject => @uri, :predicate => predicate)
-          @repo.delete(*old.to_a) unless old.empty?
-          new = []
-          arg.each do |value|
-            value = self.class.build_rdf_value(value, type)
-            new << RDF::Statement.new(@uri, predicate, value)
-          end
-          @repo.insert(*new)
-        end
-
-        getter = lambda do
-          values = []
-          statements = @repo.query(:subject => @uri, :predicate => predicate)
-          statements.each do |statement|
-            values << self.class.build_value(statement, type)
-          end
-          values
-        end
-
-        [getter, setter]
-      end
-
-      def single_accessors(name, predicate, type)
-        setter = lambda do |arg|
-          old = @repo.query(:subject => @uri, :predicate => predicate)
-          @repo.delete(*old.to_a) unless old.empty?
-          arg = self.class.build_rdf_value(arg, type)
-          @repo.insert(RDF::Statement.new(@uri, predicate, arg))
-        end
-
-        getter = lambda do
-          statement = @repo.query(:subject => @uri, :predicate => predicate).first
-          self.class.build_value(statement, type)
-        end
-
-        [getter, setter]
-      end
-
     end
   end
 end
