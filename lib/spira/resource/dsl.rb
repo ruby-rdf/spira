@@ -56,7 +56,7 @@ module Spira
             nil
           when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
             type.unserialize(statement.object)
-          when type.is_a?(Symbol)
+          when type.is_a?(Symbol) || type.is_a?(String)
             klass = begin 
               Kernel.const_get(type.to_s)
             rescue NameError
@@ -105,7 +105,7 @@ module Spira
         type = case
             when opts[:type].nil?
               Spira::Types::Any
-            when opts[:type].is_a?(Symbol)
+            when opts[:type].is_a?(Symbol) || opts[:type].is_a?(String)
               opts[:type]
             when !(Spira.types[opts[:type]].nil?)
               Spira.types[opts[:type]]

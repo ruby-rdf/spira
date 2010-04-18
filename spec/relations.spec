@@ -15,7 +15,7 @@ describe "Spira Relations" do
       include Spira::Resource
       base_uri CDs.cds
       property :name,   :predicate => DC.title,   :type => String
-      property :artist, :predicate => CDs.artist, :type => :Artist
+      property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
     
     class Artist
