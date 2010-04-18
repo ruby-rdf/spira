@@ -19,6 +19,12 @@ end
 
 describe 'default vocabularies' do
 
+  before :all do
+    @bubble_repo = RDF::Repository.new
+    Spira.add_repository(:default, @bubble_repo)
+
+  end
+
   before :each do
     @vocabulary = RDF::URI.new('http://example.org/vocabulary/')
   end

@@ -14,8 +14,6 @@ class Person
 
   property :name, :predicate => RDFS.label
   property :age,  :predicate => FOAF.age,  :type => Integer
-
-
 end
 
 class Employee
@@ -26,7 +24,6 @@ class Employee
 
   property :name, :predicate => RDFS.label
   property :age,  :predicate => FOAF.age, :type => Integer
-
 end
 
 # Tests of basic functionality--getting, setting, creating, saving, when no
