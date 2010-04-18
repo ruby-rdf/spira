@@ -65,7 +65,6 @@ describe "Spira Relations" do
       @cd.should equal artist_cd
     end
 
-
     it "should find a model object for a uri" do
       @cd.artist.should == @artist
     end
@@ -82,15 +81,33 @@ describe "Spira Relations" do
   end
 
   context "invalid relationships" do
-    
-    it "should raise a type error to access a field named for a non-existant class" do
-      class RelationsTestA
-        include Spira::Resource
-        base_uri CDs.cds
-        property :test, :predicate => CDs.artist, :type => :non_existant_type
+
+    before :all do
+      @invalid_repo = RDF::Repository.new
+      Spira.add_repository(:default, @invalid_repo)
+    end
+
+    context "should raise a type error to access a field named for a non-existant class" do
+      
+      before :all do
+        class RelationsTestA
+          include Spira::Resource
+          base_uri CDs.cds
+          property :invalid, :predicate => CDs.artist, :type => :non_existant_type
+        end
+
+        @uri_b = RDF::URI.new(CDs.cds.to_s + "/invalid_b")
+        @invalid_repo.insert(RDF::Statement.new(@uri_b, CDs.artist, "whatever"))
       end
-      @test = RelationsTestA.new('invalid_a')
-      lambda { @test.test }.should raise_error TypeError
+
+      it "should fail to create an object with the invalid property" do
+        pending "This implementation can probably be done better with better validations support, so delaying for now"
+        lambda { RelationsTestA.create('invalid_a', :invalid => Object.new) }.should raise_error TypeError
+      end
+
+      it "should fail to access the invalid field on an existing object" do
+        lambda { RelationsTestA.find('invalid_b') }.should raise_error TypeError
+      end
     end
 
   end

@@ -50,17 +50,27 @@ module Spira
 
       #
       # @private
-      def build_value(statement, type)
+      def build_value(statement, type, existing_relation = nil)
         case
           when statement == nil
             nil
           when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
             type.unserialize(statement.object)
           when type.is_a?(Symbol)
-            klass = Kernel.const_get(type.to_s.capitalize)
-            raise TypeError, "#{klass} is not a Spira Resource (referenced as #{type} by #{self}" unless klass.ancestors.include? Spira::Resource
-            promise { klass.find(statement.object) || 
-                      klass.create(statement.object) }
+            klass = begin 
+              Kernel.const_get(type.to_s)
+            rescue NameError
+              unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
+                raise TypeError, "#{type} is not a Spira Resource (referenced as #{type} by #{self}"
+              end
+            end
+            case
+              when false && existing_relation && (existing_relation.uri == statement.object.to_uri)
+                existing_relation
+              else
+                promise { klass.find(statement.object) || 
+                          klass.create(statement.object) }
+            end
           else
             raise TypeError, "Unable to unserialize #{statement.object} for #{type}"
         end

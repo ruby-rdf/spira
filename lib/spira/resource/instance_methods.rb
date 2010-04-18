@@ -10,6 +10,7 @@ module Spira
       # The new instance can be instantiated with an opts[:statements] or opts[:attributes], but not both.
       def initialize(identifier, opts = {})
        
+        puts "initializing, #{identifier} and #{opts}"
         @attributes = {}
 
         if identifier.is_a? RDF::URI
@@ -31,6 +32,7 @@ module Spira
         if opts[:statements]
           # Set attributes for each statement corresponding to a predicate
           self.class.properties.each do |name, property|
+            puts "checking #{property} on find"
             if self.class.is_list?(name)
               values = []
               statements = opts[:statements].query(:subject => @uri, :predicate => property[:predicate])
