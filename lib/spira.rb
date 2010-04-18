@@ -8,6 +8,11 @@ module Spira
   end
   module_function :repositories
 
+  def types
+    settings[:types] ||= {}
+  end
+  module_function :types
+
   def settings
     Thread.current[:spira] ||= {}
   end
@@ -34,7 +39,14 @@ module Spira
   end
   module_function :repository
 
+  def type_alias(new, original)
+    types[new] = original 
+  end
+  module_function :type_alias
+
   autoload :Resource,         'spira/resource'
+  autoload :Type,             'spira/type'
+  autoload :Types,            'spira/types'
 
   class ValidationError < StandardError; end
 end

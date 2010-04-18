@@ -97,7 +97,7 @@ module Spira
         type = opts[:type] || String
         @properties[name] = {}
         @properties[name][:predicate] = predicate
-        @properties[name][:type] = type
+        @properties[name][:type] = Spira.types[type]
         name_equals = (name.to_s + "=").to_sym
 
         (getter,setter) = self.send(accessors_method, name, predicate, type)
