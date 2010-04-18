@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/../spec_helper.rb"
 
 describe Spira::Types::Integer do
 
-  context "serializing" do
+  context "when serializing" do
     it "should serialize integers to XSD integers" do
       serialized = Spira::Types::Integer.serialize(5)
       serialized.should be_a RDF::Literal
@@ -12,7 +12,7 @@ describe Spira::Types::Integer do
     end
   end
 
-  context "unserializing" do
+  context "when unserializing" do
     it "should unserialize XSD integers to integers" do
       value = Spira::Types::Integer.unserialize(RDF::Literal.new(5, :datatype => RDF::XSD.integer))
       value.should be_a Fixnum

@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/../spec_helper.rb"
 
 describe Spira::Types::Boolean do
 
-  context "serializing" do
+  context "when serializing" do
     it "should serialize booleans to XSD booleans" do
       serialized = Spira::Types::Boolean.serialize(true)
       serialized.should be_a RDF::Literal
@@ -28,7 +28,7 @@ describe Spira::Types::Boolean do
     end
   end
 
-  context "unserializing" do
+  context "when unserializing" do
     it "should unserialize XSD booleans to booleans" do
       value = Spira::Types::Integer.unserialize(RDF::Literal.new(true, :datatype => RDF::XSD.boolean))
       value.should equal true
