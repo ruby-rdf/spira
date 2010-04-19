@@ -7,7 +7,6 @@ class EnumerableSpec
 
   default_source :enumerable
 
-  # the default base path to find Persons
   base_uri "http://example.org/example/people"
 
   property :name, :predicate => RDFS.label
@@ -25,28 +24,55 @@ describe Spira::Resource do
       require 'rdf/ntriples'
     end
 
-    before :each do
-      @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
-      @statements = @enumerable_repository
-      @person = Person.create 'bob'
-      @person.name = "Bob Smith"
-      @person.age = 15
-      @enumerable = @person
-    end
-
     context "when running the rdf-spec RDF::Enumerable shared groups" do
 
       before :each do
+        @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
+        @statements = @enumerable_repository
+        @person = EnumerableSpec.create 'bob'
+        @person.name = "Bob Smith"
+        @person.age = 15
+        @enumerable = @person
       end
 
       it_should_behave_like RDF_Enumerable
 
     end
 
-    context "when comparing with other RDF::Enumerables" do
+    context "when a resource has RDF data not specified in the model" do
 
       before :each do
+        @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
+        @bob_uri         = RDF::URI.new('http://example.org/example/people/bob')
+        @extra_predicate = RDF::URI.new('http://example.org/example/predicate')
+        @extra_object    = RDF::URI.new('http://example.org/example/object')
+        @extra_statement = RDF::Statement.new(@bob_uri, @extra_predicate, @extra_object)
+        @enumerable_repository.insert(@extra_statement)
+        Spira.add_repository(:enumerable, @enumerable_repository)
+        @bob = EnumerableSpec.find 'bob'
       end
+
+      it "should contain the information not found in the model" do
+        @bob.should have_predicate @extra_predicate
+        @bob.should have_object @extra_object
+        @bob.should have_statement @extra_statement
+      end
+
+
+    end
+
+    context "when comparing with other RDF::Enumerables" do
+      
+      before :each do
+        @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
+        @statements = @enumerable_repository
+        @person = EnumerableSpec.create 'bob'
+        @person.name = "Bob Smith"
+        @person.age = 15
+        @enumerable = @person
+      end
+
+      it_should_behave_like RDF_Enumerable
 
       it "should be equal if they are completely the same" do
         @enumerable.should == @enumerable_repository
