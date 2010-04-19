@@ -35,6 +35,7 @@ module Spira
       # Creates a URI based on a base_uri and string or URI
       #
       # @param [Any] Identifier
+      # @return [RDF::URI]
       # @raises [ArgumentError] If this class cannot create an identifier from the given string
       def uri_for(identifier)
         uri = case identifier
