@@ -12,16 +12,7 @@ module Spira
        
         @attributes = {}
 
-        if identifier.is_a? RDF::URI
-          @uri = identifier
-        else
-          if (self.class.base_uri)
-            separator = self.class.base_uri.to_s[-1,1] == "/" ? '' : '/'
-            @uri = RDF::URI.parse(self.class.base_uri.to_s + separator + identifier)
-          else
-            raise ArgumentError, "#{self.class} has no base URI configured, and can thus only be created using RDF::URIs (got #{identifier.inspect})"
-          end
-        end
+        @uri = self.class.uri_for(identifier)
 
         #  If we got statements, we are being loaded, not created
         if opts[:statements]
