@@ -11,34 +11,31 @@ class Cars < RDF::Vocabulary('http://example.org/cars/')
   property :unrelated_type
 end
 
-
-class Car
-  include Spira::Resource
-
-  type Cars.car
-
-  property :name, :predicate => RDFS.label
-end
-
-class Van
-  include Spira::Resource
-
-  type Cars.van
-
-  property :name, :predicate => RDFS.label
-end
-
-class Wagon
-  include Spira::Resource
-
-  property :name, :predicate => RDFS.label
-end
-
 describe 'finding based on types' do
 
 
   before :all do
     require 'rdf/ntriples'
+
+    class Car
+      include Spira::Resource
+      type Cars.car
+      property :name, :predicate => RDFS.label
+    end
+    
+    class Van
+      include Spira::Resource
+      type Cars.van
+      property :name, :predicate => RDFS.label
+    end
+    
+    class Wagon
+      include Spira::Resource
+      property :name, :predicate => RDFS.label
+    end
+  end
+
+  before :each do
     @types_repository = RDF::Repository.load(fixture('types.nt'))
     Spira.add_repository(:default, @types_repository)
   end
@@ -99,6 +96,32 @@ describe 'finding based on types' do
 
   end
 
+  context "when loading" do
+    before :each do
+      @car1 = Car.find Cars.car1
+      @car2 = Car.find Cars.car2
+    end
+
+    it "should have a type" do
+      @car1.type.should == Car.type
+    end
+
+    it "should have a type when loading a resource without one in the data store" do
+      @car2.type.should == Car.type
+    end
+  end
+
+  context "when saving" do
+    before :each do
+      @car2 = Car.find Cars.car2
+    end
+
+    it "should save a type for resources which don't have one in the data store" do
+      @car2.save!
+      @types_repository.query(:subject => Cars.car2, :predicate => RDF.type, :object => Cars.car).count.should == 1
+    end
+  end
+
   context "When getting/setting" do
     before :each do
       @car = Car.find Cars.car1
@@ -125,5 +148,28 @@ describe 'finding based on types' do
       @types_repository.query(:subject => Cars.car1).count.should == original_triples.size
     end
   end
+
+  context "when counting" do
+    it "should provide a count method for resources with types" do
+      Car.count.should == 1
+    end
+
+    it "should increase the count when items are saved" do
+      Car.create(Cars.toyota).save!
+      Car.count.should == 2
+    end
+
+    it "should decrease the count when items are destroyed" do
+      Car.find(Cars.car1).destroy!
+      puts RDF::Writer.for(:ntriples).dump(@types_repository)
+      Car.count.should == 0
+    end
+
+    it "should raise a TypeError to call Resource.count for models without types" do
+      lambda { Wagon.count }.should raise_error TypeError
+    end
+
+  end
+
 
 end
