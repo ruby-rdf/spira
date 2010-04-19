@@ -23,10 +23,6 @@ module Spira
           end
         end
 
-        #@repo = RDF::Repository.new
-        #@repo.insert(*(opts[:statements])) unless opts[:statements].nil?
-        #@repo.insert(*[RDF::Statement.new(@uri, RDF.type, opts[:type])]) if opts[:type]
-
         #  If we got statements, we are being loaded, not created
         if opts[:statements]
           # Set attributes for each statement corresponding to a predicate
@@ -52,14 +48,6 @@ module Spira
 
         end
 
-
-        #@repo = RDF::Repository.new
-        #@repo.insert(*(opts[:statements])) unless opts[:statements].nil?
-        #@repo.insert(*[RDF::Statement.new(@uri, RDF.type, opts[:type])]) if opts[:type]
-  
-        #self.class.properties.each do |name, predicate|
-        #  send(((name.to_s)+"=").to_sym, opts[name]) unless opts[name].nil?
-        #end
         @original_attributes = @attributes.dup
         @original_attributes.each do | name, value |
           @original_attributes[name] = value.dup if value.is_a?(Array)
