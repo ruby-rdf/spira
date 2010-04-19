@@ -43,16 +43,7 @@ module Spira
         if repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
         end
-        uri = case identifier
-          when RDF::URI
-            identifier
-          when String
-            raise ArgumentError, "Cannot find #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
-            separator = self.base_uri.to_s[-1,1] == "/" ? '' : '/'
-            RDF::URI.parse(self.base_uri.to_s + separator + identifier)
-          else
-            raise ArgumentError, "Cannot instantiate #{self} from #{identifier}, expected RDF::URI or String"
-        end
+        uri = uri_for(identifier)
         statements = self.repository.query(:subject => uri)
         if statements.empty?
           nil
@@ -60,7 +51,27 @@ module Spira
           self.new(identifier, :statements => statements) 
         end
       end
- 
+
+      ##
+      # Creates a URI based on a base_uri and string or URI
+      #
+      # @param [Any] Identifier
+      # @raises [ArgumentError] If this class cannot create an identifier from the given string
+      def uri_for(identifier)
+        uri = case identifier
+          when RDF::URI
+            identifier
+          when String
+            uri = RDF::URI.new(identifier)
+            return uri if uri.absolute?
+            raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
+            separator = self.base_uri.to_s[-1,1] == "/" ? '' : '/'
+            RDF::URI.new(self.base_uri.to_s + separator + identifier)
+          else
+            raise ArgumentError, "Cannot create an identifier for #{self} from #{identifier}, expected RDF::URI or String"
+        end
+      end
+
       def count
         raise TypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
         result = repository.query(:predicate => RDF.type, :object => @type)

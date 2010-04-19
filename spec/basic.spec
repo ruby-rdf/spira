@@ -170,12 +170,6 @@ describe Spira do
 
     end
 
-    context "creating without a base URI" do
-      it "should raise an exception to create an object without a URI for a class without a base_uri" do
-        lambda {employee = Employee.create 'bob'}.should raise_error ArgumentError
-      end
-    end
-
     context "getting, setting, and saving" do
 
       before :all do
