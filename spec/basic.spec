@@ -1,8 +1,5 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
-Spira.add_repository(:person, ::RDF::Repository)
-
-
 class Person
 
   include Spira::Resource
@@ -37,6 +34,7 @@ describe Spira do
     before :all do
       require 'rdf/ntriples'
       @person_repository = RDF::Repository.load(fixture('bob.nt'))
+      Spira.add_repository(:person, @person_repository)
     end
 
     it "should know its source" do
@@ -140,8 +138,6 @@ describe Spira do
         @person.save!
         @repo.query(:predicate => RDF::FOAF.age).size.should == 1
       end
-
-
     end
 
     context "creating with attributes" do
@@ -212,6 +208,29 @@ describe Spira do
         @person.name = "steve"
         @person.save!
         @person.name.should == "steve"
+      end
+    end
+
+    context "destroying" do
+      before :each do
+        @person_repository = RDF::Repository.load(fixture('bob.nt'))
+        Spira.add_repository(:person, @person_repository)
+        @bob = Person.find 'bob'
+      end
+
+      it "should respond to destroy!" do
+        @bob.should respond_to :destroy!
+      end
+       
+      it "should destroy the resource with #destroy!" do
+        @bob.destroy!
+        Person.find('bob').should == nil
+      end
+
+      it "should remove the resource's statements from the repository" do
+        uri = @bob.uri
+        @bob.destroy!
+        @person_repository.query(:subject => uri).should == []
       end
 
     end
