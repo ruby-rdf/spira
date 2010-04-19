@@ -125,8 +125,6 @@ module Spira
         repo = RDF::Repository.new
         attributes.each do | name, attribute |
           if self.class.is_list?(name)
-            #old = @repo.query(:subject => @uri, :predicate => predicate)
-            #@repo.delete(*old.to_a) unless old.empty?
             new = []
             attribute.each do |value|
               value = self.class.build_rdf_value(value, self.class.properties[name][:type])
@@ -143,7 +141,7 @@ module Spira
 
       def ==(other)
         case other
-          # TODO: define behavior for equality on subclasses.  also subclasses.
+          # TODO: define behavior for equality on subclasses.  also implement subclasses.
           when self.class
             @uri == other.uri 
           when RDF::Enumerable
