@@ -48,7 +48,7 @@ module Spira
         if statements.empty?
           nil
         else
-          self.new(identifier, :statements => statements) 
+          self.new(uri, :statements => statements) 
         end
       end
 
