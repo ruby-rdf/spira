@@ -60,7 +60,7 @@ describe "Spira Relations" do
       cds.find { |cd| cd.name == 'In Utero' }.should be_true
     end
 
-    it "should not reload an object for a recursive relationship" do
+    it "should not reload an object for a simple reverse relationship" do
       artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
       @cd.should equal artist_cd
     end
