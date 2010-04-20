@@ -87,7 +87,7 @@ describe "Spira Relations" do
       Spira.add_repository(:default, @invalid_repo)
     end
 
-    context "should raise a type error to access a field named for a non-existant class" do
+    context "accessing a field named for a non-existant class" do
       
       before :all do
         class RelationsTestA
