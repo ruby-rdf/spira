@@ -1,0 +1,9 @@
+<http://example.org/example/example1> <http://www.w3.org/2000/01/rdf-schema#label> "a name" .
+<http://example.org/example/example1> <http://www.w3.org/2000/01/rdf-schema#label> "another name" .
+<http://example.org/example/example1> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/example/example1> <http://xmlns.com/foaf/0.1/name> "Not in the model" .
+
+<http://example.org/example/example2> <http://www.w3.org/2000/01/rdf-schema#label> "a name" .
+<http://example.org/example/example2> <http://www.w3.org/2000/01/rdf-schema#label> "another name" .
+<http://example.org/example/example2> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/example/example2> <http://xmlns.com/foaf/0.1/age> "20"^^<http://www.w3.org/2001/XMLSchema#integer> .
