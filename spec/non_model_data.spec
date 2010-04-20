@@ -12,7 +12,7 @@ describe 'Resources with data not associated with a model' do
 
       has_many :list,     :predicate => RDFS.label
     end
-    @filename = fixture('extra_data.nt')
+    @filename = fixture('non_model_data.nt')
   end
 
   before :each do
