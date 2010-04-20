@@ -120,6 +120,12 @@ describe 'models with a defined rdf type' do
       @car2.save!
       @types_repository.query(:subject => Cars.car2, :predicate => RDF.type, :object => Cars.car).count.should == 1
     end
+
+    it "should save a type for newly-created resources which in the data store" do
+      car3 = Car.create(Cars.car3)
+      car3.save!
+      @types_repository.query(:subject => Cars.car3, :predicate => RDF.type, :object => Cars.car).count.should == 1
+    end
   end
 
   context "When getting/setting" do
