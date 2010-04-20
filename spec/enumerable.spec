@@ -39,28 +39,6 @@ describe Spira::Resource do
 
     end
 
-    context "when a resource has RDF data not specified in the model" do
-
-      before :each do
-        @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
-        @bob_uri         = RDF::URI.new('http://example.org/example/people/bob')
-        @extra_predicate = RDF::URI.new('http://example.org/example/predicate')
-        @extra_object    = RDF::URI.new('http://example.org/example/object')
-        @extra_statement = RDF::Statement.new(@bob_uri, @extra_predicate, @extra_object)
-        @enumerable_repository.insert(@extra_statement)
-        Spira.add_repository(:enumerable, @enumerable_repository)
-        @bob = EnumerableSpec.find 'bob'
-      end
-
-      it "should contain the information not found in the model" do
-        @bob.should have_predicate @extra_predicate
-        @bob.should have_object @extra_object
-        @bob.should have_statement @extra_statement
-      end
-
-
-    end
-
     context "when comparing with other RDF::Enumerables" do
       
       before :each do
