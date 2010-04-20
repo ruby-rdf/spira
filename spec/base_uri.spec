@@ -20,7 +20,19 @@ describe 'Default URIs' do
     Spira.add_repository(:default, ::RDF::Repository)
   end
 
+  context "all classes" do
+    it "should have a base URI method" do
+      BaseURITest.should respond_to :base_uri
+      NoBaseURITest.should respond_to :base_uri
+    end
+
+  end
+
   context "classes with a base URI" do
+
+    it "should have a correct base URI" do
+      BaseURITest.base_uri.should == "http://example.org/example"
+    end
 
     it "should provide a uri_for method" do
       BaseURITest.should respond_to :uri_for
@@ -39,7 +51,11 @@ describe 'Default URIs' do
       lambda {x = BaseURITest.create 'bob'}.should_not raise_error 
     end
 
-    it "should be createable with a URI path" do
+    it "should be createable with a relative URI" do
+      lambda { baseuri = BaseURITest.create('bob') }.should_not raise_error
+    end
+
+    it "should return an absolute, correct RDF::URI from #uri when created with a relative uri" do
       baseuri = BaseURITest.create('bob')
       baseuri.uri.should be_a RDF::URI
       baseuri.uri.to_s.should == "http://example.org/example/bob"
@@ -57,6 +73,10 @@ describe 'Default URIs' do
   context "classes without a base URI" do
     it "should provide a uri_for method" do
       NoBaseURITest.should respond_to :uri_for
+    end
+
+    it "should have a nil base_uri" do
+      NoBaseURITest.base_uri.should be_nil
     end
 
     it "should raise an ArgumentError when asking for a relative uri" do

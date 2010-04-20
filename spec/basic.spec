@@ -1,205 +1,247 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
-class Person
-
-  include Spira::Resource
-
-  default_source :person
-
-  # the default base path to find Persons
-  base_uri "http://example.org/example/people"
-
-  property :name, :predicate => RDFS.label
-  property :age,  :predicate => FOAF.age,  :type => Integer
-end
-
-class Employee
-
-  include Spira::Resource
-
-  default_source :person
-
-  property :name, :predicate => RDFS.label
-  property :age,  :predicate => FOAF.age, :type => Integer
-end
-
 # Tests of basic functionality--getting, setting, creating, saving, when no
 # relations or anything fancy are involved.
 
-
 describe Spira do
+
+  before :all do
+    class Person
+      include Spira::Resource
+      base_uri "http://example.org/example/people"
+      property :name, :predicate => RDFS.label
+      property :age,  :predicate => FOAF.age,  :type => Integer
+    end
+    
+    class Employee
+      include Spira::Resource
+      property :name, :predicate => RDFS.label
+      property :age,  :predicate => FOAF.age, :type => Integer
+    end
+
+    require 'rdf/ntriples'
+    @person_repository = RDF::Repository.load(fixture('bob.nt'))
+    Spira.add_repository(:default, @person_repository)
+  end
+
+  before :each do
+    @person_repository = RDF::Repository.load(fixture('bob.nt'))
+    Spira.add_repository(:default, @person_repository)
+  end
 
   context "The person fixture" do
 
-    before :all do
-      require 'rdf/ntriples'
-      @person_repository = RDF::Repository.load(fixture('bob.nt'))
-      Spira.add_repository(:person, @person_repository)
-    end
-
     it "should know its source" do
       Person.repository.should be_a RDF::Repository
-    end
-
-    it "should have a base path" do
-      Person.base_uri.should == "http://example.org/example/people"
-    end
-
-    it "should have a find method" do
-      Person.should respond_to :find
+      Person.repository.should equal @person_repository
     end
 
     context "when creating" do
-      it "should be instantiable from a string" do
-        lambda {x = Person.create 'bob'}.should_not raise_error
+
+      it "should offer a create method" do
+        Person.should respond_to :create
+      end
+
+      it "should be able to create new instances" do
+        lambda { Person.create(RDF::URI.new('http://example.org/newperson')) }.should_not raise_error
+      end
+
+      it "should create Person instances" do
+        Person.create(RDF::URI.new('http://example.org/newperson')).should be_a Person
+      end
+
+      it "should raise an error to create existing resources" do
+        lambda { Person.create 'bob'  }.should raise_error ArgumentError
+      end
+
+      it "should find_or_create Person instances" do
+        Person.create(RDF::URI.new('http://example.org/newperson')).should be_a Person
+      end
+
+      it "should allow setting of attributes at creation" do
+        lambda {Person.create 'bob', :age => 15}.should_not raise_error
+      end
+
+      context "with attributes given" do
+        before :each do
+          @alice = Person.create 'alice', :age => 30, :name => 'Alice'
+        end
+  
+        it "should have properties if it had them as attributes on creation" do
+          @alice.age.should == 30
+          @alice.name.should == 'Alice'
+        end
+  
+        it "should save updated properties" do
+          @alice.age = 16
+          @alice.age.should == 16
+        end
+       
+      end
+    end
+
+    context "when finding" do
+      
+      it "should offer a find method" do
+        Person.should respond_to :find
       end
 
       it "should return nil for a non-existent person" do
         Person.find('nobody').should == nil
       end
 
-      it "should allow setting of attributes at creation" do
-        lambda {Person.create 'bob', :age => 15}.should_not raise_error
+      it "should find via an RDF::URI" do
+        Person.find(RDF::URI.new('http://example.org/example/people/bob')).should be_a Person
       end
+
+      it "should find via an Addressable::URI" do
+        Person.find(Addressable::URI.parse('http://example.org/example/people/bob')).should be_a Person
+      end
+    end
+
+    context "when find_or_creating" do
+      it "should offer a find_or_create method" do
+        Person.should respond_to :find_or_create
+      end
+
+      it "should not raise an error to find_or_create existing resources" do
+        lambda { Person.find_or_create 'bob'  }.should_not raise_error
+      end
+
+      it "should find via an RDF::URI" do
+        Person.find(RDF::URI.new('http://example.org/example/people/bob')).should be_a Person
+      end
+
+      it "should find via an Addressable::URI" do
+        Person.find(Addressable::URI.parse('http://example.org/example/people/bob')).should be_a Person
+      end
+
+      it "should find_or_create existing Person instances for existing resources" do
+        Person.find_or_create('bob').should be_a Person
+      end
+
+      it "should find_or_create the correct existing Person instance" do
+        Person.find_or_create('bob').name.should == "Bob Smith"
+      end
+
+      it "should find_or_create new Person instances for non-existing resources" do
+        Person.create(RDF::URI.new('http://example.org/newperson')).should be_a Person
+      end
+
+      context "with attributes given" do
+        before :each do
+          @alice = Person.find_or_create 'alice', :age => 30, :name => 'Alice'
+          @bob   = Person.find_or_create 'bob',   :name => 'Bob Smith II'
+        end
+        
+        context "new instances" do
+          it "should have properties if it had them as attributes on creation" do
+            @alice.age.should == 30
+            @alice.name.should == 'Alice'
+          end
+    
+          it "should allow property updating" do
+            @alice.age = 16
+            @alice.age.should == 16
+          end
+        end
+
+        context "existing instances" do
+          it "should overwrite existing properties with given attributes" do
+            @bob.name.should == "Bob Smith II"
+          end
+
+          it "should not overwrite existing properties which are not given" do
+            @bob.age.should == 15
+          end
+
+          it "should allow property updating" do
+            @bob.age = 16
+            @bob.age.should == 16
+          end
+        end
+      end   
     end
 
     context "A newly-created person" do
 
       before :each do
-        @person = Person.create 'bob'
+        @person = Person.create 'http://example.org/example/people/alice'
       end
 
-      after :each do
-        @person.destroy!
+      context "in respect to some general methods" do
+        it "should offer a uri method" do
+          @person.should respond_to :uri 
+        end
+
+        it "should return a RDF::URI with uri" do
+          @person.uri.should be_a RDF::URI
+        end
+
+        it "should return the correct URI with #uri" do
+          @person.uri.to_s.should == 'http://example.org/example/people/alice'
+        end
       end
 
-      it "should be destroyable" do
-        lambda {@person.destroy!}.should_not raise_error
-      end
-
-      it "should be createable with a URI path" do
-        @person.uri.should be_a RDF::URI
-        @person.uri.to_s.should == "http://example.org/example/people/bob"
-      end
-      
-      it "should have a name method" do
-        @person.should respond_to :name
-      end
-
-      it "should have an age method" do
-        @person.should respond_to :age
-      end
-
-      it "should return nil for unset properties" do
-        @person.name.should == nil
-      end
-
-      it "should allow setting a name" do
-        lambda { @person.name = "Bob Smith" }.should_not raise_error
-      end
-
-      it "should allow getting a name" do
-        @person.name = "Bob Smith"
-        @person.name.should == "Bob Smith"
-      end
-
-      it "should allow setting an age" do
-        lambda { @person.age = 15 }.should_not raise_error
-      end
-
-      it "should allow getting an age" do
-        @person.age = 15
-        @person.age.should == 15
-      end
-
-      it "should return strings for the name" do
-        @person.name = "Bob Smith"
-        @person.name.should be_a String
-      end
-
-      it "should return integers for the age" do
-        @person.age = 15
-        @person.age.should be_a Integer
-      end
-
-      it "should save both properties" do
-        @person.age = 15
-        @person.name = "Bob Smith"
-        @person.age.should == 15
-        @person.name.should == "Bob Smith"
-      end
-
-      # Tests for a bug wherein the original repo to delete was not being updated on save!
-      it "should safely delete old repository information on updates" do
-        @repo = Person.repository
-        @person.age = 16
-        @person.save!
-        @person.age = 17
-        @person.save!
-        @repo.query(:predicate => RDF::FOAF.age).size.should == 1
+      context "using getters and setters" do
+        it "should have a name method" do
+          @person.should respond_to :name
+        end
+  
+        it "should have an age method" do
+          @person.should respond_to :age
+        end
+  
+        it "should return nil for unset properties" do
+          @person.name.should == nil
+        end
+  
+        it "should allow setting a name" do
+          lambda { @person.name = "Bob Smith" }.should_not raise_error
+        end
+  
+        it "should allow getting a name" do
+          @person.name = "Bob Smith"
+          @person.name.should == "Bob Smith"
+        end
+  
+        it "should allow setting an age" do
+          lambda { @person.age = 15 }.should_not raise_error
+        end
+  
+        it "should allow getting an age" do
+          @person.age = 15
+          @person.age.should == 15
+        end
+  
+        it "should correctly set more than one property" do
+          @person.age = 15
+          @person.name = "Bob Smith"
+          @person.age.should == 15
+          @person.name.should == "Bob Smith"
+        end
       end
     end
 
-    context "creating with attributes" do
-      before :each do
-        @alice = Person.create 'alice', :age => 30, :name => 'Alice'
-      end
-
-      after :each do
-        @alice.destroy!
-      end
-
-      it "should have properties if it had them as attributes on creation" do
-        @alice.age.should == 30
-        @alice.name.should == 'Alice'
-      end
-
-      it "should save updated properties" do
-        @alice.age = 16
-        @alice.age.should == 16
-      end
-     
-      it "should allow saving" do
-        @alice.save!
-        Person.find('alice').should be_isomorphic_with @alice
-      end
-
-    end
-
-    context "getting, setting, and saving" do
-
-      before :all do
-        require 'rdf/ntriples'
-        @person_repository = RDF::Repository.load(fixture('bob.nt'))
-      end
+    context "saving" do
 
       before :each do
-        @person = Person.create 'bob'
-        @person.name = "Bob Smith"
+        @person = Person.create 'alice'
+        @person.name = "Alice Smith"
         @person.age = 15
-      end
-
-      after :each do
-        @person.destroy!
       end
 
       it "should be saveable" do
         lambda { @person.save! }.should_not raise_error
       end
 
-      it "should be findable with a string after saving" do
+      it "should be findable after saving" do
         @person.save!
-        bob = Person.find 'bob'
-        bob.should == @person
+        alice = Person.find RDF::URI.new("http://example.org/example/people/alice")
+        alice.should == @person
       end
 
-      it "should be findable via an RDF::URI" do
-        @person.save!
-        bob = Person.find RDF::URI.new("http://example.org/example/people/bob")
-        bob.should == @person
-      end
-
-      it "should not find non-existent identifiers after saving one" do
+      it "should not find non-existent identifiers after saving an existing one" do
         @person.save!
         Person.find('xyz').should == nil
       end
@@ -208,13 +250,34 @@ describe Spira do
         @person.name = "steve"
         @person.save!
         @person.name.should == "steve"
+        alice = Person.find RDF::URI.new("http://example.org/example/people/alice")
+        alice.name.should == "steve"
+      end
+
+      it "should add saved statements to the repository" do
+        uri = @person.uri
+        @person.save!
+        @person_repository.should have_triple [uri, RDF::RDFS.label, 'Alice Smith']
+        @person_repository.should have_triple [uri, RDF::FOAF.age, RDF::Literal.new(15)]
+        @person_repository.query(:subject => uri).count.should == 2
+      end
+
+      # Tests for a bug wherein the originally loaded attributes were being
+      # deleted on save!, not the current ones
+      it "should safely delete old repository information on updates" do
+        @repo = Person.repository
+        uri = @person.uri
+        @person.age = 16
+        @person.save!
+        @person.age = 17
+        @person.save!
+        @repo.query(:subject => uri, :predicate => RDF::FOAF.age).size.should == 1
+        @repo.first_value(:subject => uri, :predicate => RDF::FOAF.age).should == "17"
       end
     end
 
     context "destroying" do
       before :each do
-        @person_repository = RDF::Repository.load(fixture('bob.nt'))
-        Spira.add_repository(:person, @person_repository)
         @bob = Person.find 'bob'
       end
 
@@ -232,7 +295,6 @@ describe Spira do
         @bob.destroy!
         @person_repository.query(:subject => uri).should == []
       end
-
     end
     
   end
