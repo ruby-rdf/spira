@@ -11,7 +11,7 @@ class Cars < RDF::Vocabulary('http://example.org/cars/')
   property :unrelated_type
 end
 
-describe 'finding based on types' do
+describe 'models with a defined rdf type' do
 
 
   before :all do
@@ -161,7 +161,6 @@ describe 'finding based on types' do
 
     it "should decrease the count when items are destroyed" do
       Car.find(Cars.car1).destroy!
-      puts RDF::Writer.for(:ntriples).dump(@types_repository)
       Car.count.should == 0
     end
 

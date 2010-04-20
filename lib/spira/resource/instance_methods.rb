@@ -45,13 +45,14 @@ module Spira
         end
       end
     
-      def _destroy_attributes(attributes)
+      def _destroy_attributes(attributes, opts = {})
         repository = repository_for_attributes(attributes)
+        repository.insert([@uri, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
         self.class.repository.delete(*repository)
       end
   
       def destroy!
-        _destroy_attributes(@attributes)
+        _destroy_attributes(@attributes, :destroy_type => true)
       end
 
       def save!
