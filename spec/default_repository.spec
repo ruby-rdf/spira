@@ -78,5 +78,9 @@ describe "The :default repository" do
       lambda { Stadium.for 'test'}.should raise_error RuntimeError
     end
 
+    it "should raise an error to call instance#save! for a class with a defined default which does not exist" do
+      stadium = Stadium.for(RDF::URI.new('http://example.org/stadiums/this-one'))
+      lambda { stadium.save! }.should raise_error RuntimeError
+    end
   end
 end
