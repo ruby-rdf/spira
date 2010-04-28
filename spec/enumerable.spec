@@ -29,7 +29,7 @@ describe Spira::Resource do
       before :each do
         @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
         @statements = @enumerable_repository
-        @person = EnumerableSpec.create 'bob'
+        @person = EnumerableSpec.for 'bob'
         @person.name = "Bob Smith"
         @person.age = 15
         @enumerable = @person
@@ -44,7 +44,7 @@ describe Spira::Resource do
       before :each do
         @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
         @statements = @enumerable_repository
-        @person = EnumerableSpec.create 'bob'
+        @person = EnumerableSpec.for 'bob'
         @person.name = "Bob Smith"
         @person.age = 15
         @enumerable = @person
