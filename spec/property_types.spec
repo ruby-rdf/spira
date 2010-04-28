@@ -93,7 +93,7 @@ describe 'types for properties' do
     end
 
     before :each do
-      @resource = PropTest.create 'test'
+      @resource = PropTest.for 'test'
     end
 
     it "uses the given serialize function" do
@@ -104,8 +104,8 @@ describe 'types for properties' do
     it "uses the given unserialize function" do
       @resource.test = "a string"
       @resource.save!
-      @resource.find 'test'
       @resource.test.should == "a string"
+      @resource.test.should == PropTest.for('test').test
     end
 
     it "correctly associates a URI datatype alias to the correct class" do
