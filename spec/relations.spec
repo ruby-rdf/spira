@@ -33,8 +33,8 @@ describe "Spira Relations" do
       require 'rdf/ntriples'
       @cds_repository = RDF::Repository.load(fixture('relations.nt'))
       Spira.add_repository(:default, @cds_repository)
-      @cd = CD.find 'nevermind'
-      @artist = Artist.find 'nirvana'
+      @cd = CD.for 'nevermind'
+      @artist = Artist.for 'nirvana'
     end
 
     it "should find a cd" do
@@ -102,11 +102,11 @@ describe "Spira Relations" do
 
       it "should fail to create an object with the invalid property" do
         pending "This implementation can probably be done better with better validations support, so delaying for now"
-        lambda { RelationsTestA.create('invalid_a', :invalid => Object.new) }.should raise_error TypeError
+        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new) }.should raise_error TypeError
       end
 
       it "should fail to access the invalid field on an existing object" do
-        lambda { RelationsTestA.find('invalid_b') }.should raise_error TypeError
+        lambda { RelationsTestA.for('invalid_b') }.should raise_error TypeError
       end
     end
 
