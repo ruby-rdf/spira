@@ -48,24 +48,24 @@ describe 'Default URIs' do
     end
 
     it "should not raise an exception to create an object without a URI for a class without a base_uri" do
-      lambda {x = BaseURITest.create 'bob'}.should_not raise_error 
+      lambda {x = BaseURITest.for 'bob'}.should_not raise_error 
     end
 
     it "should be createable with a relative URI" do
-      lambda { baseuri = BaseURITest.create('bob') }.should_not raise_error
+      lambda { baseuri = BaseURITest.for('bob') }.should_not raise_error
     end
 
     it "should return an absolute, correct RDF::URI from #uri when created with a relative uri" do
-      baseuri = BaseURITest.create('bob')
+      baseuri = BaseURITest.for('bob')
       baseuri.uri.should be_a RDF::URI
       baseuri.uri.to_s.should == "http://example.org/example/bob"
     end
 
     it "should save objects created with a relative URI using an absolute URI" do
-      baseuri = BaseURITest.create('bob')
+      baseuri = BaseURITest.for('bob')
       baseuri.name = 'test'
       baseuri.save!
-      saved = BaseURITest.find('bob')
+      saved = BaseURITest.for('bob')
       saved.name.should == 'test'
     end
   end
@@ -84,7 +84,7 @@ describe 'Default URIs' do
     end
 
     it "should raise an ArgumentError to create an object without a URI for a class without a base_uri" do
-      lambda { x = NoBaseURITest.create 'bob'}.should raise_error ArgumentError
+      lambda { x = NoBaseURITest.for 'bob'}.should raise_error ArgumentError
     end
   end
 
