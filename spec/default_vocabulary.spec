@@ -63,7 +63,7 @@ describe 'default vocabularies' do
     end
 
     it "should do non-default sets and gets normally" do
-      bubble = Bubble.create 'tulips'
+      bubble = Bubble.for 'tulips'
       bubble.year = 1500
       bubble.title = "Holland tulip"
       bubble.save!
@@ -72,7 +72,7 @@ describe 'default vocabularies' do
       bubble.should have_predicate RDF::DC.title
     end
     it "should create a predicate for a given property" do
-      bubble = Bubble.create 'dotcom'
+      bubble = Bubble.for 'dotcom'
       bubble.year = 2000
       bubble.name = 'Dot-com boom'
 
