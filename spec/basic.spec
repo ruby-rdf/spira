@@ -36,35 +36,23 @@ describe Spira do
       Person.repository.should equal @person_repository
     end
 
-    context "when creating" do
+    context "when instantiating new URIs" do
 
-      it "should offer a create method" do
-        Person.should respond_to :create
+      it "should offer a for method" do
+        Person.should respond_to :for
       end
 
-      it "should be able to create new instances" do
-        lambda { Person.create(RDF::URI.new('http://example.org/newperson')) }.should_not raise_error
+      it "should be able to create new instances for non-existing resources" do
+        lambda { Person.for(RDF::URI.new('http://example.org/newperson')) }.should_not raise_error
       end
 
       it "should create Person instances" do
-        Person.create(RDF::URI.new('http://example.org/newperson')).should be_a Person
-      end
-
-      it "should raise an error to create existing resources" do
-        lambda { Person.create 'bob'  }.should raise_error ArgumentError
-      end
-
-      it "should find_or_create Person instances" do
-        Person.create(RDF::URI.new('http://example.org/newperson')).should be_a Person
-      end
-
-      it "should allow setting of attributes at creation" do
-        lambda {Person.create 'bob', :age => 15}.should_not raise_error
+        Person.for(RDF::URI.new('http://example.org/newperson')).should be_a Person
       end
 
       context "with attributes given" do
         before :each do
-          @alice = Person.create 'alice', :age => 30, :name => 'Alice'
+          @alice = Person.for 'alice', :age => 30, :name => 'Alice'
         end
   
         it "should have properties if it had them as attributes on creation" do
@@ -80,93 +68,44 @@ describe Spira do
       end
     end
 
-    context "when finding" do
+    context "when instantiating existing URIs" do
       
-      it "should offer a find method" do
-        Person.should respond_to :find
+      it "should return a Person for a non-existent URI" do
+        Person.for('nobody').should be_a Person
       end
 
-      it "should return nil for a non-existent person" do
-        Person.find('nobody').should == nil
+      it "should return an empty Person for a non-existent URI" do
+        person = Person.for('nobody')
+        person.age.should be_nil
+        person.name.should be_nil
       end
 
-      it "should find via an RDF::URI" do
-        Person.find(RDF::URI.new('http://example.org/example/people/bob')).should be_a Person
-      end
-
-      it "should find via an Addressable::URI" do
-        Person.find(Addressable::URI.parse('http://example.org/example/people/bob')).should be_a Person
-      end
     end
 
-    context "when find_or_creating" do
-      it "should offer a find_or_create method" do
-        Person.should respond_to :find_or_create
+    context "with attributes given" do
+      before :each do
+        @alice = Person.for 'alice', :age => 30, :name => 'Alice'
+        @bob   = Person.for 'bob',   :name => 'Bob Smith II'
+      end
+      
+      it "should overwrite existing properties with given attributes" do
+        @bob.name.should == "Bob Smith II"
       end
 
-      it "should not raise an error to find_or_create existing resources" do
-        lambda { Person.find_or_create 'bob'  }.should_not raise_error
+      it "should not overwrite existing properties which are not given" do
+        @bob.age.should == 15
       end
 
-      it "should find via an RDF::URI" do
-        Person.find(RDF::URI.new('http://example.org/example/people/bob')).should be_a Person
+      it "should allow property updating" do
+        @bob.age = 16
+        @bob.age.should == 16
       end
-
-      it "should find via an Addressable::URI" do
-        Person.find(Addressable::URI.parse('http://example.org/example/people/bob')).should be_a Person
-      end
-
-      it "should find_or_create existing Person instances for existing resources" do
-        Person.find_or_create('bob').should be_a Person
-      end
-
-      it "should find_or_create the correct existing Person instance" do
-        Person.find_or_create('bob').name.should == "Bob Smith"
-      end
-
-      it "should find_or_create new Person instances for non-existing resources" do
-        Person.create(RDF::URI.new('http://example.org/newperson')).should be_a Person
-      end
-
-      context "with attributes given" do
-        before :each do
-          @alice = Person.find_or_create 'alice', :age => 30, :name => 'Alice'
-          @bob   = Person.find_or_create 'bob',   :name => 'Bob Smith II'
-        end
-        
-        context "new instances" do
-          it "should have properties if it had them as attributes on creation" do
-            @alice.age.should == 30
-            @alice.name.should == 'Alice'
-          end
-    
-          it "should allow property updating" do
-            @alice.age = 16
-            @alice.age.should == 16
-          end
-        end
-
-        context "existing instances" do
-          it "should overwrite existing properties with given attributes" do
-            @bob.name.should == "Bob Smith II"
-          end
-
-          it "should not overwrite existing properties which are not given" do
-            @bob.age.should == 15
-          end
-
-          it "should allow property updating" do
-            @bob.age = 16
-            @bob.age.should == 16
-          end
-        end
-      end   
-    end
+    end   
 
     context "A newly-created person" do
 
       before :each do
-        @person = Person.create 'http://example.org/example/people/alice'
+        @person = Person.for 'http://example.org/example/people/alice'
       end
 
       context "in respect to some general methods" do
@@ -226,7 +165,7 @@ describe Spira do
     context "saving" do
 
       before :each do
-        @person = Person.create 'alice'
+        @person = Person.for 'alice'
         @person.name = "Alice Smith"
         @person.age = 15
       end
@@ -237,20 +176,22 @@ describe Spira do
 
       it "should be findable after saving" do
         @person.save!
-        alice = Person.find RDF::URI.new("http://example.org/example/people/alice")
+        alice = Person.for RDF::URI.new("http://example.org/example/people/alice")
         alice.should == @person
       end
 
       it "should not find non-existent identifiers after saving an existing one" do
         @person.save!
-        Person.find('xyz').should == nil
+        Person.for('xyz').should be_a Person
+        Person.for('xyz').name.should be_nil
+        Person.for('xyz').age.should be_nil
       end
 
       it "should save properties" do
         @person.name = "steve"
         @person.save!
         @person.name.should == "steve"
-        alice = Person.find RDF::URI.new("http://example.org/example/people/alice")
+        alice = Person.for RDF::URI.new("http://example.org/example/people/alice")
         alice.name.should == "steve"
       end
 
@@ -278,7 +219,7 @@ describe Spira do
 
     context "destroying" do
       before :each do
-        @bob = Person.find 'bob'
+        @bob = Person.for 'bob'
       end
 
       it "should respond to destroy!" do
@@ -287,7 +228,7 @@ describe Spira do
        
       it "should destroy the resource with #destroy!" do
         @bob.destroy!
-        Person.find('bob').should == nil
+        Person.for('bob').should == nil
       end
 
       it "should remove the resource's statements from the repository" do

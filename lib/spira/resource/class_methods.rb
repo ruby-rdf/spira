@@ -18,17 +18,13 @@ module Spira
         end
       end
 
-      def find(identifier)
+      def for(identifier, attributes = {})
         if repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
         end
         uri = uri_for(identifier)
         statements = self.repository.query(:subject => uri)
-        if statements.empty?
-          nil
-        else
-          self.new(uri, :statements => statements) 
-        end
+        self.new(uri, attributes.merge(:statements => statements)) 
       end
 
       ##
@@ -56,17 +52,6 @@ module Spira
         raise TypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
         result = repository.query(:predicate => RDF.type, :object => @type)
         result.count
-      end
-
-      def create(name, attributes = {})
-        # TODO: validate attributes
-        unless @type.nil?
-          if attributes[:type]
-            raise TypeError, "Cannot assign type to new instance of #{self}; this class is associated with #{@type}"
-          end
-          attributes[:type] = @type
-        end
-        resource = self.new(name, attributes)
       end
 
       def is_list?(property)
