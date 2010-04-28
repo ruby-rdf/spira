@@ -22,16 +22,32 @@ end
 describe 'validations' do
 
   before :all do
+    class Bank
+    
+      include Spira::Resource
+    
+      default_vocabulary URI.new('http://example.org/banks/vocab')
+    
+      property :title, :predicate => RDFS.label
+      property :balance, :type => Integer
+    
+      def validate
+        assert_set :title
+        assert_numeric :balance
+      end
+    
+    end
+    Spira.add_repository(:default, RDF::Repository.new)
   end
 
   context "when validating" do
     it "should not save an invalid model" do
-      bank = Bank.create RDF::URI.new('http://example.org/banks/bank1')
+      bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
       lambda { bank.save! }.should raise_error Spira::ValidationError
     end
 
     it "should save a valid model" do
-      bank = Bank.create RDF::URI.new('http://example.org/banks/bank1')
+      bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
       bank.title = "A bank"
       bank.balance = 1000
     end
@@ -52,7 +68,7 @@ describe 'validations' do
       end
 
       before :each do
-        @v1 = V1.create RDF::URI.new('http://example.org/v1/first')
+        @v1 = V1.for RDF::URI.new('http://example.org/v1/first')
       end 
 
       it "should fail when false" do
@@ -79,7 +95,7 @@ describe 'validations' do
       end
 
       before :each do
-        @v2 = V2.create RDF::URI.new('http://example.org/v2/first')
+        @v2 = V2.for RDF::URI.new('http://example.org/v2/first')
       end 
 
       it "should fail when nil" do
@@ -105,7 +121,7 @@ describe 'validations' do
       end
 
       before :each do
-        @v3 = V3.create RDF::URI.new('http://example.org/v3/first')
+        @v3 = V3.for RDF::URI.new('http://example.org/v3/first')
       end 
 
       it "should fail when nil" do
