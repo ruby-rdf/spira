@@ -68,7 +68,7 @@ module Spira
               when false && existing_relation && (existing_relation.uri == statement.object.to_uri)
                 existing_relation
               else
-                promise { klass.find(statement.object) || 
+                promise { klass.for(statement.object) || 
                           klass.create(statement.object) }
             end
           else
