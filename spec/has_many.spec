@@ -44,8 +44,8 @@ describe "has_many" do
       Spira.add_repository(:default, @posts_repository)
       @uri = RDF::URI.new('http://example.org/comments/comment1')
       @empty_uri = RDF::URI.new('http://example.org/comments/comment0')
-      @comment = Comment.find @uri
-      @empty_comment = Comment.create @empty_uri
+      @comment = Comment.for @uri
+      @empty_comment = Comment.for @empty_uri
     end
 
     it "should have a ratings method" do
@@ -94,7 +94,7 @@ describe "has_many" do
       @comment.ratings.sort.should == [1,2,4]
       @comment.save!
       @comment.ratings.sort.should == [1,2,4]
-      @comment = Comment.find @uri
+      @comment = Comment.for @uri
       @comment.ratings.sort.should == [1,2,4]
     end
 
@@ -108,7 +108,7 @@ describe "has_many" do
     it "should allow saving of appended elements" do
       @comment.ratings << 6
       @comment.save!
-      @comment = Comment.find @uri
+      @comment = Comment.for @uri
       @comment.ratings.sort.should == [1,3,5,6]
     end
   end
@@ -122,10 +122,10 @@ describe "has_many" do
     before :each do
       @uri = RDF::URI.new('http://example.org/posts/post1')
       @empty_uri = RDF::URI.new('http://example.org/posts/post0')
-      @post = Post.find @uri
-      @empty_post = Post.create @empty_uri
+      @post = Post.for @uri
+      @empty_post = Post.for @empty_uri
       @empty_comment_uri = RDF::URI.new('http://example.org/comments/comment0')
-      @empty_comment = Comment.create @empty_comment_uri
+      @empty_comment = Comment.for @empty_comment_uri
     end
 
     it "should have a comments method" do
