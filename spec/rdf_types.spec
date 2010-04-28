@@ -77,7 +77,7 @@ describe 'models with a defined rdf type' do
   context "when creating" do
    
     before :each do
-      @car = Car.create RDF::URI.new('http://example.org/cars/newcar')
+      @car = Car.for RDF::URI.new('http://example.org/cars/newcar')
     end
 
     it "should have a type on creation" do
@@ -91,15 +91,15 @@ describe 'models with a defined rdf type' do
     end
 
     it "should raise a type error to send a type attribute to a class with a type on instantiation" do
-      lambda { Car.create RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van }.should raise_error TypeError
+      lambda { Car.for RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van }.should raise_error TypeError
     end
 
   end
 
   context "when loading" do
     before :each do
-      @car1 = Car.find Cars.car1
-      @car2 = Car.find Cars.car2
+      @car1 = Car.for Cars.car1
+      @car2 = Car.for Cars.car2
     end
 
     it "should have a type" do
@@ -113,7 +113,7 @@ describe 'models with a defined rdf type' do
 
   context "when saving" do
     before :each do
-      @car2 = Car.find Cars.car2
+      @car2 = Car.for Cars.car2
     end
 
     it "should save a type for resources which don't have one in the data store" do
@@ -122,7 +122,7 @@ describe 'models with a defined rdf type' do
     end
 
     it "should save a type for newly-created resources which in the data store" do
-      car3 = Car.create(Cars.car3)
+      car3 = Car.for(Cars.car3)
       car3.save!
       @types_repository.query(:subject => Cars.car3, :predicate => RDF.type, :object => Cars.car).count.should == 1
     end
@@ -130,7 +130,7 @@ describe 'models with a defined rdf type' do
 
   context "When getting/setting" do
     before :each do
-      @car = Car.find Cars.car1
+      @car = Car.for Cars.car1
       @car.nil?.should_not be_true
       @types_repository = RDF::Repository.load(fixture('types.nt'))
       Car.repository = @types_repository
@@ -161,12 +161,12 @@ describe 'models with a defined rdf type' do
     end
 
     it "should increase the count when items are saved" do
-      Car.create(Cars.toyota).save!
+      Car.for(Cars.toyota).save!
       Car.count.should == 2
     end
 
     it "should decrease the count when items are destroyed" do
-      Car.find(Cars.car1).destroy!
+      Car.for(Cars.car1).destroy!
       Car.count.should == 0
     end
 
