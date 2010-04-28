@@ -63,7 +63,7 @@ describe "The :default repository" do
     end
 
     it "should be instantiable" do
-      lambda {x = Event.create RDF::URI.new 'http://example.org/people/bob'}.should_not raise_error
+      lambda {x = Event.for RDF::URI.new 'http://example.org/people/bob'}.should_not raise_error
     end
 
     it "should know its source" do
@@ -75,12 +75,8 @@ describe "The :default repository" do
     end
 
     it "should raise an error to call class.find for a class with a defined default which does not exist" do
-      lambda { Stadium.find 'test'}.should raise_error RuntimeError
+      lambda { Stadium.for 'test'}.should raise_error RuntimeError
     end
 
-    it "should raise an error to call instance#save! for a class with a defined default which does not exist" do
-      stadium = Stadium.create RDF::URI.new 'http://example.org/stadiums/this-one'
-      lambda { stadium.save! }.should raise_error RuntimeError
-    end
   end
 end
