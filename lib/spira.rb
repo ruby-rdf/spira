@@ -50,3 +50,12 @@ module Spira
 
   class ValidationError < StandardError; end
 end
+
+module RDF
+  class URI
+    def as(klass, *args)
+      raise ArgumentError, "#{klass} is not a Spira resource" unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
+      klass.for(self, *args)
+    end
+  end
+end
