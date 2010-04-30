@@ -100,13 +100,12 @@ describe "Spira Relations" do
         @invalid_repo.insert(RDF::Statement.new(@uri_b, CDs.artist, "whatever"))
       end
 
-      it "should fail to create an object with the invalid property" do
-        pending "This implementation can probably be done better with better validations support, so delaying for now"
-        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new) }.should raise_error TypeError
+      it "should fail to save an object with the invalid property" do
+        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new).save! }.should raise_error TypeError
       end
 
       it "should fail to access the invalid field on an existing object" do
-        lambda { RelationsTestA.for('invalid_b') }.should raise_error TypeError
+        lambda { RelationsTestA.for('invalid_b').invalid }.should raise_error TypeError
       end
     end
 
