@@ -10,19 +10,27 @@ module Spira
       # The new instance can be instantiated with an opts[:statements] or opts[:attributes], but not both.
       def initialize(identifier, opts = {})
         @uri = self.class.uri_for(identifier)
-        @attributes = promise { reload(opts) }
+        reload(opts)
       end
-   
+  
+
+      def reload(opts = {})
+        @attributes = promise { reload_attributes }
+        @original_attributes = promise { reload_original_attributes }
+        self.class.properties.each do |name, predicate|
+          attribute_set(name, opts[name]) unless opts[name].nil?
+        end
+      end
+
       ##
       # Load this instances attributes.  Overwrite loaded values with attributes in the given options.
       #
       # @param [Hash] opts
       # @return [Hash] @attributes
-      def reload(opts = {})
+      def reload_attributes()
         statements = self.class.repository.query(:subject => @uri)
         @attributes = {}
 
-        #  If we got statements, we are being loaded, not created
         unless statements.empty?
           # Set attributes for each statement corresponding to a predicate
           self.class.properties.each do |name, property|
@@ -40,19 +48,18 @@ module Spira
               attribute_set(name, self.class.build_value(statement, property[:type]))
             end
           end
-        else
-          self.class.properties.each do |name, predicate|
-            attribute_set(name, opts[name]) unless opts[name].nil?
-          end
-
         end
 
+        @attributes
+      end
+
+      def reload_original_attributes
+        @original_attributes = {}
         @original_attributes = @attributes.dup
         @original_attributes.each do | name, value |
           @original_attributes[name] = value.dup if value.is_a?(Array)
         end
-
-        @attributes
+        @original_attributes
       end
 
 
