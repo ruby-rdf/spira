@@ -16,7 +16,7 @@ module Spira
 
       def reload(opts = {})
         @attributes = promise { reload_attributes }
-        @original_attributes = promise { reload_original_attributes }
+        @original_attributes = promise { @attributes.force ; @original_attributes }
         self.class.properties.each do |name, predicate|
           attribute_set(name, opts[name]) unless opts[name].nil?
         end
@@ -50,18 +50,14 @@ module Spira
           end
         end
 
-        @attributes
-      end
-
-      def reload_original_attributes
         @original_attributes = {}
         @original_attributes = @attributes.dup
         @original_attributes.each do | name, value |
           @original_attributes[name] = value.dup if value.is_a?(Array)
         end
-        @original_attributes
-      end
 
+        @attributes
+      end
 
       def _destroy_attributes(attributes, opts = {})
         repository = repository_for_attributes(attributes)
