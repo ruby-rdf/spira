@@ -74,7 +74,7 @@ describe 'types for properties' do
         end
 
         def self.unserialize(value)
-          value.object
+          value.value
         end
 
         register_alias XSD.test_type
