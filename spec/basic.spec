@@ -228,7 +228,8 @@ describe Spira do
        
       it "should destroy the resource with #destroy!" do
         @bob.destroy!
-        Person.for('bob').should == nil
+        @bob.name.should be_nil
+        @bob.age.should be_nil
       end
 
       it "should remove the resource's statements from the repository" do

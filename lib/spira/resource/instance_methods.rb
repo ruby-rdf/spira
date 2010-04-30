@@ -70,6 +70,7 @@ module Spira
   
       def destroy!
         _destroy_attributes(@attributes, :destroy_type => true)
+        reload
       end
 
       def save!
