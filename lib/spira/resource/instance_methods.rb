@@ -39,9 +39,9 @@ module Spira
           self.class.properties.each do |name, property|
             if self.class.is_list?(name)
               values = []
-              statements = statements.query(:subject => @uri, :predicate => property[:predicate])
-              unless statements.nil?
-                statements.each do |statement|
+              collection = statements.query(:subject => @uri, :predicate => property[:predicate])
+              unless collection.nil?
+                collection.each do |statement|
                   values << self.class.build_value(statement,property[:type])
                 end
               end
