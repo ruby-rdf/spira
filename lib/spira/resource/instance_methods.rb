@@ -28,6 +28,9 @@ module Spira
       # @param [Hash] opts
       # @return [Hash] @attributes
       def reload_attributes()
+        if self.class.repository.nil?
+          raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
+        end
         statements = self.class.repository.query(:subject => @uri)
         @attributes = {}
 

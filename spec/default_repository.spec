@@ -2,30 +2,22 @@ require File.dirname(__FILE__) + "/spec_helper.rb"
 
 # Fixture to test :default repository loading
 
-class Event
-  include Spira::Resource
-
-  property :name, :predicate => DC.title
-
-end
-
-class Stadium
-  include Spira::Resource
-
-  property :name, :predicate => DC.title
-
-  default_source :stadium
-
-end
-
-# This test is a simple model that uses the :default repository
-
 describe "The :default repository" do
 
   context "Adding a default repository" do
 
     before :all do
       @repo = RDF::Repository.new
+      class Event
+        include Spira::Resource
+        property :name, :predicate => DC.title
+      end
+      
+      class Stadium
+        include Spira::Resource
+        property :name, :predicate => DC.title
+        default_source :stadium
+      end
     end
 
     it "should fail to add something that is not a repository" do
@@ -74,8 +66,9 @@ describe "The :default repository" do
       Stadium.repository.should == nil
     end
 
-    it "should raise an error to call class.find for a class with a defined default which does not exist" do
-      lambda { Stadium.for 'test'}.should raise_error RuntimeError
+    it "should raise an error when accessing an attribute for a class without a working repository" do
+      stadium = RDF::URI('http://example.org/stadiums/that-one').as(Stadium)
+      lambda { stadium.name }.should raise_error RuntimeError
     end
 
     it "should raise an error to call instance#save! for a class with a defined default which does not exist" do
