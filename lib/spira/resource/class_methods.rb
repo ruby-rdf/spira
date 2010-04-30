@@ -23,8 +23,7 @@ module Spira
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
         end
         uri = uri_for(identifier)
-        statements = self.repository.query(:subject => uri)
-        self.new(uri, attributes.merge(:statements => statements)) 
+        self.new(uri, attributes)
       end
 
       ##

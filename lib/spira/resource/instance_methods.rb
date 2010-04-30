@@ -9,18 +9,26 @@ module Spira
       # Initialize a new instance of a spira resource.
       # The new instance can be instantiated with an opts[:statements] or opts[:attributes], but not both.
       def initialize(identifier, opts = {})
-       
+        @uri = self.class.uri_for(identifier)
+        @attributes = promise { reload(opts) }
+      end
+   
+      ##
+      # Load this instances attributes.  Overwrite loaded values with attributes in the given options.
+      #
+      # @param [Hash] opts
+      # @return [Hash] @attributes
+      def reload(opts = {})
+        statements = self.class.repository.query(:subject => @uri)
         @attributes = {}
 
-        @uri = self.class.uri_for(identifier)
-
         #  If we got statements, we are being loaded, not created
-        if opts[:statements]
+        unless statements.empty?
           # Set attributes for each statement corresponding to a predicate
           self.class.properties.each do |name, property|
             if self.class.is_list?(name)
               values = []
-              statements = opts[:statements].query(:subject => @uri, :predicate => property[:predicate])
+              statements = statements.query(:subject => @uri, :predicate => property[:predicate])
               unless statements.nil?
                 statements.each do |statement|
                   values << self.class.build_value(statement,property[:type])
@@ -28,7 +36,7 @@ module Spira
               end
               attribute_set(name, values)
             else
-              statement = opts[:statements].query(:subject => @uri, :predicate => property[:predicate]).first
+              statement = statements.query(:subject => @uri, :predicate => property[:predicate]).first
               attribute_set(name, self.class.build_value(statement, property[:type]))
             end
           end
@@ -43,8 +51,11 @@ module Spira
         @original_attributes.each do | name, value |
           @original_attributes[name] = value.dup if value.is_a?(Array)
         end
+
+        @attributes
       end
-    
+
+
       def _destroy_attributes(attributes, opts = {})
         repository = repository_for_attributes(attributes)
         repository.insert([@uri, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])

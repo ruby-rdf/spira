@@ -25,7 +25,13 @@ describe Spira do
     end
 
     it "should attempt to load from the repository on property access" do
-      @repo.should_receive(:query).once
+      @repo.should_receive(:query).once.and_return([])
+      test = @uri.as(LoadTest)
+      name = test.name
+    end
+
+    it "should only query once for all properties" do
+      @repo.should_receive(:query).once.and_return([])
       test = @uri.as(LoadTest)
       name = test.name
       label = test.label
@@ -40,6 +46,14 @@ describe Spira do
       @repo.should_not_receive(:query)
       test = @uri.as(LoadTest)
       test.reload
+    end
+
+    it "should query the repository again after a reload" do
+      @repo.should_receive(:query).twice.and_return([])
+      test = @uri.as(LoadTest)
+      name = test.name
+      test.reload
+      name = test.name
     end
   end
 
