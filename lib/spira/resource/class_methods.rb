@@ -22,6 +22,9 @@ module Spira
         if repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
         end
+        if !self.type.nil? && attributes[:type]
+          raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
+        end
         uri = uri_for(identifier)
         self.new(uri, attributes)
       end
