@@ -24,7 +24,7 @@ or to create a new store of RDF data based on simple defaults.
 
     end
 
-    bob = Person.create 'bob'
+    bob = Person.for('bob')
     bob.age  = 15
     bob.name = "Bob Smith"
     bob.save!
@@ -75,9 +75,9 @@ without the `RDF::` prefix.  For example:
 
 Then use your model classes, in a way more or less similar to any number of ORMs:
 
-    cd = CD.create "queens-greatest-hits"
+    cd = CD.for("queens-greatest-hits")
     cd.name = "Queen's greatest hits"
-    artist = Artist.create "queen"
+    artist = Artist.for("queen")
     artist.name = "Queen"
     
     cd.artist = artist
@@ -85,21 +85,30 @@ Then use your model classes, in a way more or less similar to any number of ORMs
     artist.cds = [cd]
     artist.save!
 
-    queen = Arist.find 'queen'
-    hits = CD.find 'queens-greatest-hits'
+    queen = Arist.for('queen')
+    hits = CD.for 'queens-greatest-hits'
     hits.artist == artist == queen
 
 ### Absolute and Relative URIs
 
 A class with a base URI can reference objects by a short name:
 
-    Artist.find 'queen'
+    Artist.for('queen')
 
 However, a class is not required to have a base URI, and even if it does, it
 can always access classes with a full URI:
 
-    nk = Artist.find RDF::URI.new('http://example.org/my-hidden-cds/new-kids')
-    
+    nk = Artist.for(RDF::URI.new('http://example.org/my-hidden-cds/new-kids'))
+
+If you have a URI that you would like to look at as a Spira resource, you can instantiate it from the URI:
+
+    RDF::URI.new('http://example.org/my-hidden-cds/new-kids').as(Artist)
+    # => <Artist @uri=http://example.org/my-hidden-cds/new-kids>
+
+Spira uses an open-world model.  Any call to 'for' with a valid identifier will
+always return an object with nil fields.  It's a way of looking at a given
+resource, not the definition of one.
+
 ### Class Options
 
 A number of options are available for Spira classes.
@@ -107,11 +116,11 @@ A number of options are available for Spira classes.
 #### base_uri
 
 A class with a `base_uri` set (either an `RDF::URI` or a `String`) will
-use that URI as a base URI for non-absolute `create` and `find` calls.
+use that URI as a base URI for non-absolute `for` calls.
 
 Example
-    CD.find 'queens-greatest-hits' # is the same as...
-    CD.find RDF::URI.new('http://example.org/cds/queens-greatest-hits')
+    CD.for 'queens-greatest-hits' # is the same as...
+    CD.for RDF::URI.new('http://example.org/cds/queens-greatest-hits')
 
 #### type
 
@@ -123,7 +132,7 @@ A class with a `type` set is assigned an `RDF.type` on creation and saving.
       property :name,   :predicate => DC.title
     end
 
-    rolling_stones = Album.create RDF::URI.new('http://example.org/cds/rolling-stones-hits')
+    rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
     # See RDF.rb for more information about #has_predicate?
     rolling_stones.has_predicate?(RDF.type) #=> true
     Album.type #=> RDF::URI('http://example.org/types/album')
@@ -152,9 +161,10 @@ A class with a `default_vocabulary` set will transparently create predicates for
       property :author, :type => :artist
     end
 
-    dancing_queen = Song.create 'dancing-queen'
+    dancing_queen = Song.for 'dancing-queen'
     dancing_queen.title = "Dancing Queen"
     dancing_queen.artist = abba
+    # See RDF::Enumerable for #has_predicate?
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/title'))  #=> true
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=> true
 
