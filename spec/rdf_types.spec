@@ -90,7 +90,7 @@ describe 'models with a defined rdf type' do
       @car.query(:predicate => RDF.type).first.subject.should == @car.uri
     end
 
-    it "should raise a type error to send a type attribute to a class with a type on instantiation" do
+    it "should raise a type error when receiving a type attribute option on instantiation" do
       lambda { Car.for RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van }.should raise_error TypeError
     end
 
