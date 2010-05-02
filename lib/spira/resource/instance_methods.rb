@@ -73,6 +73,10 @@ module Spira
         reload
       end
 
+      def destroy_resource!
+        self.class.repository.delete([@uri,nil,nil])
+      end
+
       def save!
         if self.class.repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
