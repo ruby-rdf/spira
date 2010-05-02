@@ -57,6 +57,16 @@ module Spira
         @lists.has_key?(property)
       end
 
+      def inherited(child)
+        child.instance_eval do
+          include Spira::Resource
+        end
+        [:@properties, :@lists, :@base_uri, :@default_vocabulary, :@repository_name, :@type].each do |variable|
+          value = instance_variable_get(variable).nil? ? nil : instance_variable_get(variable).dup
+          child.instance_variable_set(variable, value)
+        end
+      end
+
     end
   end
 end
