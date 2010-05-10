@@ -61,9 +61,16 @@ module Spira
         child.instance_eval do
           include Spira::Resource
         end
-        [:@properties, :@lists, :@base_uri, :@default_vocabulary, :@repository_name, :@type].each do |variable|
+        [:@base_uri, :@default_vocabulary, :@repository_name, :@type].each do |variable|
           value = instance_variable_get(variable).nil? ? nil : instance_variable_get(variable).dup
           child.instance_variable_set(variable, value)
+        end
+        [:@properties, :@lists].each do |variable|
+          if child.instance_variable_get(variable).nil?
+            child.instance_variable_set(variable, instance_variable_get(variable).dup)
+          elsif !(instance_variable_get(variable).nil?)
+            child.instance_variable_set(variable, instance_variable_get(variable).dup.merge(child.instance_variable_get(variable)))
+          end
         end
       end
 

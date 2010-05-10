@@ -125,33 +125,81 @@ describe Spira do
 
     context "when including modules" do
       before :all do
-        module IModule
+        module SpiraModule1
           include Spira::Resource
           property :name, :predicate => DC.title, :type => String
         end
   
-        class ModuleIncluder
+        module SpiraModule2
           include Spira::Resource
-          include IModule
+          property :author, :predicate => DC.author, :type => String
+        end
+
+        class ModuleIncluder1
+          include Spira::Resource
+          include SpiraModule1
+          property :age, :predicate => FOAF.age, :type => Integer
+        end
+
+        class ModuleIncluder2
+          include Spira::Resource
+          include SpiraModule1
+          include SpiraModule2
           property :age, :predicate => FOAF.age, :type => Integer
         end
       end
 
       before :each do
         Spira.add_repository(:default, RDF::Repository.new)
-        @includer = RDF::URI('http://example.org/item').as(ModuleIncluder)
+        @includer1 = RDF::URI('http://example.org/item').as(ModuleIncluder1)
+        @includer2 = RDF::URI('http://example.org/item').as(ModuleIncluder2)
       end
 
       it "should include a property getter from the module" do
-        @includer.should respond_to :name    
+        @includer1.should respond_to :name
       end
 
       it "should include a property setter from the module" do
-        @includer.should respond_to :name=
+        @includer1.should respond_to :name=
       end
 
       it "should maintain property information for included modules" do
-        ModuleIncluder.properties[:name][:type].should == Spira::Types::String
+        ModuleIncluder1.properties[:name][:type].should == Spira::Types::String
+      end
+
+      it "should maintain propety information for including modules" do
+        @includer1.should respond_to :age
+        @includer1.should respond_to :age=
+        ModuleIncluder1.properties[:age][:type].should == Spira::Types::Integer
+      end
+
+      context "when including multiple modules" do
+        before :each do
+          @includer2 = RDF::URI('http://example.org/item').as(ModuleIncluder2)
+        end
+
+        it "should maintain property getters from both modules" do
+          @includer2.should respond_to :name
+          @includer2.should respond_to :author
+        end
+
+        it "should maintain property setters from both modules" do
+          @includer2.should respond_to :name=
+          @includer2.should respond_to :author=
+        end
+
+        it "should maintain property information for included modules" do
+          ModuleIncluder2.properties.should have_key :name
+          ModuleIncluder2.properties[:name][:type].should == Spira::Types::String
+          ModuleIncluder2.properties.should have_key :author
+          ModuleIncluder2.properties[:author][:type].should == Spira::Types::String
+        end
+
+        it "should maintain property information for the including module" do
+          @includer2.should respond_to :age
+          @includer2.should respond_to :age=
+          ModuleIncluder2.properties[:age][:type].should == Spira::Types::Integer
+        end
       end
     end
 
