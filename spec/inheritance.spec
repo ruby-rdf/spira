@@ -127,17 +127,20 @@ describe Spira do
       before :all do
         module SpiraModule1
           include Spira::Resource
+          has_many :names, :predicate => DC.titles
           property :name, :predicate => DC.title, :type => String
         end
   
         module SpiraModule2
           include Spira::Resource
+          has_many :authors, :predicate => DC.authors
           property :author, :predicate => DC.author, :type => String
         end
 
         class ModuleIncluder1
           include Spira::Resource
           include SpiraModule1
+          has_many :ages, :predicate => FOAF.ages
           property :age, :predicate => FOAF.age, :type => Integer
         end
 
@@ -145,6 +148,7 @@ describe Spira do
           include Spira::Resource
           include SpiraModule1
           include SpiraModule2
+          has_many :ages, :predicate => FOAF.ages
           property :age, :predicate => FOAF.age, :type => Integer
         end
       end
@@ -199,6 +203,18 @@ describe Spira do
           @includer2.should respond_to :age
           @includer2.should respond_to :age=
           ModuleIncluder2.properties[:age][:type].should == Spira::Types::Integer
+        end
+
+        it "should maintain the list of lists for the included modules" do
+          @includer2.should respond_to :authors
+          @includer2.should respond_to :names
+          @includer2.authors.should == []
+          @includer2.names.should == []
+        end
+
+        it "should maintain the list of lists for the including module" do
+          @includer2.should respond_to :ages
+          @includer2.ages.should == []
         end
       end
     end
