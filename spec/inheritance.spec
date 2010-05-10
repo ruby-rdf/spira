@@ -8,12 +8,13 @@ describe Spira do
       class InheritanceItem
         include Spira::Resource
 
-        property :title, :predicate => DC.title
+        property :title, :predicate => DC.title, :type => String
         type  SIOC.item
       end
 
       class InheritancePost < InheritanceItem
         type  SIOC.post
+        property :author, :predicate => DC.author
       end
 
       class InheritedType < InheritanceItem
@@ -62,6 +63,17 @@ describe Spira do
         @forum.should respond_to :title= 
       end
 
+      it "should maintain property metadata" do
+        InheritancePost.properties.should have_key :title
+        InheritancePost.properties[:title][:type].should == Spira::Types::String
+      end
+
+      it "should add properties of child classes" do
+        @post.should respond_to :author
+        @post.should respond_to :author=
+        InheritancePost.properties.should have_key :author
+      end
+
       it "should allow setting a property" do
         @post.title = "test title"
         @post.title.should == "test title"
@@ -108,8 +120,38 @@ describe Spira do
         it "should save the supertype for a subclass which has not specified one" do
           InheritedType.repository.query(:subject => @type.uri, :predicate => RDF.type, :object => RDF::SIOC.item).count.should == 1
         end
+      end
+    end
 
+    context "when including modules" do
+      before :all do
+        module IModule
+          include Spira::Resource
+          property :name, :predicate => DC.title, :type => String
+        end
+  
+        class ModuleIncluder
+          include Spira::Resource
+          include IModule
+          property :age, :predicate => FOAF.age, :type => Integer
+        end
+      end
 
+      before :each do
+        Spira.add_repository(:default, RDF::Repository.new)
+        @includer = RDF::URI('http://example.org/item').as(ModuleIncluder)
+      end
+
+      it "should include a property getter from the module" do
+        @includer.should respond_to :name    
+      end
+
+      it "should include a property setter from the module" do
+        @includer.should respond_to :name=
+      end
+
+      it "should maintain property information for included modules" do
+        ModuleIncluder.properties[:name][:type].should == Spira::Types::String
       end
     end
 

@@ -67,6 +67,10 @@ module Spira
         end
       end
 
+      def included(child)
+        inherited(child)
+      end
+
     end
   end
 end
