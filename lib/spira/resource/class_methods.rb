@@ -61,13 +61,18 @@ module Spira
         child.instance_eval do
           include Spira::Resource
         end
+        # FIXME: This is clearly brittle and ugly.
         [:@base_uri, :@default_vocabulary, :@repository_name, :@type].each do |variable|
           value = instance_variable_get(variable).nil? ? nil : instance_variable_get(variable).dup
           child.instance_variable_set(variable, value)
         end
-        [:@properties, :@lists].each do |variable|
+        [:@properties, :@lists, :@validators].each do |variable|
           if child.instance_variable_get(variable).nil?
-            child.instance_variable_set(variable, instance_variable_get(variable).dup)
+            if instance_variable_get(variable).nil?
+              child.instance_variable_set(variable, nil)
+            else
+              child.instance_variable_set(variable, instance_variable_get(variable).dup)
+            end
           elsif !(instance_variable_get(variable).nil?)
             child.instance_variable_set(variable, instance_variable_get(variable).dup.merge(child.instance_variable_get(variable)))
           end
@@ -76,6 +81,14 @@ module Spira
 
       def included(child)
         inherited(child)
+      end
+
+      ## 
+      # The list of validation functions for this aspect
+      #
+      # @return [Array[Symbol]]
+      def validators
+        @validators ||= []
       end
 
     end

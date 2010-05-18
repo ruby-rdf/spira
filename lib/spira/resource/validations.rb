@@ -6,16 +6,16 @@ module Spira
         @errors ||= []
       end
 
-      def assert(boolean, message)
-        errors.push(message) unless boolean
+      def assert(boolean, property, message)
+        errors.add(property, message) unless boolean
       end
 
       def assert_set(name)
-        assert(!(self.send(name).nil?), "#{name.to_s} cannot be nil")
+        assert(!(self.send(name).nil?), name, "#{name.to_s} cannot be nil")
       end
 
       def assert_numeric(name)
-        assert(self.send(name).is_a?(Numeric), "#{name.to_s} must be numeric (was #{self.send(name)})")
+        assert(self.send(name).is_a?(Numeric), name, "#{name.to_s} must be numeric (was #{self.send(name)})")
       end
 
     end

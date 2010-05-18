@@ -1,24 +1,5 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
-# For testing assertions
-#
-class Bank
-
-  include Spira::Resource
-
-  default_vocabulary URI.new('http://example.org/banks/vocab')
-
-  property :title, :predicate => RDFS.label
-  property :balance, :type => Integer
-
-  def validate
-    assert_set :title
-    assert_numeric :balance
-  end
-
-end
-
-
 describe 'validations' do
 
   before :all do
@@ -30,8 +11,11 @@ describe 'validations' do
     
       property :title, :predicate => RDFS.label
       property :balance, :type => Integer
-    
-      def validate
+
+      validate :validate_bank
+      
+      def validate_bank
+        puts "validing bank"
         assert_set :title
         assert_numeric :balance
       end
@@ -61,8 +45,9 @@ describe 'validations' do
         class V1
           include Spira::Resource
           property :title, :predicate => DC.title
-          def validate
-            assert(title == 'xyz', 'bad title')
+          validate :title_is_bad
+          def title_is_bad
+            assert(title == 'xyz', :title, 'bad title')
           end
         end
       end
@@ -88,7 +73,8 @@ describe 'validations' do
         class V2
           include Spira::Resource
           property :title, :predicate => DC.title
-          def validate
+          validate :title_is_set
+          def title_is_set
             assert_set(:title)
           end
         end
@@ -114,7 +100,8 @@ describe 'validations' do
         class V3
           include Spira::Resource
           property :title, :predicate => DC.title, :type => Integer
-          def validate
+          validate :title_is_numeric
+          def title_is_numeric
             assert_numeric(:title)
           end
         end

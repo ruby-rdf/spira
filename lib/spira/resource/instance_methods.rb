@@ -81,13 +81,13 @@ module Spira
         if self.class.repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
         end
-        if respond_to?(:validate)
+        unless self.class.validators.empty?
           errors.clear
-          validate
+          self.class.validators.each do | validator | self.send(validator) end
           if errors.empty?
             _update!
           else
-            raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.join(';'))
+            raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
           end
         else
           _update!
@@ -162,6 +162,9 @@ module Spira
         end
       end
 
+      def errors
+        @errors ||= Spira::Errors.new
+      end
 
       include ::RDF::Enumerable, ::RDF::Queryable
 

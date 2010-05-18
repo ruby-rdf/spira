@@ -36,6 +36,15 @@ module Spira
         @lists[name] = true
       end
 
+      ##
+      # Validate this model with the given validator.  If a symbol, calls that method to validate.
+      #
+      # @param [Symbol] validator
+      # @return [Void]
+      def validate(validator)
+        validators << validator unless validators.include?(validator)
+      end
+
       def type(uri = nil)
         unless uri.nil?
           @type = case uri
