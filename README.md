@@ -39,17 +39,18 @@ or to create a new store of RDF data based on simple defaults.
  * Extensible types system
  * Easy to use multiple data sources
  * Easy to adapt models to existing data
+ * Open-world semantics
  * Objects are still RDF.rb-compatible enumerable objects
  * No need to put everything about an object into Spira
  * Easy to use a resource as multiple models
 
 ## Getting Started
 
-Spira is not yet ready, but if you want to play, by far the easiest way to work with Spira is to install it via Rubygems:
+The easiest way to work with Spira is to install it via Rubygems:
 
-    $ sudo gem install spira --pre
+    $ sudo gem install spira
 
-Downloads will be available on the github project page for the first release, as well as on Rubyforge.
+Downloads will be available on the github project page, as well as on Rubyforge.
 
 ## Defining Model Classes
 
@@ -179,6 +180,11 @@ repository if one is not set.
 
 See 'Defining Repositories' for more information.
 
+#### validate
+
+Provides the name of a function which does some sort of validation.  See
+'Validations' for more information.
+
 ### Property Options
 
 Spira classes can have properties that are either singular or a list.  For a
@@ -307,23 +313,54 @@ Classes can specify a default repository to use other than `:default` with the
 
 ## Validations
 
-Before saving, each object will run a `validate` function, if one exists.  You
-can use the built in `assert` and assert helpers such as `assert_set` and
+You may declare any number of validation functions with the `validate` function. 
+Before saving, each referenced validation will be run, and the instance's
+{Spira::Errors} object will be populated with any errors.  You can use the
+built in `assert` and assert helpers such as `assert_set` and
 `asssert_numeric`.
 
 
     class CD
-      def validate
-        # the only valid CDs are ABBA CD's!
-        assert(artist.name == "Abba","Could not save a CD made by #{artist.name}")
+      validate :is_real_music
+      def is_real_music
+        assert(artist.name != "Nickelback", :artist, "cannot be Nickelback")
+      end
+
+      validate :track_count_numeric
+      def track_count_numeric
+        assert_numeric(track_count)
       end
     end
 
-    dancing-queen.artist = nil
+    dancing-queen.artist = nickelback
     dancing-queen.save!  #=> ValidationError
+    dancing-queen.errors.each => ["artist cannot be Nickelback"]
 
     dancing-queen.artist = abba
     dancing-queen.save!  #=> true
+
+
+## Inheritance
+
+You can extend Spira resources without a problem:
+
+    class BoxedSet < CD
+      include Spira::Resource
+      property cd_count, :predicate => CD.count, :type => Integer
+    end
+
+You can also make Spira modules and include them into other classes:
+
+    module Media
+      include Spira::Resource
+      property :format, :predicate => Media.format
+    end
+
+    class CD
+      include Spira::Resource
+      include Media
+    end
+
 
 ## Using Model Objects as RDF.rb Objects
 
@@ -336,6 +373,7 @@ level.  You can also access attributes that are not defined as properties.
 There are a number of ways to ask for help.  In declining order of likelihood of response:
 
  * Fork the project and write a failing test, or a pending test for a feature request
+ * Ask on the [public-rdf-ruby w3c mailing list][]
  * You can post issues to the Github issue queue
  * (there might one day be a google group or other such support channel, but not yet)
 
@@ -351,3 +389,5 @@ domain.  For more information, see the included UNLICENSE file.
 #### Contributing
 Fork it on Github and go.  Please make sure you're kosher with the UNLICENSE
 file before contributing.
+
+[public-rdf-ruby w3c mailing list]:         http://lists.w3.org/Archives/Public/public-rdf-ruby/
