@@ -15,7 +15,6 @@ describe 'validations' do
       validate :validate_bank
       
       def validate_bank
-        puts "validing bank"
         assert_set :title
         assert_numeric :balance
       end
