@@ -113,7 +113,7 @@ module Spira
       end
   
       def each(*args, &block)
-        return Enumerable::Enumerator.new(self, :each) unless block_given?
+        return RDF::Enumerator.new(self, :each) unless block_given?
         repository = repository_for_attributes(@attributes)
         repository.insert(RDF::Statement.new(@uri, RDF.type, type)) unless type.nil?
         repository.each(*args, &block)
