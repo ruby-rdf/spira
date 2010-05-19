@@ -5,7 +5,7 @@ describe Spira do
   context "when instantiating" do
 
     before :all do
-      class InstantiationTest
+      class ::InstantiationTest
         include Spira::Resource
 
         property :name, :predicate => FOAF.name

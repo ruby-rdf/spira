@@ -6,7 +6,7 @@ require File.dirname(__FILE__) + "/spec_helper.rb"
 describe Spira do
 
   before :all do
-    class Person
+    class ::Person
       include Spira::Resource
       base_uri "http://example.org/example/people"
       property :name, :predicate => RDFS.label

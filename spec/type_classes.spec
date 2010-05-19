@@ -5,16 +5,16 @@ describe 'types' do
 
   context "when declaring a new type" do
     before :all do
-      class TypeA
+      class ::TypeA
         include Spira::Type
       end
 
-      class TypeB
+      class ::TypeB
         include Spira::Type
         register_alias :typeb_alias
       end
 
-      class TypeC
+      class ::TypeC
         include Spira::Type
         
         def self.serialize(value)
@@ -58,7 +58,7 @@ describe 'types' do
 
     context "working with RDF vocabularies" do
       before :all do
-        class TypeWithRDF
+        class ::TypeWithRDF
           include Spira::Type
           register_alias DC.title
         end

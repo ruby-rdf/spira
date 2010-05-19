@@ -8,12 +8,12 @@ describe "The :default repository" do
 
     before :all do
       @repo = RDF::Repository.new
-      class Event
+      class ::Event
         include Spira::Resource
         property :name, :predicate => DC.title
       end
       
-      class Stadium
+      class ::Stadium
         include Spira::Resource
         property :name, :predicate => DC.title
         default_source :stadium

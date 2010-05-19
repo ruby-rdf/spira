@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + "/spec_helper.rb"
 describe 'validations' do
 
   before :all do
-    class Bank
+    class ::Bank
     
       include Spira::Resource
     
@@ -41,7 +41,7 @@ describe 'validations' do
     context "provides a working assert" do
 
       before :all do
-        class V1
+        class ::V1
           include Spira::Resource
           property :title, :predicate => DC.title
           validate :title_is_bad
@@ -69,7 +69,7 @@ describe 'validations' do
 
     context "provides a working assert_set" do
       before :all do
-        class V2
+        class ::V2
           include Spira::Resource
           property :title, :predicate => DC.title
           validate :title_is_set
@@ -96,7 +96,7 @@ describe 'validations' do
 
     context "provides a working assert_numeric" do
       before :all do
-        class V3
+        class ::V3
           include Spira::Resource
           property :title, :predicate => DC.title, :type => Integer
           validate :title_is_numeric

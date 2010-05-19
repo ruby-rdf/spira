@@ -3,13 +3,13 @@ require File.dirname(__FILE__) + "/spec_helper.rb"
 describe 'Default URIs' do
 
   before :all do
-    class BaseURITest
+    class ::BaseURITest
       include Spira::Resource
       base_uri "http://example.org/example"
       property :name, :predicate => RDFS.label
     end
     
-    class NoBaseURITest
+    class ::NoBaseURITest
       include Spira::Resource
       property :name, :predicate => RDFS.label
     end

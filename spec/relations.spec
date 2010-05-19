@@ -4,21 +4,21 @@ describe "Spira Relations" do
 
   before :all do
     
-    class CDs < RDF::Vocabulary('http://example.org/')
+    class ::CDs < RDF::Vocabulary('http://example.org/')
       property :artist
       property :cds
       property :artists
       property :has_cd
     end
     
-    class CD
+    class ::CD
       include Spira::Resource
       base_uri CDs.cds
       property :name,   :predicate => DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
     
-    class Artist
+    class ::Artist
       include Spira::Resource
       base_uri CDs.artists
       property :name, :predicate => DC.title, :type => String
@@ -90,7 +90,7 @@ describe "Spira Relations" do
     context "accessing a field named for a non-existant class" do
       
       before :all do
-        class RelationsTestA
+        class ::RelationsTestA
           include Spira::Resource
           base_uri CDs.cds
           property :invalid, :predicate => CDs.artist, :type => :non_existant_type

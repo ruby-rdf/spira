@@ -9,7 +9,7 @@ describe 'types for properties' do
   context "when declaring type classes" do
     it "should raise a type error to use a type that has not been declared" do
       lambda {
-        class PropTypeA
+        class ::PropTypeA
           include Spira::Resource
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
@@ -21,7 +21,7 @@ describe 'types for properties' do
 
     it "should not raise a type error to use a symbol type, even if the class has not been declared yet" do
       lambda {
-        class PropTypeB
+        class ::PropTypeB
           include Spira::Resource
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
@@ -33,7 +33,7 @@ describe 'types for properties' do
 
     it "should not raise an error to use an included XSD type aliased to a Spira type" do
       lambda {
-        class PropTypeD
+        class ::PropTypeD
           include Spira::Resource
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
@@ -45,7 +45,7 @@ describe 'types for properties' do
 
     it "should not raise an error to use an included Spira type" do
       lambda {
-        class PropTypeC
+        class ::PropTypeC
           include Spira::Resource
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
@@ -66,7 +66,7 @@ describe 'types for properties' do
       @property_types_repo = RDF::Repository.new
       Spira.add_repository(:default, @property_types_repo)
 
-      class TestType
+      class ::TestType
         include Spira::Type
       
         def self.serialize(value)
@@ -80,7 +80,7 @@ describe 'types for properties' do
         register_alias XSD.test_type
       end
 
-      class PropTest
+      class ::PropTest
       
         include Spira::Resource
         

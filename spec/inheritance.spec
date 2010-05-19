@@ -5,32 +5,32 @@ describe Spira do
   context "inheritance" do
 
     before :all do
-      class InheritanceItem
+      class ::InheritanceItem
         include Spira::Resource
 
         property :title, :predicate => DC.title, :type => String
         type  SIOC.item
       end
 
-      class InheritancePost < InheritanceItem
+      class ::InheritancePost < ::InheritanceItem
         type  SIOC.post
         property :author, :predicate => DC.author
       end
 
-      class InheritedType < InheritanceItem
+      class ::InheritedType < ::InheritanceItem
       end
 
-      class InheritanceForumPost < InheritancePost
+      class ::InheritanceForumPost < ::InheritancePost
       end
 
-      class InheritanceContainer
+      class ::InheritanceContainer
         include Spira::Resource
         type SIOC.container
 
         has_many :items, :type => 'InheritanceItem', :predicate => SIOC.container_of
       end
 
-      class InheritanceForum < InheritanceContainer
+      class ::InheritanceForum < ::InheritanceContainer
         type SIOC.forum
 
         #property :moderator, :predicate => SIOC.has_moderator
@@ -125,26 +125,26 @@ describe Spira do
 
     context "when including modules" do
       before :all do
-        module SpiraModule1
+        module ::SpiraModule1
           include Spira::Resource
           has_many :names, :predicate => DC.titles
           property :name, :predicate => DC.title, :type => String
         end
   
-        module SpiraModule2
+        module ::SpiraModule2
           include Spira::Resource
           has_many :authors, :predicate => DC.authors
           property :author, :predicate => DC.author, :type => String
         end
 
-        class ModuleIncluder1
+        class ::ModuleIncluder1
           include Spira::Resource
           include SpiraModule1
           has_many :ages, :predicate => FOAF.ages
           property :age, :predicate => FOAF.age, :type => Integer
         end
 
-        class ModuleIncluder2
+        class ::ModuleIncluder2
           include Spira::Resource
           include SpiraModule1
           include SpiraModule2

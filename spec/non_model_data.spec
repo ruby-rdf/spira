@@ -4,7 +4,7 @@ describe 'Resources with data not associated with a model' do
 
   before :all do
     require 'rdf/ntriples'
-    class ExtraDataTest
+    class ::ExtraDataTest
       include Spira::Resource
       base_uri "http://example.org/example"
 

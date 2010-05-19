@@ -5,7 +5,7 @@ describe Spira do
   context "when loading" do
 
     before :all do
-      class LoadTest
+      class ::LoadTest
         include Spira::Resource
 
         property :name,  :predicate => FOAF.name

@@ -17,19 +17,19 @@ describe 'models with a defined rdf type' do
   before :all do
     require 'rdf/ntriples'
 
-    class Car
+    class ::Car
       include Spira::Resource
       type Cars.car
       property :name, :predicate => RDFS.label
     end
     
-    class Van
+    class ::Van
       include Spira::Resource
       type Cars.van
       property :name, :predicate => RDFS.label
     end
     
-    class Wagon
+    class ::Wagon
       include Spira::Resource
       property :name, :predicate => RDFS.label
     end
@@ -43,7 +43,7 @@ describe 'models with a defined rdf type' do
   context "when declaring types" do
     it "should raise an error when declaring a non-uri type" do
       lambda {
-        class XYZ
+        class ::XYZ
           include Spira::Resource
           type 'a string, for example'
         end
