@@ -50,8 +50,6 @@ describe Spira::Resource do
         @enumerable = @person
       end
 
-      it_should_behave_like RDF_Enumerable
-
       it "should be equal if they are completely the same" do
         @enumerable.should == @enumerable_repository
       end
