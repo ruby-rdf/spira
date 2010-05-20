@@ -101,6 +101,7 @@ module Spira
   autoload :Type,             'spira/type'
   autoload :Types,            'spira/types'
   autoload :Errors,           'spira/errors'
+  autoload :VERSION,          'spira/version'
 
   class ValidationError < StandardError; end
 end
