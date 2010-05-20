@@ -106,9 +106,9 @@ If you have a URI that you would like to look at as a Spira resource, you can in
     RDF::URI.new('http://example.org/my-hidden-cds/new-kids').as(Artist)
     # => <Artist @uri=http://example.org/my-hidden-cds/new-kids>
 
-Spira uses an open-world model.  Any call to 'for' with a valid identifier will
-always return an object with nil fields.  It's a way of looking at a given
-resource, not the definition of one.
+Any call to 'for' with a valid identifier will always return an object with nil
+fields.  It's a way of looking at a given resource, not a closed-world mapping
+to one.
 
 ### Class Options
 
@@ -134,7 +134,7 @@ A class with a `type` set is assigned an `RDF.type` on creation and saving.
     end
 
     rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
-    # See RDF.rb for more information about #has_predicate?
+    # See RDF.rb at http://rdf.rubyforge.org/RDF/Enumerable.html for more information about #has_predicate?
     rolling_stones.has_predicate?(RDF.type) #=> true
     Album.type #=> RDF::URI('http://example.org/types/album')
 
@@ -370,7 +370,7 @@ level.  You can also access attributes that are not defined as properties.
 
 ## Support
 
-There are a number of ways to ask for help.  In declining order of likelihood of response:
+There are a number of ways to ask for help.  In declining order of preference:
 
  * Fork the project and write a failing test, or a pending test for a feature request
  * Ask on the [public-rdf-ruby w3c mailing list][]
