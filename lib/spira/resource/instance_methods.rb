@@ -2,18 +2,43 @@ require 'rdf/isomorphic'
 
 module Spira
   module Resource
+
+    ##
+    # This module contains instance methods for Spira resources.  See
+    # {Spira::Resource} for more information.
+    #
+    # @see Spira::Resource
+    # @see Spira::Resource::ClassMethods
+    # @see Spira::Resource::DSL
+    # @see Spira::Resource::Validations
     module InstanceMethods 
-  
+ 
+      ##
+      # This instance's URI.
+      #
+      # @return [RDF::URI]
       attr_reader :uri
 
-      # Initialize a new instance of a spira resource.
-      # The new instance can be instantiated with an opts[:statements] or opts[:attributes], but not both.
+      ## 
+      # Initialize a new Spira::Resource instance of this resource class.  This
+      # method should not be called directly, use
+      # {Spira::Resource::ClassMethods#for} instead.
+      #
+      # @param [Any] identifier The URI or URI fragment for this instance
+      # @param [Hash] opts Default attributes for this instance
+      # @see Spira::Resource::ClassMethods#for
       def initialize(identifier, opts = {})
         @uri = self.class.uri_for(identifier)
         reload(opts)
       end
   
-
+      ##
+      # Reload all attributes for this instance, overwriting or setting
+      # defaults with the given opts.  This resource will block if the
+      # underlying repository blocks the next time it accesses attributes.
+      #
+      # @param   [Hash{Symbol => Any}] opts
+      # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
         @attributes = promise { reload_attributes }
         @original_attributes = promise { @attributes.force ; @original_attributes }
@@ -23,10 +48,11 @@ module Spira
       end
 
       ##
-      # Load this instances attributes.  Overwrite loaded values with attributes in the given options.
+      # Load this instance's attributes.  Overwrite loaded values with attributes in the given options.
       #
       # @param [Hash] opts
       # @return [Hash] @attributes
+      # @private
       def reload_attributes()
         if self.class.repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
@@ -38,6 +64,11 @@ module Spira
           # Set attributes for each statement corresponding to a predicate
           self.class.properties.each do |name, property|
             if self.class.is_list?(name)
+              # FIXME: This should not be an Array, but a Set.  However, a set
+              # must compare its values to see if they already exist.  This
+              # means any referenced relations will check their attributes and
+              # execute the promises to load those classes.  Need an identity
+              # map of some sort to fix that.
               values = []
               collection = statements.query(:subject => @uri, :predicate => property[:predicate])
               unless collection.nil?
@@ -53,6 +84,9 @@ module Spira
           end
         end
 
+        # We need to load and save the original attributes so we can remove
+        # them from the repository on save, since RDF will happily let us add
+        # as many triples for a subject and predicate as we want.
         @original_attributes = {}
         @original_attributes = @attributes.dup
         @original_attributes.each do | name, value |
@@ -62,21 +96,43 @@ module Spira
         @attributes
       end
 
+      ##
+      # Remove the given attributes from the repository
+      #
+      # @param [Hash] attributes The hash of attributes to delete
+      # @param [Hash{Symbol => Any}] opts Options for deletion
+      # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
+      # @private
       def _destroy_attributes(attributes, opts = {})
         repository = repository_for_attributes(attributes)
         repository.insert([@uri, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
         self.class.repository.delete(*repository)
       end
-  
+ 
+      ##
+      # Remove this instance from the repository.  Will not delete statements
+      # not associated with this model.
+      #
+      # @return [true, false] Whether or not the destroy was successful
       def destroy!
         _destroy_attributes(@attributes, :destroy_type => true)
         reload
       end
 
+      ##
+      # Remove all statements associated with this instance from the
+      # repository. This will delete statements unassociated with the current
+      # projection.
+      #
+      # @return [true, false] Whether or not the destroy was successful
       def destroy_resource!
         self.class.repository.delete([@uri,nil,nil])
       end
 
+      ##
+      # Save changes in this instance to the repository.
+      #
+      # @return [true, false] Whether or not the save was successful
       def save!
         if self.class.repository.nil?
           raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
@@ -94,24 +150,48 @@ module Spira
         end
       end
 
+      ##
+      # Save changes to the repository
+      #
+      # @private
       def _update!
         _destroy_attributes(@original_attributes)
         self.class.repository.insert(*self)
         @original_attributes = @attributes.dup
       end
-  
+ 
+      ## 
+      # The `RDF.type` associated with this class.
+      #
+      # @return [nil,RDF::URI] The RDF type associated with this instance's class.
       def type
         self.class.type
       end
-  
+ 
+      ##
+      # `type` is a special property which is associated with the class and not
+      # the instance.  Always raises a TypeError to try and assign it.  
+      #
+      # @raise [TypeError] always
       def type=(type)
         raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
       end
-  
+ 
+      ##
+      # A developer-friendly view of this projection
+      #
+      # @private
       def inspect
         "<#{self.class}:#{self.object_id} uri: #{@uri}>"
       end
-  
+ 
+      ##
+      # Enumerate each RDF statement that makes up this projection.  This makes
+      # each instance an `RDF::Enumerable`, with all of the nifty benefits
+      # thereof.  See <http://rdf.rubyforge.org/RDF/Enumerable.html> for
+      # information on arguments.
+      #
+      # @see http://rdf.rubyforge.org/RDF/Enumerable.html
       def each(*args, &block)
         return RDF::Enumerator.new(self, :each) unless block_given?
         repository = repository_for_attributes(@attributes)
@@ -119,10 +199,19 @@ module Spira
         repository.each(*args, &block)
       end
 
+      ##
+      # Safely set a given attribute.  Currently not needed and marked as
+      # private.
+      #
+      # @private
       def attribute_set(name, value)
         @attributes[name] = value
       end
 
+      ##
+      # Safely get a given attribute. 
+      #
+      # @private
       def attribute_get(name)
         case self.class.is_list?(name)
           when true
@@ -132,6 +221,13 @@ module Spira
         end
       end
 
+      ##
+      # Create an RDF::Repository for the given attributes hash.  This could
+      # just as well be a class method but is only used here in #save! and
+      # #destroy!, so it is defined here for simplicity.  
+      #
+      # @param [Hash] attributes The attributes to create a repository for
+      # @private
       def repository_for_attributes(attributes)
         repo = RDF::Repository.new
         attributes.each do | name, attribute |
@@ -150,9 +246,15 @@ module Spira
         repo
       end
 
+      ##
+      # Compare this instance with another instance.  The comparison is done on
+      # an RDF level, and will work across subclasses as long as the attributes
+      # are the same.
+      # 
+      # @see http://rdf.rubyforge.org/isomorphic/
       def ==(other)
         case other
-          # TODO: define behavior for equality on subclasses.  also implement subclasses.
+          # TODO: define behavior for equality on subclasses.
           when self.class
             @uri == other.uri 
           when RDF::Enumerable
@@ -162,12 +264,19 @@ module Spira
         end
       end
 
+      ##
+      # The validation errors collection associated with this instance.
+      #
+      # @return [Spira::Errors]
+      # @see Spira::Errors
       def errors
         @errors ||= Spira::Errors.new
       end
 
+      ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
 
+      ## Include the base validation functions
       include Spira::Resource::Validations
 
     end  
