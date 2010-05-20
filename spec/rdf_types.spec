@@ -132,8 +132,6 @@ describe 'models with a defined rdf type' do
     before :each do
       @car = Car.for Cars.car1
       @car.nil?.should_not be_true
-      @types_repository = RDF::Repository.load(fixture('types.nt'))
-      Car.repository = @types_repository
     end
 
     it "should allow setting other properties" do
