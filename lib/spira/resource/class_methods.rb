@@ -33,7 +33,7 @@ module Spira
       # @return [RDF::URI]
       # @raises [ArgumentError] If this class cannot create an identifier from the given string
       def uri_for(identifier)
-        uri = case identifier
+        case identifier
           when RDF::URI
             identifier
           when String
