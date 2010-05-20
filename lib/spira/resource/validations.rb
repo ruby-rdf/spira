@@ -11,15 +11,6 @@ module Spira
     module Validations
 
       ##
-      # The {Spira::Errors} object for this instance.
-      #
-      # @return [Spira::Errors] The errors
-      # @see Spira::Errors
-      def errors
-        @errors ||= []
-      end
-
-      ##
       # Assert a fact about this instance.  If the given expression is false,
       # an error will be noted.
       #
