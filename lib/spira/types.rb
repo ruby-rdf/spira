@@ -1,4 +1,14 @@
 module Spira
+
+  ##
+  # Spira::Types is a set of default Spira::Type classes.
+  #
+  # @see Spira::Type
+  # @see Spira::Types::Integer
+  # @see Spira::Types::Boolean
+  # @see Spira::Types::String
+  # @see Spira::Types::Float
+  # @see Spira::Types::Any
   module Types
 
     # No autoloading here--the associations to XSD types are made by the
