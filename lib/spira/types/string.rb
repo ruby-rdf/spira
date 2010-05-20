@@ -1,4 +1,14 @@
 module Spira::Types
+
+  ##
+  # A {Spira::Type} for string values.  Values will be associated with the
+  # `XSD.string` type with no language code.
+  #
+  # A {Spira::Resource} property can reference this type as
+  # `Spira::Types::String`, `String`, or `XSD.string`.
+  #
+  # @see Spira::Type
+  # @see http://rdf.rubyforge.org/RDF/Literal.html
   class String
 
     include Spira::Type

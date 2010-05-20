@@ -1,4 +1,14 @@
 module Spira::Types
+
+  ##
+  # A {Spira::Type} for Float values.  Values will be associated with the
+  # `XSD.double` type.
+  #
+  # A {Spira::Resource} property can reference this type as
+  # `Spira::Types::Float`, `Float`, `XSD.double`, or `XSD.float`.
+  #
+  # @see Spira::Type
+  # @see http://rdf.rubyforge.org/RDF/Literal.html
   class Float
 
     include Spira::Type
