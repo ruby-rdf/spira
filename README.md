@@ -19,12 +19,12 @@ or to create a new store of RDF data based on simple defaults.
 
       base_uri "http://example.org/example/people"
     
-      property :name, :predicate => RDF::FOAF.name, :type => String
-      property :age,  :predicate => RDF::FOAF.age,  :type => Integer
+      property :name, :predicate => FOAF.name, :type => String
+      property :age,  :predicate => FOAF.age,  :type => Integer
 
     end
 
-    bob = Person.for('bob')
+    bob = RDF::URI("http://example.org/people/bob").as(Person)
     bob.age  = 15
     bob.name = "Bob Smith"
     bob.save!
@@ -129,7 +129,7 @@ A class with a `type` set is assigned an `RDF.type` on creation and saving.
 
     class Album
       include Spira::Resource
-      type RDF::URI.new('http://example.org/types/album')
+      type URI.new('http://example.org/types/album')
       property :name,   :predicate => DC.title
     end
 
@@ -156,7 +156,7 @@ A class with a `default_vocabulary` set will transparently create predicates for
 
     class Song
       include Spira::Resource
-      default_vocabulary RDF::URI.new('http://example.org/vocab')
+      default_vocabulary URI.new('http://example.org/vocab')
       base_uri 'http://example.org/songs'
       property :title
       property :author, :type => :artist
