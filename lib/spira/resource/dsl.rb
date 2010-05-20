@@ -1,50 +1,122 @@
 require 'promise'
 
 module Spira
- module Resource
+  module Resource
 
-   # This module contains all user-exposed methods for use in building a model class.
-   # It is used to extend classes that include Spira::Resource.
-   # @see a little bit of magic in Spira::Resource#included as well--some
-   # tricks need class_eval before this module is included.
-   # @see Spira::Resource::ClassMethods for class methods available after class
-   # definition 
-   # @see Spira::Resource::InstanceMethods for instance methods available after
-   # class definition
+    ##
+    # This module consists of Spira::Resource class methods which correspond to
+    # the Spira resource class declaration DSL.  See {Spira::Resource} for more
+    # information.
+    #
+    # @see Spira::Resource
+    # @see Spira::Resource::ClassMethods
+    # @see Spira::Resource::InstanceMethods
+    # @see Spira::Resource::Validations
     module DSL  
 
+      ##
+      # The name of the default repository to use for this class.  This
+      # repository will be queried and written to instead of the :default
+      # repository.
+      #
+      # @param  [Symbol] name
+      # @return [Void]
       def default_source(name)
         @repository_name = name
         @repository = Spira.repository(name)
       end
-  
+ 
+      ##
+      # The base URI for this class.  Attempts to create instances for non-URI
+      # objects will be appended to this base URI.
+      #
+      # @param  [String, RDF::URI] base uri
+      # @return [Void]
       def base_uri(uri = nil)
         @base_uri = uri unless uri.nil?
         @base_uri
       end
-      
+     
+      ##
+      # The default vocabulary for this class.  Setting a default vocabulary
+      # will allow properties to be defined without a `:predicate` option.
+      # Predicates will instead be created by appending the property name to
+      # the given string.
+      #
+      # @param  [String, RDF::URI] base uri
+      # @return [Void]
       def default_vocabulary(uri)
         @default_vocabulary = uri
       end
 
+
+      ## 
+      # Add a property to this class.  A property is an accessor field that
+      # represents an RDF predicate.
+      #
+      # @example A simple string property
+      #     property :name, :predicate => FOAF.name, :type => String
+      # @example A property which defaults to {Spira::Types::Any}
+      #     property :name, :predicate => FOAF.name
+      # @example An integer property
+      #     property :age,  :predicate => FOAF.age, :type => Integer
+      # @param  [Symbol] name The name of this property
+      # @param  [Hash{Symbol => Any}] opts property options
+      # @option opts [RDF::URI]            :predicate The RDF predicate which will refer to this property
+      # @option opts [Spira::Type, String] :type      (Spira::Types::Any) The
+      # type for this property.  If a Spira::Type is given, that class will be
+      # used to serialize and unserialize values.  If a String is given, it
+      # should be the String form of a Spira::Resource class name (Strings are
+      # used to prevent issues with load order).  
+      # @see Spira::Types
+      # @see Spira::Type
+      # @return [Void]
       def property(name, opts = {} )
         add_accessors(name,opts,:hash_accessors)
       end
 
+      ##
+      # The plural form of `property`.  `Has_many` has the same options as
+      # `property`, but instead of a single value, a Ruby Array of objects will
+      # be created instead.  Be warned that this should be a Set to match RDF
+      # semantics, but this is not currently implemented.  Duplicate values of
+      # an array will be lost on save.  
+      #
+      # @see Spira::Resource::DSL#property
       def has_many(name, opts = {})
         add_accessors(name,opts,:hash_accessors)
         @lists[name] = true
       end
 
       ##
-      # Validate this model with the given validator.  If a symbol, calls that method to validate.
+      # Validate this model with the given validator function name.
       #
-      # @param [Symbol] validator
+      # @example
+      #     class Person
+      #       include Spira::Resource
+      #       property :name, :predicate => FOAF.name
+      #       validate :is_awesome
+      #       def is_awesome
+      #         assert(name =~ /Thor/, :name, "not awesome")
+      #       end
+      #     end
+      # @param  [Symbol] validator
       # @return [Void]
       def validate(validator)
         validators << validator unless validators.include?(validator)
       end
 
+
+      ##
+      # Associate an RDF type with this class.  RDF resources can be multiple
+      # types at once, but if they have an `RDF.type` statement for the given
+      # URI, this class can #count them.
+      #
+      # @param  [RDF::URI] uri The URI object of the `RDF.type` triple
+      # @return [Void]
+      # @see http://rdf.rubyforge.net/RDF/URI.html
+      # @see http://rdf.rubyforge.org/RDF.html#type-class_method
+      # @see Spira::Resource::ClassMethods#count 
       def type(uri = nil)
         unless uri.nil?
           @type = case uri
@@ -57,6 +129,7 @@ module Spira
         @type
       end
 
+      # Build a Ruby value from an RDF value.
       #
       # @private
       def build_value(statement, type, existing_relation = nil)
@@ -85,6 +158,7 @@ module Spira
         end
       end
 
+      # Build an RDF value from a Ruby value for a property
       # @private
       def build_rdf_value(value, type)
         case
@@ -101,6 +175,9 @@ module Spira
 
       private
 
+      ##
+      # Add getters and setters for a property or list.
+      # @private
       def add_accessors(name, opts, accessors_method)
         predicate = case
           when opts[:predicate]
@@ -132,6 +209,11 @@ module Spira
 
       end
 
+      ##
+      # Getter and Setter methods for predicates.
+      # FIXME: this and add_accessors are from an older version in which
+      # multiple versions of accessors existed, and can be refactored.
+      # @private
       def hash_accessors(name, predicate, type)
         setter = lambda do |arg|
           attribute_set(name,arg)
