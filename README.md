@@ -334,12 +334,12 @@ built in `assert` and assert helpers such as `assert_set` and
       end
     end
 
-    dancing-queen.artist = nickelback
-    dancing-queen.save!  #=> ValidationError
-    dancing-queen.errors.each => ["artist cannot be Nickelback"]
+    dancing_queen.artist = nickelback
+    dancing_queen.save!  #=> ValidationError
+    dancing_queen.errors.each => ["artist cannot be Nickelback"]
 
-    dancing-queen.artist = abba
-    dancing-queen.save!  #=> true
+    dancing_queen.artist = abba
+    dancing_queen.save!  #=> true
 
 
 ## Inheritance
