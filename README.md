@@ -5,7 +5,7 @@ It's time to breathe life into your linked data.
 ---
 
 ## Synopsis
-Spira is a framework for using the information in RDF.rb repositories as model
+Spira is a framework for using the information in [RDF.rb][] repositories as model
 objects.  It gives you the ability to work in a resource-oriented way without
 losing access to statement-oriented nature of linked data, if you so choose.
 It can be used either to access existing RDF data in a resource-oriented way,
@@ -393,3 +393,4 @@ Fork it on Github and go.  Please make sure you're kosher with the UNLICENSE
 file before contributing.
 
 [public-rdf-ruby w3c mailing list]:         http://lists.w3.org/Archives/Public/public-rdf-ruby/
+[RDF.rb]:                                   http://rdf.rubyforge.org
