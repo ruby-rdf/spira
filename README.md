@@ -11,6 +11,8 @@ losing access to statement-oriented nature of linked data, if you so choose.
 It can be used either to access existing RDF data in a resource-oriented way,
 or to create a new store of RDF data based on simple defaults.
 
+An introductory blog post is at <http://blog.datagraph.org/2010/05/spira>
+
 ### Example
 
     class Person
