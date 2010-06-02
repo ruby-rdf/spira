@@ -336,7 +336,7 @@ built in `assert` and assert helpers such as `assert_set` and
 
     dancing_queen.artist = nickelback
     dancing_queen.save!  #=> ValidationError
-    dancing_queen.errors.each => ["artist cannot be Nickelback"]
+    dancing_queen.errors.each #=> ["artist cannot be Nickelback"]
 
     dancing_queen.artist = abba
     dancing_queen.save!  #=> true
