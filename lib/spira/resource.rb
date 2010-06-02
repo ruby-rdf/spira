@@ -64,8 +64,8 @@ module Spira
     end
     
     # This lets including classes reference vocabularies without the RDF:: prefix
-    include RDF
     include Spira::Types
+    include RDF
     include InstanceMethods
 
   end
