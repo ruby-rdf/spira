@@ -19,6 +19,7 @@ module Spira
     require 'spira/types/any'
     require 'spira/types/string'
     require 'spira/types/float'
+    require 'spira/types/uri'
 
 
   end
