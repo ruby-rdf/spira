@@ -47,6 +47,11 @@ describe 'Default URIs' do
       BaseURITest.uri_for(uri).should == RDF::URI.new(uri)
     end
 
+    it "should allow any type to be used as a URI fragment, via to_s" do 
+      uri = 'http://example.org/example/5'
+      BaseURITest.uri_for(5).should == RDF::URI.new(uri)
+    end
+
     it "should not raise an exception to create an object without a URI for a class without a base_uri" do
       lambda {x = BaseURITest.for 'bob'}.should_not raise_error 
     end

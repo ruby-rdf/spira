@@ -72,14 +72,12 @@ module Spira
         case identifier
           when RDF::URI
             identifier
-          when String
-            uri = RDF::URI.new(identifier)
+          else
+            uri = RDF::URI.new(identifier.to_s)
             return uri if uri.absolute?
             raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
             separator = self.base_uri.to_s[-1,1] == "/" ? '' : '/'
-            RDF::URI.new(self.base_uri.to_s + separator + identifier)
-          else
-            raise ArgumentError, "Cannot create an identifier for #{self} from #{identifier}, expected RDF::URI or String"
+            RDF::URI.new(self.base_uri.to_s + separator + identifier.to_s)
         end
       end
 
