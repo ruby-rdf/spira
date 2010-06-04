@@ -109,16 +109,32 @@ describe Spira do
       end
 
       context "in respect to some general methods" do
-        it "should offer a uri method" do
+        it "should #uri" do
           @person.should respond_to :uri 
         end
 
-        it "should return a RDF::URI with uri" do
+        it "should return a RDF::URI from #uri" do
           @person.uri.should be_a RDF::URI
         end
 
-        it "should return the correct URI with #uri" do
+        it "should return the correct URI from #uri" do
           @person.uri.to_s.should == 'http://example.org/example/people/alice'
+        end
+
+        it "should support #to_uri" do
+          @person.should respond_to :to_uri
+        end
+
+        it "should return the correct URI from #to_uri" do
+          @person.to_uri.to_s.should == 'http://example.org/example/people/alice'
+        end
+
+        it "should support #to_rdf" do
+          @person.should respond_to :to_rdf
+        end
+
+        it "should return an RDF::Enumerable for #to_rdf" do
+          @person.to_rdf.should be_a RDF::Enumerable
         end
       end
 

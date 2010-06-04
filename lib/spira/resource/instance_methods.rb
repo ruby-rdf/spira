@@ -176,7 +176,23 @@ module Spira
       def type=(type)
         raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
       end
- 
+
+      ##
+      # Returns the RDF representation of this resource.
+      #
+      # @return [RDF::Enumerable]
+      def to_rdf
+        self
+      end
+      
+      ##
+      # Returns the URI representation of this resource.
+      #
+      # @return [RDF::URI]
+      def to_uri
+        uri
+      end
+
       ##
       # A developer-friendly view of this projection
       #
@@ -255,6 +271,7 @@ module Spira
       def ==(other)
         case other
           # TODO: define behavior for equality on subclasses.
+          # TODO: should we compare attributes here?
           when self.class
             @uri == other.uri 
           when RDF::Enumerable
