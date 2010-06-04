@@ -33,6 +33,6 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency 'yard' ,          '>= 0.5.3'
   gem.add_runtime_dependency     'rdf',            '>= 0.1.10'
   gem.add_runtime_dependency     'rdf-isomorphic', '>= 0.1.2'
-  gem.add_runtime_dependency     'promise',        '>= 0.1.0'
+  gem.add_runtime_dependency     'promise',        '>= 0.1.1'
   gem.post_install_message       = nil
 end
