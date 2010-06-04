@@ -87,7 +87,7 @@ module Spira
       # This method is only valid for classes which declare a `type` with the
       # `type` method in the DSL.
       #
-      # @raise  [TypeError] if the resource class does not have an RDF type declared
+      # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       # @see Spira::Resource::DSL
       def count
@@ -95,6 +95,33 @@ module Spira
         result = repository.query(:predicate => RDF.type, :object => @type)
         result.count
       end
+
+      ##
+      # Enumerate over all resources projectable as this class.  This method is
+      # only valid for classes which declare a `type` with the `type` method in
+      # the DSL.
+      #
+      # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
+      # @overload each
+      #   @yield [instance] A block to perform for each available projection of this class
+      #   @yieldparam [self] instance
+      #   @yieldreturn [Void]
+      #   @return [Void]
+      #
+      # @overload each
+      #   @return [Enumerator]
+      # @see Spira::Resource::DSL
+      def each(&block)
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
+        case block_given?
+          when false
+            return RDF::Enumerator.new(self,:each) unless block_given?
+          else
+            result = repository.query(:predicate => RDF.type, :object => @type)
+            result.each_subject { |subject| block.call(self.for(subject)) }
+        end
+      end
+
 
       ##
       # Returns true if the given property is a has_many property, false otherwise

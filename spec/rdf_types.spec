@@ -168,11 +168,33 @@ describe 'models with a defined rdf type' do
       Car.count.should == 0
     end
 
-    it "should raise a TypeError to call Resource.count for models without types" do
+    it "should raise a Spira::NoTypeError to call #count for models without types" do
       lambda { Wagon.count }.should raise_error Spira::NoTypeError
     end
-
   end
 
+  context "when enumerating" do
+    it "should provide an each method for resources with types" do
+      Van.each.to_a.size.should == 3
+    end
+
+    it "should raise a Spira::NoTypeError to call #each for models without types" do
+      lambda { Wagon.each }.should raise_error Spira::NoTypeError
+    end
+
+    it "should return an enumerator if no block is given" do
+      Van.each.should be_a RDF::Enumerator
+    end
+
+    it "should execute a block if one is given" do
+      vans = []
+      Van.each do |resource|
+        vans << resource
+      end
+      [Cars.van1, Cars.van2, Cars.van3].each do |uri|
+        vans.any? { |van| van.uri == uri }.should be_true
+      end
+    end
+  end
 
 end
