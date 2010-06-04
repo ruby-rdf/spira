@@ -92,8 +92,7 @@ module Spira
       # @see Spira::Resource::DSL
       def count
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
-        result = repository.query(:predicate => RDF.type, :object => @type)
-        result.count
+        repository.query(:predicate => RDF.type, :object => @type).subjects.count
       end
 
       ##
@@ -115,10 +114,11 @@ module Spira
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
         case block_given?
           when false
-            return RDF::Enumerator.new(self,:each) unless block_given?
+            enum_for(:each)
           else
-            result = repository.query(:predicate => RDF.type, :object => @type)
-            result.each_subject { |subject| block.call(self.for(subject)) }
+            repository.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
+              block.call(self.for(subject))
+            end
         end
       end
 
