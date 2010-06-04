@@ -8,7 +8,7 @@ describe "has_many" do
 
   before :all do
     require 'rdf/ntriples'
-    class Post
+    class ::Post
     
       include Spira::Resource
     
@@ -22,7 +22,7 @@ describe "has_many" do
     
     
     
-    class Comment
+    class ::Comment
     
       include Spira::Resource
     
