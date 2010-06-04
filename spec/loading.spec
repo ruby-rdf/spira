@@ -24,7 +24,13 @@ describe Spira do
       test = @uri.as(LoadTest)
     end
 
-    it "should attempt to load from the repository on property access" do
+    it "should not attempt to load from the repository on property setting" do
+      @repo.should_not_receive(:query)
+      test = @uri.as(LoadTest)
+      test.name = "test"
+    end
+
+    it "should attempt to load from the repository on property getting" do
       @repo.should_receive(:query).once.and_return([])
       test = @uri.as(LoadTest)
       name = test.name
