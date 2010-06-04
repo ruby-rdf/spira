@@ -169,7 +169,7 @@ describe 'models with a defined rdf type' do
     end
 
     it "should raise a TypeError to call Resource.count for models without types" do
-      lambda { Wagon.count }.should raise_error TypeError
+      lambda { Wagon.count }.should raise_error Spira::NoTypeError
     end
 
   end

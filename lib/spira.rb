@@ -1,4 +1,5 @@
 require 'rdf'
+require 'spira/exceptions'
 
 ##
 # Spira is a framework for building projections of RDF data into Ruby classes.
@@ -103,7 +104,6 @@ module Spira
   autoload :Errors,           'spira/errors'
   autoload :VERSION,          'spira/version'
 
-  class ValidationError < StandardError; end
 end
 
 module RDF

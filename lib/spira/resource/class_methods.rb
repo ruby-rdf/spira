@@ -91,7 +91,7 @@ module Spira
       # @return [Integer] the count
       # @see Spira::Resource::DSL
       def count
-        raise TypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
         result = repository.query(:predicate => RDF.type, :object => @type)
         result.count
       end
