@@ -1,19 +1,5 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
-Spira.add_repository(:enumerable, ::RDF::Repository)
-
-class EnumerableSpec
-  include Spira::Resource
-
-  default_source :enumerable
-
-  base_uri "http://example.org/example/people"
-
-  property :name, :predicate => RDFS.label
-  property :age,  :predicate => FOAF.age,  :type => Integer
-end
-
-
 # Tests in terms of RDF::Enumerable, and interaction with other enumerables
 
 describe Spira::Resource do
@@ -22,6 +8,16 @@ describe Spira::Resource do
 
     before :all do
       require 'rdf/ntriples'
+      Spira.add_repository(:default, ::RDF::Repository)
+      
+      class ::EnumerableSpec
+        include Spira::Resource
+      
+        base_uri "http://example.org/example/people"
+      
+        property :name, :predicate => RDFS.label
+        property :age,  :predicate => FOAF.age,  :type => Integer
+      end
     end
 
     context "when running the rdf-spec RDF::Enumerable shared groups" do
