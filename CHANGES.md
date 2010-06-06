@@ -1,5 +1,10 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
-
+ 
+## untagged
+ * Bumped promise dependency to 0.1.1 to fix a Ruby 1.9 warning
+ * Rework error handling when a repository is not configured; this should
+   always now raise a Spira::NoRepositoryError regardless of what operation 
+   was attempted, and the error message was improved as well.
 
 ## 0.0.2
  * Implemented #each on resource classes, allowing classes with a defined RDF
