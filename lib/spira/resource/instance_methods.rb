@@ -54,10 +54,7 @@ module Spira
       # @return [Hash] @attributes
       # @private
       def reload_attributes()
-        if self.class.repository.nil?
-          raise Spira::NoRepositoryError, "#{self.class} is configured to use #{self.class.repository_name} as a repository, but it has not been set." 
-        end
-        statements = self.class.repository.query(:subject => @uri)
+        statements = self.class.repository_or_fail.query(:subject => @uri)
         @attributes = {}
 
         unless statements.empty?
@@ -106,7 +103,7 @@ module Spira
       def _destroy_attributes(attributes, opts = {})
         repository = repository_for_attributes(attributes)
         repository.insert([@uri, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
-        self.class.repository.delete(*repository)
+        self.class.repository_or_fail.delete(*repository)
       end
  
       ##
@@ -126,7 +123,7 @@ module Spira
       #
       # @return [true, false] Whether or not the destroy was successful
       def destroy_resource!
-        self.class.repository.delete([@uri,nil,nil])
+        self.class.repository_or_fail.delete([@uri,nil,nil])
       end
 
       ##
@@ -134,9 +131,6 @@ module Spira
       #
       # @return [true, false] Whether or not the save was successful
       def save!
-        if self.class.repository.nil?
-          raise Spira::NoRepositoryError, "#{self.class} is configured to use #{self.class.repository_name} as a repository, but it has not been set." 
-        end
         unless self.class.validators.empty?
           errors.clear
           self.class.validators.each do | validator | self.send(validator) end
@@ -156,7 +150,7 @@ module Spira
       # @private
       def _update!
         _destroy_attributes(@original_attributes)
-        self.class.repository.insert(*self)
+        self.class.repository_or_fail.insert(*self)
         @original_attributes = @attributes.dup
       end
  

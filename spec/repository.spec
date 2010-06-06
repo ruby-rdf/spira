@@ -79,6 +79,16 @@ describe Spira do
         event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
         lambda { event.save! }.should raise_error Spira::NoRepositoryError
       end
+
+      it "should raise an error to call instance#destroy!" do
+        event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
+        lambda { event.destroy! }.should raise_error Spira::NoRepositoryError
+      end
+
+      it "should raise an error to call instance#destroy_resource!" do
+        event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
+        lambda { event.destroy_resource! }.should raise_error Spira::NoRepositoryError
+      end
     end 
 
     context "with a set repository" do
