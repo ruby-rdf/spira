@@ -8,7 +8,13 @@ describe 'Default URIs' do
       base_uri "http://example.org/example"
       property :name, :predicate => RDFS.label
     end
-    
+
+    class ::HashBaseURITest
+      include Spira::Resource
+      base_uri "http://example.org/example#"
+      property :name, :predicate => RDFS.label
+    end
+
     class ::NoBaseURITest
       include Spira::Resource
       property :name, :predicate => RDFS.label
@@ -72,6 +78,10 @@ describe 'Default URIs' do
       baseuri.save!
       saved = BaseURITest.for('bob')
       saved.name.should == 'test'
+    end
+
+    it "should not append a / if the base URI ends with a #" do
+      HashBaseURITest.uri_for('bob').should == RDF::URI.new('http://example.org/example#bob')
     end
   end
 
