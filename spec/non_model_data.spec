@@ -62,6 +62,7 @@ describe 'Resources with data not associated with a model' do
     end
 
     it "unspecified model information should appear in the enumeration" do
+      pending "full iteration is not yet implemented."
       @example1.should have_predicate RDF::FOAF.name
     end
   end
