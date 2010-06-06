@@ -17,13 +17,27 @@ module Spira
       ##
       # The current repository for this class
       # 
-      # @param  [RDF::Repository] repo The repository
-      # @return [Void]
+      # @return [RDF::Repository, nil]
       # @private
       def repository
         name = @repository_name || :default
         repository = Spira.repository(name)
         repository
+      end
+
+      ##
+      # Get the current repository for this class, and raise a
+      # Spira::NoRepositoryError if it is nil.
+      #
+      # @raise  [Spira::NoRepositoryError]
+      # @return [RDF::Repository]
+      # @private
+      def repository_or_fail
+        current_repository = repository
+        if current_repository.nil?
+          raise Spira::NoRepositoryError, "#{self} is configured to use #{@repository_name} as a repository, but it has not been set." 
+        end
+        current_repository
       end
 
       ##
