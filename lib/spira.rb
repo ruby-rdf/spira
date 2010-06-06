@@ -86,6 +86,17 @@ module Spira
   module_function :repository
 
   ##
+  # Clear all repositories from Spira's knowledge.  Use it if you want, but
+  # it's really here for testing.
+  #
+  # @return [Void]
+  # @private
+  def clear_repositories!
+    settings[:repositories] = {}
+  end
+  module_function :clear_repositories!
+
+  ##
   # Alias a property type to another.  This allows a range of options to be
   # specified for a property type which all reference one Spira::Type
   #
