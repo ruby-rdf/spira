@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
-describe "Spira Relations" do
+describe "Spira resources" do
 
   before :all do
     
@@ -27,7 +27,7 @@ describe "Spira Relations" do
   end
 
 
-  context "a one-to-many relationship" do
+  context "with a one-to-many relationship" do
   
     before :all do
       require 'rdf/ntriples'
@@ -71,7 +71,7 @@ describe "Spira Relations" do
     end
 
     it "should make a valid statement referencing the an assigned objects URI" do
-      @kurt = Artist.new 'kurt cobain'
+      @kurt = Artist.for('kurt cobain')
       @cd.artist = @kurt
       statement = @cd.query(:predicate => CDs.artist).first
       statement.subject.should == @cd.uri
@@ -81,14 +81,14 @@ describe "Spira Relations" do
 
   end
 
-  context "invalid relationships" do
+  context "with invalid relationships" do
 
     before :all do
       @invalid_repo = RDF::Repository.new
       Spira.add_repository(:default, @invalid_repo)
     end
 
-    context "accessing a field named for a non-existant class" do
+    context "when accessing a field named for a non-existant class" do
       
       before :all do
         class ::RelationsTestA
