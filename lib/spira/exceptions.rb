@@ -7,5 +7,9 @@ module Spira
 
   ##
   # For cases when a projection fails a validation check
-  class ValidationError < StandardError; end
+  class ValidationError < StandardError ; end
+
+  ##
+  # For cases in which a repository is required but none has been given
+  class NoRepositoryError < StandardError ; end
 end

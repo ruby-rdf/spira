@@ -55,7 +55,7 @@ module Spira
       # @private
       def reload_attributes()
         if self.class.repository.nil?
-          raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
+          raise Spira::NoRepositoryError, "#{self.class} is configured to use #{self.class.repository_name} as a repository, but it has not been set." 
         end
         statements = self.class.repository.query(:subject => @uri)
         @attributes = {}
@@ -135,7 +135,7 @@ module Spira
       # @return [true, false] Whether or not the save was successful
       def save!
         if self.class.repository.nil?
-          raise RuntimeError, "#{self} is configured to use #{@repository_name} as a repository, but was unable to find it." 
+          raise Spira::NoRepositoryError, "#{self.class} is configured to use #{self.class.repository_name} as a repository, but it has not been set." 
         end
         unless self.class.validators.empty?
           errors.clear
@@ -216,8 +216,7 @@ module Spira
       end
 
       ##
-      # Safely set a given attribute.  Currently not needed and marked as
-      # private.
+      # Sets the given attribute to the given value.
       #
       # @private
       def attribute_set(name, value)
@@ -225,7 +224,7 @@ module Spira
       end
 
       ##
-      # Safely get a given attribute. 
+      # Get the current value for the given attribute
       #
       # @private
       def attribute_get(name)

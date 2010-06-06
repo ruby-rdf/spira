@@ -11,18 +11,19 @@ module Spira
     module ClassMethods
 
       ##
+      # A symbol name for the repository this class is currently using.
+      attr_reader :repository_name
+
+      ##
       # The current repository for this class
       # 
       # @param  [RDF::Repository] repo The repository
       # @return [Void]
       # @private
       def repository
-        case @repository_name
-          when nil
-            Spira.repository(:default)
-          else
-            Spira.repository(@repository_name)
-        end
+        name = @repository_name || :default
+        repository = Spira.repository(name)
+        repository
       end
 
       ##

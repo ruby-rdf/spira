@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + "/spec_helper.rb"
 
 describe Spira do
 
-  context ", in regards to a default repository, " do
+  context "when registering repositories" do
 
     before :all do
       @repo = RDF::Repository.new
