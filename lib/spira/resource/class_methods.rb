@@ -21,8 +21,7 @@ module Spira
       # @private
       def repository
         name = @repository_name || :default
-        repository = Spira.repository(name)
-        repository
+        Spira.repository(name)
       end
 
       ##
@@ -33,11 +32,7 @@ module Spira
       # @return [RDF::Repository]
       # @private
       def repository_or_fail
-        current_repository = repository
-        if current_repository.nil?
-          raise Spira::NoRepositoryError, "#{self} is configured to use #{@repository_name} as a repository, but it has not been set." 
-        end
-        current_repository
+        repository || (raise Spira::NoRepositoryError, "#{self} is configured to use #{@repository_name} as a repository, but it has not been set.")
       end
 
       ##
