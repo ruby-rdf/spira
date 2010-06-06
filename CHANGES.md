@@ -5,6 +5,7 @@
  * Rework error handling when a repository is not configured; this should
    always now raise a Spira::NoRepositoryError regardless of what operation 
    was attempted, and the error message was improved as well.
+ * A '/' is no longer appended to base URIs ending with a '#'
 
 ## 0.0.2
  * Implemented #each on resource classes, allowing classes with a defined RDF
