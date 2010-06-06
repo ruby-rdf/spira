@@ -40,22 +40,22 @@ describe 'Default URIs' do
       BaseURITest.base_uri.should == "http://example.org/example"
     end
 
-    it "should provide a uri_for method" do
-      BaseURITest.should respond_to :uri_for
+    it "should provide an id_for method" do
+      BaseURITest.should respond_to :id_for
     end
 
     it "should provide a uri based on the base URI for string arguments" do
-      BaseURITest.uri_for('bob').should == RDF::URI.new('http://example.org/example/bob')
+      BaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example/bob')
     end
 
     it "should correctly figure out that a string of an absolute URI is an absolute URI" do
       uri = 'http://example.org/example/bob'
-      BaseURITest.uri_for(uri).should == RDF::URI.new(uri)
+      BaseURITest.id_for(uri).should == RDF::URI.new(uri)
     end
 
     it "should allow any type to be used as a URI fragment, via to_s" do 
       uri = 'http://example.org/example/5'
-      BaseURITest.uri_for(5).should == RDF::URI.new(uri)
+      BaseURITest.id_for(5).should == RDF::URI.new(uri)
     end
 
     it "should not raise an exception to create an object without a URI for a class without a base_uri" do
@@ -81,13 +81,13 @@ describe 'Default URIs' do
     end
 
     it "should not append a / if the base URI ends with a #" do
-      HashBaseURITest.uri_for('bob').should == RDF::URI.new('http://example.org/example#bob')
+      HashBaseURITest.id_for('bob').should == RDF::URI.new('http://example.org/example#bob')
     end
   end
 
   context "classes without a base URI" do
-    it "should provide a uri_for method" do
-      NoBaseURITest.should respond_to :uri_for
+    it "should provide a id_for method" do
+      NoBaseURITest.should respond_to :id_for
     end
 
     it "should have a nil base_uri" do
@@ -95,7 +95,7 @@ describe 'Default URIs' do
     end
 
     it "should raise an ArgumentError when asking for a relative uri" do
-      lambda { x = NoBaseURITest.uri_for('bob')}.should raise_error ArgumentError
+      lambda { x = NoBaseURITest.id_for('bob')}.should raise_error ArgumentError
     end
 
     it "should raise an ArgumentError to create an object without a URI for a class without a base_uri" do

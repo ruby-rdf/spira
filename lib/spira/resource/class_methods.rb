@@ -67,21 +67,32 @@ module Spira
         if !self.type.nil? && attributes[:type]
           raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
         end
-        uri = uri_for(identifier)
+        uri = id_for(identifier)
         self.new(uri, attributes)
       end
 
       ##
-      # Creates a URI based on a base_uri and string or URI
+      # Creates a URI or RDF::Node based on a potential base_uri and string,
+      # URI, or Node, or Addressable::URI.  If not a URI or Node, the given
+      # identifier should be a string representing an absolute URI, or
+      # something responding to to_s which can be appended to a base URI, which
+      # this class must have.
       #
       # @param  [Any] Identifier
-      # @return [RDF::URI]
-      # @raise  [ArgumentError] If this class cannot create an identifier from the given string
+      # @return [RDF::URI, RDF::Node]
+      # @raise  [ArgumentError] If this class cannot create an identifier from the given argument
       # @see http://rdf.rubyforge.org/RDF/URI.html
-      def uri_for(identifier)
-        case identifier
-          when RDF::URI
+      def id_for(identifier)
+        case 
+          # Catches RDF::URI and implementing subclasses
+          when identifier.respond_to?(:to_uri)
+            identifier.to_uri
+          # Catches RDF::Nodes
+          when identifier.respond_to?(:node?) && identifier.node?
             identifier
+          when identifier.is_a?(Addressable::URI)
+            RDF::URI.new(identifier)
+          # Treat identifier as a string, and create a URI out of it.
           else
             uri = RDF::URI.new(identifier.to_s)
             return uri if uri.absolute?

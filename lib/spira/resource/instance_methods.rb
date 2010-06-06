@@ -24,11 +24,11 @@ module Spira
       # method should not be called directly, use
       # {Spira::Resource::ClassMethods#for} instead.
       #
-      # @param [Any] identifier The URI or URI fragment for this instance
+      # @param [RDF::URI, RDF::Node] identifier The URI or URI fragment for this instance
       # @param [Hash] opts Default attributes for this instance
       # @see Spira::Resource::ClassMethods#for
       def initialize(identifier, opts = {})
-        @uri = self.class.uri_for(identifier)
+        @uri = identifier
         reload(opts)
       end
   
