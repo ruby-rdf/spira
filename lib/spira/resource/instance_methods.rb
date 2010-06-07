@@ -17,7 +17,7 @@ module Spira
       # This instance's URI.
       #
       # @return [RDF::URI]
-      attr_reader :uri
+      attr_reader :subject
 
       ## 
       # Initialize a new Spira::Resource instance of this resource class.  This
@@ -28,7 +28,7 @@ module Spira
       # @param [Hash] opts Default attributes for this instance
       # @see Spira::Resource::ClassMethods#for
       def initialize(identifier, opts = {})
-        @uri = identifier
+        @subject = identifier
         reload(opts)
       end
   
@@ -54,7 +54,7 @@ module Spira
       # @return [Hash] @attributes
       # @private
       def reload_attributes()
-        statements = self.class.repository_or_fail.query(:subject => @uri)
+        statements = self.class.repository_or_fail.query(:subject => @subject)
         @attributes = {}
 
         unless statements.empty?
@@ -67,7 +67,7 @@ module Spira
               # execute the promises to load those classes.  Need an identity
               # map of some sort to fix that.
               values = []
-              collection = statements.query(:subject => @uri, :predicate => property[:predicate])
+              collection = statements.query(:subject => @subject, :predicate => property[:predicate])
               unless collection.nil?
                 collection.each do |statement|
                   values << self.class.build_value(statement,property[:type])
@@ -75,7 +75,7 @@ module Spira
               end
               attribute_set(name, values)
             else
-              statement = statements.query(:subject => @uri, :predicate => property[:predicate]).first
+              statement = statements.query(:subject => @subject, :predicate => property[:predicate]).first
               attribute_set(name, self.class.build_value(statement, property[:type]))
             end
           end
@@ -102,7 +102,7 @@ module Spira
       # @private
       def _destroy_attributes(attributes, opts = {})
         repository = repository_for_attributes(attributes)
-        repository.insert([@uri, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
+        repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
         self.class.repository_or_fail.delete(*repository)
       end
  
@@ -123,7 +123,7 @@ module Spira
       #
       # @return [true, false] Whether or not the destroy was successful
       def destroy_resource!
-        self.class.repository_or_fail.delete([@uri,nil,nil])
+        self.class.repository_or_fail.delete([@subject,nil,nil])
       end
 
       ##
@@ -180,11 +180,13 @@ module Spira
       end
       
       ##
-      # Returns the URI representation of this resource.
+      # Returns the URI representation of this resource, if available.  If this
+      # resource's subject is a BNode, raises a NoMethodError.
       #
       # @return [RDF::URI]
+      # @raise [NoMethodError]
       def to_uri
-        uri
+        #uri || (raise NoMethodError
       end
 
       ##
@@ -192,7 +194,7 @@ module Spira
       #
       # @private
       def inspect
-        "<#{self.class}:#{self.object_id} uri: #{@uri}>"
+        "<#{self.class}:#{self.object_id} uri: #{@subject}>"
       end
  
       ##
@@ -205,7 +207,7 @@ module Spira
       def each(*args, &block)
         return RDF::Enumerator.new(self, :each) unless block_given?
         repository = repository_for_attributes(@attributes)
-        repository.insert(RDF::Statement.new(@uri, RDF.type, type)) unless type.nil?
+        repository.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
         repository.each(*args, &block)
       end
 
@@ -244,12 +246,12 @@ module Spira
             new = []
             attribute.each do |value|
               value = self.class.build_rdf_value(value, self.class.properties[name][:type])
-              new << RDF::Statement.new(@uri, self.class.properties[name][:predicate], value)
+              new << RDF::Statement.new(@subject, self.class.properties[name][:predicate], value)
             end
             repo.insert(*new)
           else
             value = self.class.build_rdf_value(attribute, self.class.properties[name][:type])
-            repo.insert(RDF::Statement.new(@uri, self.class.properties[name][:predicate], value))
+            repo.insert(RDF::Statement.new(@subject, self.class.properties[name][:predicate], value))
           end
         end
         repo
@@ -266,12 +268,38 @@ module Spira
           # TODO: define behavior for equality on subclasses.
           # TODO: should we compare attributes here?
           when self.class
-            @uri == other.uri 
+            @subject == other.uri 
           when RDF::Enumerable
             self.isomorphic_with?(other)
           else
             false
         end
+      end
+
+      ##
+      # Returns true for :to_uri if this instance's subject is a URI, and false if it is not.
+      # Returns true for :to_node if this instance's subject is a Node, and false if it is not.
+      # Calls super otherwise.
+      #
+      # @private
+      def respond_to?(*args)
+        case args[0]
+          when :to_uri
+            @subject.respond_to?(:to_uri)
+          when :to_node
+            @subject.node?
+          else
+            super(*args)
+        end
+      end
+
+      ##
+      # Returns the RDF::URI associated with this instance if this instance's
+      # subject is an RDF::URI, and nil otherwise.
+      #
+      # @return [RDF::URI,nil]
+      def uri
+        @subject.respond_to?(:to_uri) ? @subject : nil
       end
 
       ##
