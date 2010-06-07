@@ -184,7 +184,7 @@ module Spira
       #
       # @private
       def inspect
-        "<#{self.class}:#{self.object_id} uri: #{@subject}>"
+        "<#{self.class}:#{self.object_id} @subject: #{@subject}>"
       end
  
       ##
