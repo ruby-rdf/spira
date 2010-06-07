@@ -180,16 +180,6 @@ module Spira
       end
       
       ##
-      # Returns the URI representation of this resource, if available.  If this
-      # resource's subject is a BNode, raises a NoMethodError.
-      #
-      # @return [RDF::URI]
-      # @raise [NoMethodError]
-      def to_uri
-        #uri || (raise NoMethodError
-      end
-
-      ##
       # A developer-friendly view of this projection
       #
       # @private
@@ -300,6 +290,34 @@ module Spira
       # @return [RDF::URI,nil]
       def uri
         @subject.respond_to?(:to_uri) ? @subject : nil
+      end
+
+      ##
+      # Returns the URI representation of this resource, if available.  If this
+      # resource's subject is a BNode, raises a NoMethodError.
+      #
+      # @return [RDF::URI]
+      # @raise [NoMethodError]
+      def to_uri
+        uri || (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI")
+      end
+
+      ##
+      # Returns true if the subject associated with this instance is a blank node.
+      #
+      # @return [true, false]
+      def node?
+        @subject.node?
+      end
+
+      ##
+      # Returns the Node subject of this resource, if available.  If this
+      # resource's subject is a URI, raises a NoMethodError.
+      #
+      # @return [RDF::Node]
+      # @raise [NoMethodError]
+      def to_node
+        @subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI")
       end
 
       ##
