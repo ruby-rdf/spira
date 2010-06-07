@@ -132,7 +132,7 @@ module Spira
       # Build a Ruby value from an RDF value.
       #
       # @private
-      def build_value(statement, type, existing_relation = nil)
+      def build_value(statement, type)
         case
           when statement == nil
             nil
@@ -146,15 +146,9 @@ module Spira
                 raise TypeError, "#{type} is not a Spira Resource (referenced as #{type} by #{self}"
               end
             end
-            case
-              when false && existing_relation && (existing_relation.uri == statement.object.to_uri)
-                existing_relation
-              else
-                promise { klass.for(statement.object) || 
-                          klass.create(statement.object) }
-            end
+            promise { klass.for(statement.object) }
           else
-            raise TypeError, "Unable to unserialize #{statement.object} for #{type}"
+            raise TypeError, "Unable to unserialize #{statement.object} as #{type}"
         end
       end
 
@@ -165,11 +159,9 @@ module Spira
           when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
             type.serialize(value)
           when value && value.class.ancestors.include?(Spira::Resource)
-            value.uri
-          when type == RDF::URI && value.is_a?(RDF::URI)
-            value
+            value.subject
           else
-            raise TypeError, "Unable to serialize #{value} for #{type}"
+            raise TypeError, "Unable to serialize #{value} as #{type}"
         end
       end
 
