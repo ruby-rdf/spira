@@ -6,6 +6,11 @@
    always now raise a Spira::NoRepositoryError regardless of what operation 
    was attempted, and the error message was improved as well.
  * A '/' is no longer appended to base URIs ending with a '#'
+ * Resources can now take a BNode as a subject.  Implemented #node?, #uri,
+   #to_uri, #to_node, and #to_subject in support of this; see the yardocs for
+   exact semantics.  RDF::Node is monkey patched with #as, just like RDF::URI,
+   for instantiation.   Old code should not break, but if you want to add
+   BNodes, you may be using #uri where you want to now be using #subject.
 
 ## 0.0.2
  * Implemented #each on resource classes, allowing classes with a defined RDF
