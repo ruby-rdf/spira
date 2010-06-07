@@ -37,6 +37,10 @@ describe 'Spira resources' do
     it "should return the subject URI for :to_uri" do
       @test.to_uri.should == @uri
     end
+
+    it "should raise a NoMethodError for :to_node" do
+      lambda { @test.to_node }.should raise_error NoMethodError
+    end
   end
 
   context "when instantiated from Nodes" do
@@ -59,6 +63,10 @@ describe 'Spira resources' do
 
     it "should return the subject URI for :to_node" do
       @test.to_node.should == @node
+    end
+
+    it "should raise a NoMethodError for :to_uri" do
+      lambda { @test.to_uri }.should raise_error NoMethodError
     end
   end
 end
