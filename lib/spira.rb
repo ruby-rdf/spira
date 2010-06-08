@@ -110,6 +110,7 @@ module Spira
   module_function :type_alias
 
   autoload :Resource,         'spira/resource'
+  autoload :Base,             'spira/base'
   autoload :Type,             'spira/type'
   autoload :Types,            'spira/types'
   autoload :Errors,           'spira/errors'

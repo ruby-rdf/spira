@@ -220,4 +220,21 @@ describe Spira do
     end
 
   end
+
+  context "base classes" do
+    before :all do
+      class BaseChild < Spira::Base ; end
+    end
+
+    it "should be able to inherit from Spira::Base" do
+      BaseChild.ancestors.should include Spira::Base
+    end
+
+    it "should have access to Spira DSL methods" do
+      BaseChild.should respond_to :property
+      BaseChild.should respond_to :base_uri
+      BaseChild.should respond_to :has_many
+      BaseChild.should respond_to :default_vocabulary
+    end
+  end
 end
