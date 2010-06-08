@@ -67,8 +67,8 @@ module Spira
         if !self.type.nil? && attributes[:type]
           raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
         end
-        uri = id_for(identifier)
-        self.new(uri, attributes)
+        subject = id_for(identifier)
+        self.new(attributes.merge(:_subject => subject))
       end
 
       ##

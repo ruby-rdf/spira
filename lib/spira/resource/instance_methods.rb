@@ -20,15 +20,17 @@ module Spira
       attr_reader :subject
 
       ## 
-      # Initialize a new Spira::Resource instance of this resource class.  This
-      # method should not be called directly, use
+      # Initialize a new Spira::Resource instance of this resource class using
+      # a new blank node subject.  Accepts a hash of arguments for initial
+      # attributes.  To use a URI or existing blank node as a subject, use
       # {Spira::Resource::ClassMethods#for} instead.
       #
-      # @param [RDF::URI, RDF::Node] identifier The URI or URI fragment for this instance
       # @param [Hash] opts Default attributes for this instance
       # @see Spira::Resource::ClassMethods#for
-      def initialize(identifier, opts = {})
-        @subject = identifier
+      # @see RDF::URI#as
+      # @see RDF::Node#as
+      def initialize(opts)
+        @subject = opts[:_subject] || RDF::Node.new
         reload(opts)
       end
   
