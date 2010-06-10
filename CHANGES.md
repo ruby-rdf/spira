@@ -1,6 +1,12 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
- 
+
 ## untagged
+ * Add a Spira::Base class that can be inherited from for users who prefer to
+   inherit rather than include.
+ * Resource#new returns to the public API as a way to create a resource with a
+   new blank node subject.
+
+## 0.0.3
  * Bumped promise dependency to 0.1.1 to fix a Ruby 1.9 warning
  * Rework error handling when a repository is not configured; this should
    always now raise a Spira::NoRepositoryError regardless of what operation 
