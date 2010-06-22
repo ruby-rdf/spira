@@ -64,7 +64,7 @@ describe Spira do
     context "when creating without an identifier" do
       it "should create an instance with a new Node identifier" do
         test = InstantiationTest.new
-        test.node.should be_a RDF::Node
+        test.subject.should be_a RDF::Node
         test.uri.should be_nil
       end
     end

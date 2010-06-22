@@ -29,7 +29,7 @@ module Spira
       # @see Spira::Resource::ClassMethods#for
       # @see RDF::URI#as
       # @see RDF::Node#as
-      def initialize(opts)
+      def initialize(opts = {})
         @subject = opts[:_subject] || RDF::Node.new
         reload(opts)
       end
