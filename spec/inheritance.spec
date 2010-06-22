@@ -223,7 +223,7 @@ describe Spira do
 
   context "base classes" do
     before :all do
-      class BaseChild < Spira::Base ; end
+      class ::BaseChild < Spira::Base ; end
     end
 
     it "should be able to inherit from Spira::Base" do
