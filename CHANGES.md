@@ -1,6 +1,7 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
 
 ## untagged
+ * Small updates for RDF.rb 0.2.0 compatibility
  * Add a Spira::Base class that can be inherited from for users who prefer to
    inherit rather than include.
  * Resource#new returns to the public API as a way to create a resource with a
