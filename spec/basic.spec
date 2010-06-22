@@ -251,7 +251,7 @@ describe Spira do
       it "should remove the resource's statements from the repository" do
         uri = @bob.uri
         @bob.destroy!
-        @person_repository.query(:subject => uri).should == []
+        @person_repository.query(:subject => uri).to_a.should == []
       end
     end
     

@@ -51,7 +51,7 @@ describe 'Resources with data not associated with a model' do
     it "should delete all instances of matching properties on #destroy!" do
       @example2.destroy!
 
-      @extra_repo.query(:subject => @uri, :predicate => RDF::RDFS.label).should == []
+      @extra_repo.query(:subject => @uri, :predicate => RDF::RDFS.label).to_a.should == []
     end
 
   end
