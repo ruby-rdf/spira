@@ -20,6 +20,7 @@ module Spira
     require 'spira/types/string'
     require 'spira/types/float'
     require 'spira/types/uri'
+    require 'spira/types/decimal'
 
 
   end
