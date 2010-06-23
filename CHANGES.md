@@ -1,7 +1,9 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
 
 ## 0.0.5
- * Fix a bug with the Decimal type where round-tripping was incorrect
+ * Fix a bug with default_vocabulary in which a '/' was appended to
+   vocabularies ending in '#' Fix a bug with the Decimal type where
+ * round-tripping was incorrect
  * Fix some error messages that were missing closing parentheses
 
 ## 0.0.4
