@@ -301,7 +301,7 @@ module Spira
       # @return [RDF::URI]
       # @raise [NoMethodError]
       def to_uri
-        uri || (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI")
+        uri || (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
       end
 
       ##
@@ -319,7 +319,7 @@ module Spira
       # @return [RDF::Node]
       # @raise [NoMethodError]
       def to_node
-        @subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI")
+        @subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
       end
 
       ##
