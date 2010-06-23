@@ -1,6 +1,11 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
 
-## untagged
+## 0.0.5
+ * Fix a bug with the Decimal type where round-tripping was incorrect
+ * Fix some error messages that were missing closing parentheses
+
+## 0.0.4
+ * Added a Decimal type
  * Small updates for RDF.rb 0.2.0 compatibility
  * Add a Spira::Base class that can be inherited from for users who prefer to
    inherit rather than include.
