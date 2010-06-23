@@ -1,22 +1,6 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 # testing out default vocabularies
 
-class Bubble
-
-  include Spira::Resource
-
-  default_vocabulary RDF::URI.new 'http://example.org/vocab/'
-
-  base_uri "http://example.org/bubbles/"
-
-  property :year, :type => Integer
-  property :name
-
-  property :title, :predicate => DC.title, :type => String
-
-end
-
-
 describe 'default vocabularies' do
 
   before :all do
@@ -55,6 +39,23 @@ describe 'default vocabularies' do
   context "using classes with a default vocabulary" do
 
     before :all do
+      class ::Bubble
+        include Spira::Resource
+      
+        default_vocabulary RDF::URI.new 'http://example.org/vocab/'
+      
+        base_uri "http://example.org/bubbles/"
+        property :year, :type => Integer
+        property :name
+        property :title, :predicate => DC.title, :type => String
+      end
+      class ::DefaultVocabVocab < ::RDF::Vocabulary('http://example.org/test#') ; end
+      class ::HashVocabTest
+        include Spira::Resource
+        default_vocabulary DefaultVocabVocab
+        base_uri "http://example.org/testing/"
+        property :name
+      end
     end
 
     before :each do
@@ -79,6 +80,20 @@ describe 'default vocabularies' do
       bubble.save!
       bubble.should have_predicate @year
       bubble.should have_predicate @name
+    end
+
+    context "that ends in a hash seperator" do
+      before :each do
+        @name = RDF::URI("http://example.org/test#name")
+      end
+
+      it "should correctly not append a slash" do
+        test = HashVocabTest.for('test1')
+        test.name = "test1"
+        test.save!
+        test.should have_predicate @name
+      end
+
     end
   end
 

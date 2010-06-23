@@ -177,7 +177,7 @@ module Spira
           when @default_vocabulary.nil?
             raise TypeError, "A :predicate option is required for types without a default vocabulary"
           else @default_vocabulary
-            separator = @default_vocabulary.to_s[-1,1] == "/" ? '' : '/'
+            separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
             RDF::URI.new(@default_vocabulary.to_s + separator + name.to_s)
         end
         type = case
