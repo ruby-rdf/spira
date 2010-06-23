@@ -1,3 +1,5 @@
+require 'bigdecimal'
+
 module Spira::Types
 
   ##
@@ -13,14 +15,12 @@ module Spira::Types
     include Spira::Type
 
     def self.unserialize(value)
-      require 'bigdecimal' unless defined?(BigDecimal)
       object = value.object
       object.is_a?(BigDecimal) ? object : BigDecimal.new(object.to_s)
     end
 
     def self.serialize(value)
-      require 'bigdecimal' unless defined?(BigDecimal)
-      RDF::Literal.new(value, :datatype => XSD.decimal)
+      RDF::Literal.new(value.is_a?(BigDecimal) ? value.to_s('F') : value.to_s, :datatype => XSD.decimal)
     end
 
     register_alias XSD.decimal
