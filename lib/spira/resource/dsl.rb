@@ -139,13 +139,7 @@ module Spira
           when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
             type.unserialize(statement.object)
           when type.is_a?(Symbol) || type.is_a?(String)
-            klass = begin 
-              Kernel.const_get(type.to_s)
-            rescue NameError
-              unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
-                raise TypeError, "#{type} is not a Spira Resource (referenced as #{type} by #{self}"
-              end
-            end
+            klass = classize_resource(type)
             promise { klass.for(statement.object) }
           else
             raise TypeError, "Unable to unserialize #{statement.object} as #{type}"
@@ -159,13 +153,65 @@ module Spira
           when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
             type.serialize(value)
           when value && value.class.ancestors.include?(Spira::Resource)
+            klass = classize_resource(type)
+            unless klass.ancestors.include?(value.class)
+              raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
+            end
             value.subject
+          when type.is_a?(Symbol) || type.is_a?(String)
+            klass = classize_resource(type)
           else
             raise TypeError, "Unable to serialize #{value} as #{type}"
         end
       end
 
       private
+
+      # Return the appropriate class object for a string or symbol
+      # representation.  Throws errors correctly if the given class cannot be
+      # located, or if it is not a Spira::Resource
+      # 
+      def classize_resource(type)
+        klass = nil
+        begin 
+          klass = qualified_const_get(type.to_s)
+        rescue NameError
+          raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
+            klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
+        end
+        unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
+          raise TypeError, "#{type} is not a Spira Resource (referenced as #{type} by #{self})"
+        end
+        klass
+      end
+
+      # Resolve a constant from a string, relative to this class' namespace, if
+      # available, and from root, otherwise.
+      #
+      # FIXME: this is not really 'qualified', but it's one of those
+      # impossible-to-name functions.  Open to suggestions.
+      #
+      # @author njh
+      # @private
+      def qualified_const_get(str)
+        path = str.to_s.split('::')
+        from_root = path[0].empty?
+        if from_root
+          from_root = []
+          path = path[1..-1]
+        else
+          start_ns = ((Class === self)||(Module === self)) ? self : self.class
+          from_root = start_ns.to_s.split('::')
+        end
+        until from_root.empty?
+          begin
+            return (from_root+path).inject(Object) { |ns,name| ns.const_get(name) }
+          rescue NameError
+            from_root.delete_at(-1)
+          end
+        end
+        path.inject(Object) { |ns,name| ns.const_get(name) }
+      end
 
       ##
       # Add getters and setters for a property or list.
