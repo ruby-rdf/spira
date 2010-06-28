@@ -16,7 +16,7 @@ describe 'default vocabularies' do
   context "defining classes" do
     it "should allow a property without a predicate if there is a default vocabulary" do
       lambda {
-        class X
+        class VocabTestX
           include Spira::Resource
           default_vocabulary RDF::URI.new('http://example.org/vocabulary/')
           property :test
@@ -26,7 +26,7 @@ describe 'default vocabularies' do
 
     it "should raise an error to set a proeprty without a default vocabulary" do
       lambda {
-        class Y
+        class VocabTestY
           include Spira::Resource
           property :test
         end

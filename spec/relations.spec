@@ -26,6 +26,82 @@ describe "Spira resources" do
     end
   end
 
+  context "when referencing relationships" do
+    context "in the root namespace" do
+      before :all do
+        class ::RootNSTest
+          include Spira::Resource
+          property :name, :predicate => DC.title, :type => 'RootNSTest'
+        end
+        Spira.add_repository!(:default, RDF::Repository.new)
+      end
+
+      it "should find a class based on the string version of the name" do
+        test = RootNSTest.new
+        subject = test.subject
+        test.name = RootNSTest.new
+        test.name.save!
+        test.save!
+        
+        test = subject.as(RootNSTest)
+        test.name.should be_a RootNSTest
+      end
+    end
+
+    context "in the same namespace" do
+      before :all do
+        module ::NSTest
+          class X
+            include Spira::Resource
+            property :name, :predicate => DC.title, :type => 'Y'
+          end
+          class Y
+            include Spira::Resource
+          end
+        end
+        Spira.add_repository!(:default, RDF::Repository.new)
+      end
+
+      it "should find a class based on the string version of the name" do
+        test = NSTest::X.new
+        subject = test.subject
+        test.name = NSTest::Y.new
+
+        test.save!
+
+        test = NSTest::X.for(subject)
+        test.name.should be_a NSTest::Y
+      end
+    end
+
+    context "in another namespace" do
+      before :all do
+        module ::NSTest
+          class Z
+            include Spira::Resource
+            property :name, :predicate => DC.title, :type => 'NSTestA::A'
+          end
+        end
+        module ::NSTestA
+          class A
+            include Spira::Resource
+          end
+        end
+      end 
+
+      it "should find a class based on the string version of the name" do
+        test = NSTest::Z.new
+        subject = test.subject
+        test.name = NSTestA::A.new
+
+        test.save!
+
+        test = NSTest::Z.for(subject)
+        test.name.should be_a NSTestA::A
+      end
+    end
+  end
+
 
   context "with a one-to-many relationship" do
   
@@ -70,7 +146,7 @@ describe "Spira resources" do
       @cd.artist.should == @artist
     end
 
-    it "should make a valid statement referencing the an assigned objects URI" do
+    it "should make a valid statement referencing the assigned objects URI" do
       @kurt = Artist.for('kurt cobain')
       @cd.artist = @kurt
       statement = @cd.query(:predicate => CDs.artist).first
@@ -101,14 +177,34 @@ describe "Spira resources" do
         @invalid_repo.insert(RDF::Statement.new(@uri_b, CDs.artist, "whatever"))
       end
 
-      it "should fail to save an object with the invalid property" do
-        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new).save! }.should raise_error TypeError
+      it "should raise a NameError when saving an object with the invalid property" do
+#        RelationsTestA.for('invalid_a', :invalid => Object.new).save!
+        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new).save! }.should raise_error NameError
       end
 
-      it "should fail to access the invalid field on an existing object" do
-        lambda { RelationsTestA.for('invalid_b').invalid }.should raise_error TypeError
+      it "should raise a NameError when accessing the invalid property on an existing object" do
+        lambda { RelationsTestA.for('invalid_b').invalid }.should raise_error NameError
       end
+
     end
 
+    context "when accessing a field for a class that is not a Spira::Resource" do
+      before :all do
+        class ::RelationsTestB
+          include Spira::Resource
+          property :invalid, :predicate => DC.title, :type => 'Object'
+        end
+      end
+    
+      it "should should raise a TypeError when saving an object with the invalid property" do
+        lambda { RelationsTestB.new(:invalid => Object.new).save! }.should raise_error TypeError
+      end
+
+      it "should raise a TypeError when accessing the invalid property on an existing object" do
+        subject = RDF::Node.new
+        @invalid_repo.insert [subject, RDF::DC.title, 'something']
+        lambda { RelationsTestB.for(subject).invalid }.should raise_error TypeError
+      end
+    end
   end
 end
