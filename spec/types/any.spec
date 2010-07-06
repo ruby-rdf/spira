@@ -23,7 +23,7 @@ describe Spira::Types::Any do
     end
 
     it "should fail to serialize collections" do
-      pending "Determine how to handle type errors"
+      lambda { Spira::Types::Any.serialize([]) }.should raise_error TypeError
     end
   end
 

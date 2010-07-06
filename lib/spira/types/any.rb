@@ -16,6 +16,7 @@ module Spira::Types
     end
 
     def self.serialize(value)
+      raise (TypeError, "Spira::Types::Any cannot serialize collections") if value.is_a?(Array)
       value.respond_to?(:to_uri) ? value.to_uri : RDF::Literal.new(value)
     end
 
