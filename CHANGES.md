@@ -1,5 +1,10 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
 
+## 0.0.6
+ * has_many collections are now Sets and not Arrays, more accurately reflecting
+   RDF semantics.
+ * The Any (default) property type will now work fine with URIs
+
 ## 0.0.5
  * Relations can now find related classes in modules, either by absolute
    reference, or by class name if they are in the same namespace.  
