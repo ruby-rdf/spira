@@ -12,11 +12,11 @@ module Spira::Types
     include Spira::Type
 
     def self.unserialize(value)
-      value.object
+      value.respond_to?(:to_uri) ? value.to_uri : value.object
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value)
+      value.respond_to?(:to_uri) ? value.to_uri : RDF::Literal.new(value)
     end
 
   end
