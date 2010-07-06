@@ -67,7 +67,7 @@ describe "has_many" do
     end
 
     it "should return an empty array of ratings for comments with none" do
-      @empty_comment.ratings.should == []
+      @empty_comment.ratings.should == Set.new
     end
 
     it "should return an array of ratings for comments with some" do
@@ -135,7 +135,7 @@ describe "has_many" do
     end
 
     it "should return an empty array from comments for an object with none" do
-      @empty_post.comments.should == []
+      @empty_post.comments.should == Set.new
     end
 
     it "should return an array of comments for an object with some" do

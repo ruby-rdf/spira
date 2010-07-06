@@ -131,7 +131,7 @@ describe "Spira resources" do
 
     it "should find CDs for an artist" do
       cds = @artist.cds
-      cds.should be_a Array
+      cds.should be_a Set
       cds.find { |cd| cd.name == 'Nevermind' }.should be_true
       cds.find { |cd| cd.name == 'In Utero' }.should be_true
     end

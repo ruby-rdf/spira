@@ -1,4 +1,5 @@
 require 'rdf/isomorphic'
+require 'set'
 
 module Spira
   module Resource
@@ -63,12 +64,7 @@ module Spira
           # Set attributes for each statement corresponding to a predicate
           self.class.properties.each do |name, property|
             if self.class.is_list?(name)
-              # FIXME: This should not be an Array, but a Set.  However, a set
-              # must compare its values to see if they already exist.  This
-              # means any referenced relations will check their attributes and
-              # execute the promises to load those classes.  Need an identity
-              # map of some sort to fix that.
-              values = []
+              values = Set.new
               collection = statements.query(:subject => @subject, :predicate => property[:predicate])
               unless collection.nil?
                 collection.each do |statement|
@@ -218,7 +214,7 @@ module Spira
       def attribute_get(name)
         case self.class.is_list?(name)
           when true
-            @attributes[name] ||= []
+            @attributes[name] ||= Set.new
           when false   
             @attributes[name]
         end

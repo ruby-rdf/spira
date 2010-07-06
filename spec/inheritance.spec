@@ -208,13 +208,13 @@ describe Spira do
         it "should maintain the list of lists for the included modules" do
           @includer2.should respond_to :authors
           @includer2.should respond_to :names
-          @includer2.authors.should == []
-          @includer2.names.should == []
+          @includer2.authors.should == Set.new
+          @includer2.names.should == Set.new
         end
 
         it "should maintain the list of lists for the including module" do
           @includer2.should respond_to :ages
-          @includer2.ages.should == []
+          @includer2.ages.should == Set.new
         end
       end
     end
