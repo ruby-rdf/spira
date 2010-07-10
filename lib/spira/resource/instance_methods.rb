@@ -193,10 +193,18 @@ module Spira
       #
       # @see http://rdf.rubyforge.org/RDF/Enumerable.html
       def each(*args, &block)
-        return RDF::Enumerator.new(self, :each) unless block_given?
+        return enum_for(:each) unless block_given?
         repository = repository_for_attributes(@attributes)
         repository.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
         repository.each(*args, &block)
+      end
+
+      ##
+      # The number of RDF::Statements this projection has.
+      #
+      # @see http://rdf.rubyforge.org/RDF/Enumerable.html#count
+      def count
+        each.size
       end
 
       ##

@@ -31,11 +31,7 @@ describe Spira::Resource do
         @enumerable = @person
       end
       
-      # FIXME: Enumerable specs were updated in RDF.rb 0.2.0 to have a specific
-      # set of statements to test, but those statements are not what Spira will
-      # produce.  Need to find a solution.
-      #it_should_behave_like RDF_Enumerable
-      it "should behave like RDF Enumerable"
+      it_should_behave_like RDF_Enumerable
 
     end
 
