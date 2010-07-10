@@ -214,8 +214,8 @@ describe Spira do
       it "should add saved statements to the repository" do
         uri = @person.uri
         @person.save!
-        @person_repository.should have_triple [uri, RDF::RDFS.label, 'Alice Smith']
-        @person_repository.should have_triple [uri, RDF::FOAF.age, RDF::Literal.new(15)]
+        @person_repository.should have_statement RDF::Statement.new(uri, RDF::RDFS.label, 'Alice Smith')
+        @person_repository.should have_statement RDF::Statement.new(uri, RDF::FOAF.age, RDF::Literal.new(15))
         @person_repository.query(:subject => uri).count.should == 2
       end
 
