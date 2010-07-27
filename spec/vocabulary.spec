@@ -24,22 +24,22 @@ describe 'default vocabularies' do
       }.should_not raise_error
     end
 
-    it "should raise an error to set a property without a default vocabulary" do
+    it "should raise a ResourceDeclarationError to set a property without a default vocabulary" do
       lambda {
         class VocabTestY
           include Spira::Resource
           property :test
         end
-      }.should raise_error TypeError
+      }.should raise_error Spira::ResourceDeclarationError
     end
 
-    it "should raise an error to set a predicate without a default vocabulary that is not an RDF::URI" do
+    it "should raise a ResourceDelcarationError to set a predicate without a default vocabulary that is not an RDF::URI" do
       lambda {
         class VocabTestY
           include Spira::Resource
           property :test, :predicate => "http://example.org/test"
         end
-      }.should raise_error TypeError
+      }.should raise_error Spira::ResourceDeclarationError
     end
   end
 

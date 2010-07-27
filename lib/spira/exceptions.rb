@@ -12,4 +12,8 @@ module Spira
   ##
   # For cases in which a repository is required but none has been given
   class NoRepositoryError < StandardError ; end
+
+  ##
+  # For errors in the DSL, such as invalid predicates
+  class ResourceDeclarationError < StandardError ; end
 end
