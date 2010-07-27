@@ -244,27 +244,13 @@ module Spira
         @properties[name][:type] = type
         name_equals = (name.to_s + "=").to_sym
 
-        (getter,setter) = self.send(accessors_method, name, predicate, type)
-        self.send(:define_method,name_equals, &setter) 
-        self.send(:define_method,name, &getter) 
-
-      end
-
-      ##
-      # Getter and Setter methods for predicates.
-      # FIXME: this and add_accessors are from an older version in which
-      # multiple versions of accessors existed, and can be refactored.
-      # @private
-      def hash_accessors(name, predicate, type)
-        setter = lambda do |arg|
-          attribute_set(name,arg)
+        self.send(:define_method,name_equals) do |arg|
+          attribute_set(name, arg)
         end
-
-        getter = lambda do
+        self.send(:define_method,name) do 
           attribute_get(name)
         end
 
-        [getter, setter]
       end
 
     end
