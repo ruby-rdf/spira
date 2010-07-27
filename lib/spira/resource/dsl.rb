@@ -226,6 +226,9 @@ module Spira
             separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
             RDF::URI.new(@default_vocabulary.to_s + separator + name.to_s)
         end
+        if !(predicate.respond_to?(:to_uri))
+         raise TypeError, ":predicate options must be RDF::URIs or strings with a default vocabulary declared"
+        end
         type = case
             when opts[:type].nil?
               Spira::Types::Any
