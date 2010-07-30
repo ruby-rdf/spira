@@ -43,8 +43,9 @@ module Spira
       # @param   [Hash{Symbol => Any}] opts
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
-        @attributes = promise { reload_attributes }
-        @original_attributes = promise { @attributes.force ; @original_attributes }
+        @dirty = {}
+        @attributes = {}
+        @original_attributes = promise { reload_attributes }
         self.class.properties.each do |name, predicate|
           attribute_set(name, opts[name]) unless opts[name].nil?
         end
@@ -58,7 +59,7 @@ module Spira
       # @private
       def reload_attributes()
         statements = self.class.repository_or_fail.query(:subject => @subject)
-        @attributes = {}
+        original_attributes = {}
 
         unless statements.empty?
           # Set attributes for each statement corresponding to a predicate
@@ -71,24 +72,27 @@ module Spira
                   values << self.class.build_value(statement,property[:type])
                 end
               end
-              attribute_set(name, values)
+              original_attributes[name] = values
             else
               statement = statements.query(:subject => @subject, :predicate => property[:predicate]).first
-              attribute_set(name, self.class.build_value(statement, property[:type]))
+              original_attributes[name] = self.class.build_value(statement, property[:type])
             end
           end
         end
 
-        # We need to load and save the original attributes so we can remove
-        # them from the repository on save, since RDF will happily let us add
-        # as many triples for a subject and predicate as we want.
-        @original_attributes = {}
-        @original_attributes = @attributes.dup
-        @original_attributes.each do | name, value |
-          @original_attributes[name] = value.dup if value.is_a?(Array)
-        end
+        original_attributes
+      end
 
-        @attributes
+      ##
+      # Returns a hash of name => value for this instance's attributes
+      #
+      # @return Hash[Symbol => Any]
+      def attributes
+        attributes = {}
+        self.class.properties.keys.each do |property|
+          attributes[property] = attribute_get(property)
+        end
+        attributes
       end
 
       ##
@@ -110,7 +114,7 @@ module Spira
       #
       # @return [true, false] Whether or not the destroy was successful
       def destroy!
-        _destroy_attributes(@attributes, :destroy_type => true)
+        _destroy_attributes(attributes, :destroy_type => true)
         reload
       end
 
@@ -149,7 +153,7 @@ module Spira
       def _update!
         _destroy_attributes(@original_attributes)
         self.class.repository_or_fail.insert(*self)
-        @original_attributes = @attributes.dup
+        @original_attributes = attributes.dup
       end
  
       ## 
@@ -194,7 +198,7 @@ module Spira
       # @see http://rdf.rubyforge.org/RDF/Enumerable.html
       def each(*args, &block)
         return enum_for(:each) unless block_given?
-        repository = repository_for_attributes(@attributes)
+        repository = repository_for_attributes(attributes)
         repository.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
         repository.each(*args, &block)
       end
@@ -213,6 +217,14 @@ module Spira
       # @private
       def attribute_set(name, value)
         @attributes[name] = value
+        @dirty[name] = true
+      end
+
+      ##
+      # Returns true if the given attribute has been changed from the backing store
+      #
+      def dirty?(name)
+        @dirty[name] == true
       end
 
       ##
@@ -222,9 +234,9 @@ module Spira
       def attribute_get(name)
         case self.class.is_list?(name)
           when true
-            @attributes[name] ||= Set.new
-          when false   
-            @attributes[name]
+            dirty?(name) ? @attributes[name] : (@original_attributes[name] ||= Set.new)
+          else
+            dirty?(name) ? @attributes[name] : @original_attributes[name]
         end
       end
 
