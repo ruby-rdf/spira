@@ -4,6 +4,12 @@
  * has_many collections are now Sets and not Arrays, more accurately reflecting
    RDF semantics.
  * The Any (default) property type will now work fine with URIs
+ * Added ResourceDeclarationError to replace various errors that occur during
+   invalid class declarations via the DSL.
+ * Raise an error if a non-URI predicate is given in the DSL
+ * Small updates for RDF.rb 0.2.0
+ * Implemented dirty field tracking.  Resource#dirty?(:name) will now report if
+   a field has not been saved.
 
 ## 0.0.5
  * Relations can now find related classes in modules, either by absolute
