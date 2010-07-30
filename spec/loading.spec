@@ -26,7 +26,6 @@ describe Spira do
     end
 
     it "should not attempt query on property setting" do
-      pending "This requires dirty tracking"
       @repo.should_not_receive(:query)
       test = @uri.as(LoadTest)
       test.name = "test"
