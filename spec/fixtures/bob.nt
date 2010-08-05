@@ -1,3 +1,5 @@
 <http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://example.org/example/people/bob> <http://www.w3.org/2000/01/rdf-schema#label> "Bob Smith" .
 
+<http://example.org/example/people/incorrect> <http://xmlns.com/foaf/0.1/age> "15.00"^^<http://www.w3.org/2001/XMLSchema#double> .
+<http://example.org/example/people/incorrect> <http://www.w3.org/2000/01/rdf-schema#label> "Bad Age" .

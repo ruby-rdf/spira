@@ -231,6 +231,15 @@ describe Spira do
         @repo.query(:subject => uri, :predicate => RDF::FOAF.age).size.should == 1
         @repo.first_value(:subject => uri, :predicate => RDF::FOAF.age).should == "17"
       end
+
+      it "should delete original information when saving" do
+        bob = Person.for 'incorrect'
+        bob.age.should == 15 # in the fixture
+        bob.age = 17
+        bob.save!
+        Person.repository.query(:subject => bob.uri, :predicate => RDF::FOAF.age).size.should == 1
+        Person.repository.first_value(:subject => bob.uri, :predicate => RDF::FOAF.age).should == "17"
+      end
     end
 
     context "destroying" do
