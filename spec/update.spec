@@ -143,9 +143,8 @@ describe Spira do
       end
 
       it "should raise an exception on failure" do
-        @update_repo.should_receive(:update).once.and_raise(RuntimeError)
-        @test.destroy!
-        #lambda {@test.destroy!}.should raise_error
+        @update_repo.should_receive(:delete).once.and_raise(RuntimeError)
+        lambda {@test.destroy!}.should raise_error
       end
 
       context "without options" do
@@ -176,15 +175,15 @@ describe Spira do
       end
 
       context "with :object" do
-        it "should delete all statements with self as the subject" do
+        it "should delete all statements with self as the object" do
           @test.destroy!(:object)
           @update_repo.should_not have_object @test_uri
         end
 
-        it "should not delete statements with self as the object" do
-          @test.destroy!(:subject)
+        it "should not delete statements with self as the subject" do
+          @test.destroy!(:object)
           @update_repo.should have_subject @test_uri
-          @update_repo.query(:subject => @test_uri).count.should == 1
+          @update_repo.query(:subject => @test_uri).count.should == 3
         end
       end
 

@@ -113,9 +113,17 @@ module Spira
       # not associated with this model.
       #
       # @return [true, false] Whether or not the destroy was successful
-      def destroy!
-        _destroy_attributes(attributes, :destroy_type => true)
-        reload
+      def destroy!(what = nil)
+        case what
+          when nil
+            _destroy_attributes(attributes, :destroy_type => true) != nil
+          when :subject
+            self.class.repository_or_fail.delete([subject, nil, nil]) != nil
+          when :object
+            self.class.repository_or_fail.delete([nil, nil, subject]) != nil
+          when :completely
+            destroy!(:subject) && destroy!(:object)
+        end
       end
 
       ##
