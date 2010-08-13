@@ -73,8 +73,8 @@ describe Spira do
       end
 
       it "should raise an exception on failure" do
-        @update_repo.should_receive(:update).once.and_raise(RuntimeError)
-        (@test.update!(:name => "Testing", :age => 10)).should raise_error
+        @update_repo.should_receive(:delete).once.and_raise(RuntimeError)
+        lambda { @test.update!(:name => "Testing", :age => 10) }.should raise_error
 
       end
     end

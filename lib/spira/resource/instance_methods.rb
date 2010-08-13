@@ -156,6 +156,46 @@ module Spira
       end
 
       ##
+      # Update multiple attributes of this repository.
+      #
+      # @example
+      #     person.update(:name => 'test', :age => 10)
+      #     #=> person
+      #     person.name
+      #     #=> 'test'
+      #     person.age
+      #     #=> 10
+      #     person.dirty?
+      #     #=> true
+      # @param  [Hash{Symbol => Any}] properties
+      # @return [self]
+      def update(properties)
+        properties.each do |property, value|
+          attribute_set(property, value)
+        end
+        self
+      end
+
+      ##
+      # Equivalent to #update followed by #save!
+      #
+      # @example
+      #     person.update!(:name => 'test', :age => 10)
+      #     #=> person
+      #     person.name
+      #     #=> 'test'
+      #     person.age
+      #     #=> 10
+      #     person.dirty?
+      #     #=> false
+      # @param  [Hash{Symbol => Any}] properties
+      # @return [self]
+      def update!(properties)
+        update(properties)
+        save!
+      end
+
+      ##
       # Save changes to the repository
       #
       # @private
