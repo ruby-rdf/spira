@@ -144,6 +144,7 @@ module Spira
         else
           _update!
         end
+        self
       end
 
       ##
@@ -151,9 +152,21 @@ module Spira
       #
       # @private
       def _update!
-        _destroy_attributes(@original_attributes)
-        self.class.repository_or_fail.insert(*self)
-        @original_attributes = attributes.dup
+        self.class.properties.each do |property, predicate|
+          if self.dirty?(property)
+            self.class.repository_or_fail.delete([subject, predicate[:predicate], nil])
+            if self.class.is_list?(property)
+              repo = RDF::Repository.new
+              attribute_get(property).each do |value|
+                repo << RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(value, self.class.properties[property][:type]))
+              end
+              self.class.repository_or_fail.insert(*repo)
+            else
+              self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type])))
+            end
+          end
+          @dirty[:property] = nil
+        end
       end
  
       ## 

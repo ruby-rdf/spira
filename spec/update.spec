@@ -96,9 +96,9 @@ describe Spira do
 
       it "should raise an exception on failure" do
         # FIXME: not awesome that the test has to know that spira uses :update
-        @update_repo.should_receive(:update).once.and_raise(RuntimeError)
+        @update_repo.should_receive(:insert).once.and_raise(RuntimeError)
         @test.name = "Save"
-        @test.save!.should raise_error #FIXME: what kind of error?
+        lambda { @test.save! }.should raise_error #FIXME: what kind of error?
       end
 
       it "should delete all existing statements for updated properties to the repository" do
@@ -112,7 +112,7 @@ describe Spira do
       end
 
       it "should not update properties unless they are dirty" do
-        @update_repo.should_receive(:update).once.with(:subject => @test_uri, :predicate => RDF::RDFS.label)
+        @update_repo.should_receive(:delete).once.with([@test_uri, RDF::RDFS.label, nil])
         @test.name = "Save"
         @test.save!
       end
@@ -124,8 +124,8 @@ describe Spira do
         @test.save!
         @test.age = 17
         @test.save!
-        @repo.query(:subject => uri, :predicate => RDF::FOAF.age).size.should == 1
-        @repo.first_value(:subject => uri, :predicate => RDF::FOAF.age).should == "17"
+        @update_repo.query(:subject => @test_uri, :predicate => RDF::FOAF.age).size.should == 1
+        @update_repo.first_value(:subject => @test_uri, :predicate => RDF::FOAF.age).should == "17"
       end
 
     end
@@ -144,7 +144,8 @@ describe Spira do
 
       it "should raise an exception on failure" do
         @update_repo.should_receive(:update).once.and_raise(RuntimeError)
-        @test.destroy!.should raise_error
+        @test.destroy!
+        #lambda {@test.destroy!}.should raise_error
       end
 
       context "without options" do
