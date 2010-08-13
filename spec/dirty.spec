@@ -27,9 +27,18 @@ describe Spira do
       @test = DirtyTest.for(@uri)
     end
 
+    it "should not mark the projetion as dirty initially" do
+      @test.dirty?.should be_false
+    end
+
     it "should not mark attributes as dirty when loading" do
       @test.dirty?(:name).should be_false
       @test.dirty?(:age).should be_false
+    end
+
+    it "should mark the projection as dirty if an attribute is dirty" do
+      @test.name = "Steve"
+      @test.dirty?.should be_true
     end
 
     it "should mark attributes as dirty when changing" do

@@ -284,8 +284,13 @@ module Spira
       ##
       # Returns true if the given attribute has been changed from the backing store
       #
-      def dirty?(name)
-        @dirty[name] == true
+      def dirty?(name = nil)
+        case name
+          when nil
+            self.class.properties.keys.any? { |key| dirty?(key) }
+          else
+            @dirty[name] == true
+          end
       end
 
       ##
