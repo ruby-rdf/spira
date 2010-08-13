@@ -38,22 +38,6 @@ describe 'Resources with data not associated with a model' do
       [15,20].should include @example2.property
     end
 
-    it "should only delete one instance of the property on #destroy!" do
-      @example2.destroy!
-
-      # We can still load the same URI, because a property for it still exists
-      ExtraDataTest.for('example2').should be_a ExtraDataTest
-
-      # One of the FOAF properties has been deleted, but not the other
-      @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.age).count.should == 1
-    end
-
-    it "should delete all instances of matching properties on #destroy!" do
-      @example2.destroy!
-
-      @extra_repo.query(:subject => @uri, :predicate => RDF::RDFS.label).to_a.should == []
-    end
-
   end
 
   context "when enumerating statements" do
@@ -78,14 +62,6 @@ describe 'Resources with data not associated with a model' do
       @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.name).count.should == 1
     end 
 
-    it "should respond to Resource#destroy_resource!" do
-      @example1.should respond_to :destroy_resource!
-    end
-
-    it "should delete the entire resource with Resource#destroy_resource!, including non-model data" do
-      @example1.destroy_resource!
-      @extra_repo.query(:subject => @uri).should be_empty
-    end
   end
 
   context "when updating" do
