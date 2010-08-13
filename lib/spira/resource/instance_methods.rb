@@ -127,16 +127,6 @@ module Spira
       end
 
       ##
-      # Remove all statements associated with this instance from the
-      # repository. This will delete statements unassociated with the current
-      # projection.
-      #
-      # @return [true, false] Whether or not the destroy was successful
-      def destroy_resource!
-        self.class.repository_or_fail.delete([@subject,nil,nil])
-      end
-
-      ##
       # Save changes in this instance to the repository.
       #
       # @return [true, false] Whether or not the save was successful
