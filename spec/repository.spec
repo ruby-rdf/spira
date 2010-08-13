@@ -64,6 +64,7 @@ describe Spira do
     context "without a set repository" do
       before :each do
         Spira.clear_repositories!
+        @event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
       end
 
       it "should return nil for a repository which does not exist" do
@@ -71,24 +72,18 @@ describe Spira do
       end
   
       it "should raise an error when accessing an attribute" do
-        event = RDF::URI('http://example.org/events/that-one').as(Event)
-        lambda { event.name }.should raise_error Spira::NoRepositoryError
+        lambda { @event.name }.should raise_error Spira::NoRepositoryError
       end
   
       it "should raise an error to call instance#save!" do
-        event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
-        lambda { event.save! }.should raise_error Spira::NoRepositoryError
+        @event.name = "test"
+        lambda { @event.save! }.should raise_error Spira::NoRepositoryError
       end
 
       it "should raise an error to call instance#destroy!" do
-        event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
-        lambda { event.destroy! }.should raise_error Spira::NoRepositoryError
+        lambda { @event.destroy! }.should raise_error Spira::NoRepositoryError
       end
 
-      it "should raise an error to call instance#destroy_resource!" do
-        event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
-        lambda { event.destroy_resource! }.should raise_error Spira::NoRepositoryError
-      end
     end 
 
     context "with a set repository" do
@@ -132,6 +127,7 @@ describe Spira do
   
       it "should raise an error to call instance#save!" do
         stadium = Stadium.for(RDF::URI.new('http://example.org/stadiums/this-one'))
+        stadium.name = 'test'
         lambda { stadium.save! }.should raise_error Spira::NoRepositoryError
       end
     end
