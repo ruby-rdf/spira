@@ -191,7 +191,7 @@ module Spira
       # @private
       def _update!
         self.class.properties.each do |property, predicate|
-          if self.dirty?(property)
+          if dirty?(property)
             self.class.repository_or_fail.delete([subject, predicate[:predicate], nil])
             if self.class.is_list?(property)
               repo = RDF::Repository.new
@@ -203,8 +203,9 @@ module Spira
               self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type])))
             end
           end
-          @dirty[:property] = nil
+          @dirty[property] = nil
         end
+        self.class.repository_or_fail.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
       end
  
       ## 

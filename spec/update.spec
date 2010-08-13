@@ -75,7 +75,6 @@ describe Spira do
       it "should raise an exception on failure" do
         @update_repo.should_receive(:delete).once.and_raise(RuntimeError)
         lambda { @test.update!(:name => "Testing", :age => 10) }.should raise_error
-
       end
     end
   end
@@ -126,6 +125,19 @@ describe Spira do
         @test.save!
         @update_repo.query(:subject => @test_uri, :predicate => RDF::FOAF.age).size.should == 1
         @update_repo.first_value(:subject => @test_uri, :predicate => RDF::FOAF.age).should == "17"
+      end
+
+      it "should not remove non-model data" do
+        @update_repo << RDF::Statement.new(@test_uri, RDF.type, RDF::URI('http://example.org/type'))
+        @test.name = "Testing 1 2 3"
+        @test.save!
+        @update_repo.query(:subject => @test_uri, :predicate => RDF.type).size.should == 1
+      end
+
+      it "should not be dirty afterwards" do
+        @test.name = "test"
+        @test.save!
+        @test.dirty?.should be_false
       end
 
     end
