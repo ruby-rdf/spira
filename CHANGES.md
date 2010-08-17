@@ -1,6 +1,20 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
 
 ## 0.0.6
+ * Added #exists?, which returns a boolean if an instance exists in
+   the backing store.
+ * Added #data, which returns an enumerator of all RDF data for a subject, not
+   just model data.
+ * #save! and #update! now return self for chaining
+ * Implemented #update and #update!, which allow setting multiple properties 
+   at once
+ * Existing values not matching a model's defined type will now be deleted on 
+   #save!
+ * Saving resources will now only update dirty fields
+ * Saving resources now removes all existing triples for a given predicate 
+   if the field was updated instead of only removing one.
+ * Implemented and documented #destroy!, #destroy!(:subject), 
+   #destroy!(:object), and #destroy!(:completely).  Removed #destroy_resource!
  * has_many collections are now Sets and not Arrays, more accurately reflecting
    RDF semantics.
  * The Any (default) property type will now work fine with URIs
