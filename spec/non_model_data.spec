@@ -45,9 +45,8 @@ describe 'Resources with data not associated with a model' do
       @example1 = ExtraDataTest.for('example1')
     end
 
-    it "unspecified model information should appear in the enumeration" do
-      pending "full iteration is not yet implemented."
-      @example1.should have_predicate RDF::FOAF.name
+    it "unspecified model information should appear in the enumeration when using #data" do
+      @example1.data.should have_predicate RDF::FOAF.name
     end
   end
 
