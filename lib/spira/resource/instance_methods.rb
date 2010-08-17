@@ -26,7 +26,7 @@ module Spira
       # attributes.  To use a URI or existing blank node as a subject, use
       # {Spira::Resource::ClassMethods#for} instead.
       #
-      # @param [Hash] opts Default attributes for this instance
+      # @param [Hash{Symbol => Any}] opts Default attributes for this instance
       # @see Spira::Resource::ClassMethods#for
       # @see RDF::URI#as
       # @see RDF::Node#as
@@ -54,8 +54,7 @@ module Spira
       ##
       # Load this instance's attributes.  Overwrite loaded values with attributes in the given options.
       #
-      # @param [Hash] opts
-      # @return [Hash] @attributes
+      # @return [Hash{Symbol => Any}] attributes
       # @private
       def reload_attributes()
         statements = self.class.repository_or_fail.query(:subject => @subject)
@@ -86,7 +85,7 @@ module Spira
       ##
       # Returns a hash of name => value for this instance's attributes
       #
-      # @return Hash[Symbol => Any]
+      # @return [Hash{Symbol => Any}] attributes
       def attributes
         attributes = {}
         self.class.properties.keys.each do |property|
@@ -109,9 +108,17 @@ module Spira
       end
  
       ##
-      # Remove this instance from the repository.  Will not delete statements
-      # not associated with this model.
+      # Delete this instance from the repository.
       #
+      # @param [Symbol] what
+      # @example Delete all fields defined in the model
+      #     @object.destroy!
+      # @example Delete all instances of this object as the subject of a triple, including non-model data @object.destroy!
+      #     @object.destroy!(:subject)
+      # @example Delete all instances of this object as the object of a triple
+      #     @object.destroy!(:object)
+      # @example Delete all triples with this object as the subject or object
+      #     @object.destroy!(:completely)
       # @return [true, false] Whether or not the destroy was successful
       def destroy!(what = nil)
         case what
@@ -129,7 +136,7 @@ module Spira
       ##
       # Save changes in this instance to the repository.
       #
-      # @return [true, false] Whether or not the save was successful
+      # @return [self] self
       def save!
         unless self.class.validators.empty?
           errors.clear
@@ -148,7 +155,7 @@ module Spira
       ##
       # Update multiple attributes of this repository.
       #
-      # @example
+      # @example Update multiple attributes
       #     person.update(:name => 'test', :age => 10)
       #     #=> person
       #     person.name
@@ -169,7 +176,7 @@ module Spira
       ##
       # Equivalent to #update followed by #save!
       #
-      # @example
+      # @example Update multiple attributes and save the changes
       #     person.update!(:name => 'test', :age => 10)
       #     #=> person
       #     person.name
