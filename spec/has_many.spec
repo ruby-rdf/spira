@@ -160,6 +160,7 @@ describe "has_many" do
     it "should allow saving array elements" do
       comments = @post.comments + [@empty_comment]
       @post.comments = (@post.comments + [@empty_comment])
+      @post.comments.size.should == 3
       @post.save!
       @post.comments.size.should == 3
       @post.comments.each do |comment|
