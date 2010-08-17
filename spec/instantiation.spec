@@ -11,13 +11,13 @@ describe Spira do
         property :name, :predicate => FOAF.name
 
       end
-      Spira.add_repository(:default, RDF::Repository.new)
     end
 
 
     context "when instantiating from a URI" do
       before :each do
         @uri = RDF::URI('http://example.org/example')
+        Spira.add_repository(:default, RDF::Repository.new)
       end
 
       it "should add the 'as' method to RDF::URI" do
@@ -35,6 +35,17 @@ describe Spira do
       it "should allow instantiation from a URI with attributes given" do
         test = @uri.as(InstantiationTest, :name => "a name")
         test.name.should == "a name"
+      end
+
+      it "should know if a URI does not exist" do
+        InstantiationTest.for(@uri).exists?.should be_false
+        InstantiationTest.for(@uri).exist?.should be_false
+      end
+
+      it "should know if a URI exists" do
+        InstantiationTest.repository << RDF::Statement.new(@uri, RDF::FOAF.name, 'test')
+        InstantiationTest.for(@uri).exists?.should be_true
+        InstantiationTest.for(@uri).exist?.should be_true
       end
     end
 
