@@ -203,6 +203,7 @@ module Spira
               self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type])))
             end
           end
+          @original_attributes[property] = attribute_get(property)
           @dirty[property] = nil
         end
         self.class.repository_or_fail.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
