@@ -20,32 +20,26 @@ describe Spira::Resource do
       end
     end
 
+    before :each do
+      @uri = RDF::URI('http://example.org/example/people/bob')
+      @person = EnumerableSpec.for @uri
+      @enumerable_repository = RDF::Repository.new
+      @enumerable_repository << RDF::Statement.new(@uri, RDF::FOAF.age, 15)
+      @enumerable_repository << RDF::Statement.new(@uri, RDF::RDFS.label, "Bob Smith")
+      @statements = @enumerable_repository
+      @person.name = "Bob Smith"
+      @person.age = 15
+      @enumerable = @person
+    end
+
     context "when running the rdf-spec RDF::Enumerable shared groups" do
 
-      before :each do
-        @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
-        @statements = @enumerable_repository
-        @person = EnumerableSpec.for 'bob'
-        @person.name = "Bob Smith"
-        @person.age = 15
-        @enumerable = @person
-      end
-      
       it_should_behave_like RDF_Enumerable
 
     end
 
     context "when comparing with other RDF::Enumerables" do
       
-      before :each do
-        @enumerable_repository = RDF::Repository.load(fixture('bob.nt'))
-        @statements = @enumerable_repository
-        @person = EnumerableSpec.for 'bob'
-        @person.name = "Bob Smith"
-        @person.age = 15
-        @enumerable = @person
-      end
-
       it "should be equal if they are completely the same" do
         @enumerable.should == @enumerable_repository
       end
