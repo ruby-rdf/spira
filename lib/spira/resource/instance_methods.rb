@@ -412,6 +412,25 @@ module Spira
         @errors ||= Spira::Errors.new
       end
 
+      ##
+      # Returns true if any data exists for this subject in the backing RDF store
+      #
+      # @return [Boolean]
+      def exists?
+        !data.empty?
+      end
+      alias_method :exist?, :exists?
+    
+      ##
+      # Returns an Enumerator of all RDF data for this subject, not just model data.
+      #
+      # @see #each
+      # @see http://rdf.rubyforge.org/RDF/Enumerable.html
+      # @return [Enumerator]
+      def data
+        self.class.repository.query(:subject => subject)
+      end
+
       ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
 
