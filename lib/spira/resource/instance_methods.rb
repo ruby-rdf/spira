@@ -44,8 +44,9 @@ module Spira
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
         @dirty = {}
-        @attributes = {}
-        @original_attributes = promise { reload_attributes }
+        # We need to save all attributes twice to track state changes in
+        # mutable objects, like lists
+        @attributes = promise { reload_attributes }
         self.class.properties.each do |name, predicate|
           attribute_set(name, opts[name]) unless opts[name].nil?
         end
@@ -58,28 +59,37 @@ module Spira
       # @private
       def reload_attributes()
         statements = self.class.repository_or_fail.query(:subject => @subject)
-        original_attributes = {}
+        attributes = {}
+        attributes[:original] = {}
+        attributes[:current] = {}
 
-        unless statements.empty?
-          # Set attributes for each statement corresponding to a predicate
-          self.class.properties.each do |name, property|
-            if self.class.is_list?(name)
-              values = Set.new
-              collection = statements.query(:subject => @subject, :predicate => property[:predicate])
-              unless collection.nil?
-                collection.each do |statement|
-                  values << self.class.build_value(statement,property[:type])
-                end
+        # Set attributes for each statement corresponding to a predicate
+        self.class.properties.each do |name, property|
+          if self.class.is_list?(name)
+            values = Set.new
+            collection = statements.query(:subject => @subject, :predicate => property[:predicate]) unless statements.empty?
+            unless collection.nil?
+              collection.each do |statement|
+                values << self.class.build_value(statement,property[:type])
               end
-              original_attributes[name] = values
-            else
-              statement = statements.query(:subject => @subject, :predicate => property[:predicate]).first
-              original_attributes[name] = self.class.build_value(statement, property[:type])
+            end
+            attributes[:current][name] = values
+            attributes[:original][name] = values.dup
+          else
+            statement = statements.query(:subject => @subject, :predicate => property[:predicate]).first unless statements.empty?
+            attributes[:current][name] = self.class.build_value(statement, property[:type])
+
+            # Lots of things like Fixnums and Nil can't be dup'd, but they are
+            # all immutable, so if we can't dup, it's no problem for dirty tracking.
+            begin
+              attributes[:original][name] = attributes[:current][name].dup
+            rescue TypeError
+              attributes[:original][name] = attributes[:current][name]
             end
           end
         end
 
-        original_attributes
+        attributes
       end
 
       ##
@@ -210,8 +220,8 @@ module Spira
               self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type])))
             end
           end
-          @original_attributes[property] = attribute_get(property)
           @dirty[property] = nil
+          @attributes[:original][property] = attribute_get(property)
         end
         self.class.repository_or_fail.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
       end
@@ -276,8 +286,8 @@ module Spira
       #
       # @private
       def attribute_set(name, value)
-        @attributes[name] = value
         @dirty[name] = true
+        @attributes[:current][name] = value
       end
 
       ##
@@ -288,7 +298,12 @@ module Spira
           when nil
             self.class.properties.keys.any? { |key| dirty?(key) }
           else
-            @dirty[name] == true
+            case
+              when @dirty[name] == true
+                true
+              else 
+                @attributes[:current][name] != @attributes[:original][name]
+            end
           end
       end
 
@@ -297,12 +312,7 @@ module Spira
       #
       # @private
       def attribute_get(name)
-        case self.class.is_list?(name)
-          when true
-            dirty?(name) ? @attributes[name] : (@original_attributes[name] ||= Set.new)
-          else
-            dirty?(name) ? @attributes[name] : @original_attributes[name]
-        end
+        @attributes[:current][name]
       end
 
       ##
