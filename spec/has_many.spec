@@ -70,7 +70,9 @@ describe "has_many" do
       @empty_comment.ratings.should == Set.new
     end
 
-    it "should return an array of ratings for comments with some" do
+    it "should return a set of ratings for comments with some" do
+      @comment.ratings.should be_a Set
+      @comment.ratings.size.should == 3
       @comment.ratings.sort.should == [1,3,5]
     end
 
