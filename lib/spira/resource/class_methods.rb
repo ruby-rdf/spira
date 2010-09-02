@@ -72,6 +72,14 @@ module Spira
       end
 
       ##
+      # Alias for #for
+      #
+      # @see #for
+      def [](*args)
+        self.for(*args)
+      end
+
+      ##
       # Creates a URI or RDF::Node based on a potential base_uri and string,
       # URI, or Node, or Addressable::URI.  If not a URI or Node, the given
       # identifier should be a string representing an absolute URI, or
@@ -137,7 +145,7 @@ module Spira
           when false
             enum_for(:each)
           else
-            repository.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
+            repository_or_fail.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
               block.call(self.for(subject))
             end
         end

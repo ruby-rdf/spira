@@ -13,7 +13,6 @@ describe Spira do
       end
     end
 
-
     context "when instantiating from a URI" do
       before :each do
         @uri = RDF::URI('http://example.org/example')
@@ -47,6 +46,11 @@ describe Spira do
         InstantiationTest.for(@uri).exists?.should be_true
         InstantiationTest.for(@uri).exist?.should be_true
       end
+
+      it "should allow the use of #[] as an alias to #for" do
+        InstantiationTest.repository << RDF::Statement.new(@uri, RDF::FOAF.name, 'test')
+        InstantiationTest[@uri].exists?.should be_true
+      end
     end
 
     context "when instantiating from a BNode" do
@@ -69,6 +73,10 @@ describe Spira do
       it "should allow instantiation from a Node with attributes given" do
         test = @node.as(InstantiationTest, :name => "a name")
         test.name.should == "a name"
+      end
+
+      it "should allow the use of #[] as an alias to #for" do
+        InstantiationTest[@node].should be_a InstantiationTest
       end
     end
 
