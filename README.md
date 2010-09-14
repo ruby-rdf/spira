@@ -90,7 +90,7 @@ Then use your model classes, in a way more or less similar to any number of ORMs
     artist.cds = [cd]
     artist.save!
 
-    queen = Arist.for('queen')
+    queen = Artist.for('queen')
     hits = CD.for 'queens-greatest-hits'
     hits.artist == artist == queen
 
@@ -117,7 +117,7 @@ Any call to 'for' with a valid identifier will always return an object with nil
 fields.  It's a way of looking at a given resource, not a closed-world mapping
 to one.
 
-You can use also use blank nodes more or less as you would a URI:
+You can also use blank nodes more or less as you would a URI:
 
     remix_artist = Artist.for(RDF::Node.new)
     # => <Artist @subject=#<RDF::Node:0xd1d314(_:g13751060)>>
