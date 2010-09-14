@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/spec_helper.rb"
+require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 
 # Tests of basic functionality--getting, setting, creating, saving, when no
 # relations or anything fancy are involved.

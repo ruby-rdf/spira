@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/spec_helper.rb"
+require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 
 # Fixture to test :default repository loading
 

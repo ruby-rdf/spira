@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/spec_helper.rb"
+require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 
 # Behaviors relating to BNodes vs URIs
 
