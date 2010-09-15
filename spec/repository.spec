@@ -24,10 +24,6 @@ describe Spira do
       Spira.clear_repositories!
     end
 
-    it "should fail to add something that is not a repository" do
-      lambda {Spira.add_repository(:bad_arguments, 'a string, for example')}.should raise_error ArgumentError
-    end
-
     it "should construct a repository from a class name" do
       lambda {Spira.add_repository(:test_class_name, ::RDF::Repository)}.should_not raise_error
       Spira.repository(:test_class_name).should be_a ::RDF::Repository
