@@ -63,7 +63,7 @@ module Spira
       when RDF::Repository
         klass
       when Class
-        klass.new(*args)
+        promise { klass.new(*args) }
       else
         raise ArgumentError, "Could not add repository #{klass} as #{name}; expected an RDF::Repository or class name"
      end
