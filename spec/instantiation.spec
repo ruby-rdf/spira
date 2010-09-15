@@ -17,6 +17,7 @@ describe Spira do
       before :each do
         @uri = RDF::URI('http://example.org/example')
         Spira.add_repository(:default, RDF::Repository.new)
+        @repo = Spira.repository(:default)
       end
 
       it "should add the 'as' method to RDF::URI" do
@@ -27,8 +28,24 @@ describe Spira do
         @uri.as(InstantiationTest).should be_a InstantiationTest
       end
 
+      it "should yield the new instance to a block given to #as" do
+        test = @uri.as(InstantiationTest) do |test|
+          test.name = "test name"
+        end
+        test.name.should == "test name"
+        @repo.should have_statement(RDF::Statement.new(@uri, RDF::FOAF.name, "test name"))
+      end
+
       it "should allow instantiation from a resource class using #for" do
         InstantiationTest.for(@uri).should be_a InstantiationTest
+      end
+
+      it "should yield the new instance to a block given to #for" do
+        test = InstantiationTest.for(@uri) do |test|
+          test.name = "test name"
+        end
+        test.name.should == "test name"
+        @repo.should have_statement(RDF::Statement.new(@uri, RDF::FOAF.name, "test name"))
       end
 
       it "should allow instantiation from a URI with attributes given" do
@@ -56,6 +73,8 @@ describe Spira do
     context "when instantiating from a BNode" do
       before :each do
         @node = RDF::Node.new
+        Spira.add_repository(:default, RDF::Repository.new)
+        @repo = Spira.repository(:default)
       end
 
       it "should add the 'as' method to RDF::" do
@@ -81,10 +100,23 @@ describe Spira do
     end
 
     context "when creating without an identifier" do
+      before :each do
+        Spira.add_repository(:default, RDF::Repository.new)
+        @repo = Spira.repository(:default)
+      end
+
       it "should create an instance with a new Node identifier" do
         test = InstantiationTest.new
         test.subject.should be_a RDF::Node
         test.uri.should be_nil
+      end
+
+      it "should yield the new instance to a block given to #new" do
+        test = InstantiationTest.new do |test|
+          test.name = "test name"
+        end
+        test.name.should == "test name"
+        @repo.should have_statement(RDF::Statement.new(test.subject, RDF::FOAF.name, "test name"))
       end
     end
 

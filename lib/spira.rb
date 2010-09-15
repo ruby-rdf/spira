@@ -129,9 +129,9 @@ module RDF
     # @param [Class] klass
     # @param [*Any] args Any arguments to pass to klass.for
     # @return [Klass] An instance of klass
-    def as(klass, *args)
+    def as(klass, *args, &block)
       raise ArgumentError, "#{klass} is not a Spira resource" unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
-      klass.for(self, *args)
+      klass.for(self, *args, &block)
     end
   end
 

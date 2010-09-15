@@ -33,6 +33,10 @@ module Spira
       def initialize(opts = {})
         @subject = opts[:_subject] || RDF::Node.new
         reload(opts)
+        if block_given?
+          yield(self)
+          save!
+        end
       end
   
       ##

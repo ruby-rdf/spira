@@ -63,12 +63,12 @@ module Spira
       #   @param [Hash{Symbol => Any}] attributes Initial attributes
       # @return  [Spira::Resource] The newly created instance
       # @see http://rdf.rubyforge.org/RDF/URI.html
-      def for(identifier, attributes = {})
+      def for(identifier, attributes = {}, &block)
         if !self.type.nil? && attributes[:type]
           raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
         end
         subject = id_for(identifier)
-        self.new(attributes.merge(:_subject => subject))
+        instance = self.new(attributes.merge(:_subject => subject), &block)
       end
 
       ##
