@@ -32,7 +32,7 @@ module Spira
       # @return [RDF::Repository]
       # @private
       def repository_or_fail
-        repository || (raise Spira::NoRepositoryError, "#{self} is configured to use #{@repository_name} as a repository, but it has not been set.")
+        repository || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{@repository_name || 'default'} as a repository, but it has not been set.")
       end
 
       ##
