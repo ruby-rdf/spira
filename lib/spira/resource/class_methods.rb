@@ -61,6 +61,8 @@ module Spira
       # @overload for(identifier, attributes = {})
       #   @param [Any] uri The identifier to append to the base URI for this class
       #   @param [Hash{Symbol => Any}] attributes Initial attributes
+      # @yield [self] Executes a given block and calls `#save!`
+      # @yieldparam [self] self The newly created instance
       # @return  [Spira::Resource] The newly created instance
       # @see http://rdf.rubyforge.org/RDF/URI.html
       def for(identifier, attributes = {}, &block)

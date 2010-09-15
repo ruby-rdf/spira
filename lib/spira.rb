@@ -128,6 +128,8 @@ module RDF
     #     RDF::URI('http://example.org/person/bob').as(Person)
     # @param [Class] klass
     # @param [*Any] args Any arguments to pass to klass.for
+    # @yield [self] Executes a given block and calls `#save!`
+    # @yieldparam [self] self The newly created instance
     # @return [Klass] An instance of klass
     def as(klass, *args, &block)
       raise ArgumentError, "#{klass} is not a Spira resource" unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)
@@ -144,6 +146,8 @@ module RDF
     #     RDF::Node.new.as(Person)
     # @param [Class] klass
     # @param [*Any] args Any arguments to pass to klass.for
+    # @yield [self] Executes a given block and calls `#save!`
+    # @yieldparam [self] self The newly created instance
     # @return [Klass] An instance of klass
     def as(klass, *args)
       raise ArgumentError, "#{klass} is not a Spira resource" unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Resource)

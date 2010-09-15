@@ -27,6 +27,8 @@ module Spira
       # {Spira::Resource::ClassMethods#for} instead.
       #
       # @param [Hash{Symbol => Any}] opts Default attributes for this instance
+      # @yield [self] Executes a given block and calls `#save!`
+      # @yieldparam [self] self The newly created instance
       # @see Spira::Resource::ClassMethods#for
       # @see RDF::URI#as
       # @see RDF::Node#as
