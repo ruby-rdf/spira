@@ -34,6 +34,8 @@ module Spira
       # @see RDF::Node#as
       def initialize(opts = {})
         @subject = opts[:_subject] || RDF::Node.new
+        @cache = opts[:_cache] || RDF::Util::Cache.new
+        @cache[subject] = self
         reload(opts)
         if block_given?
           yield(self)
@@ -76,14 +78,14 @@ module Spira
             collection = statements.query(:subject => @subject, :predicate => property[:predicate]) unless statements.empty?
             unless collection.nil?
               collection.each do |statement|
-                values << self.class.build_value(statement,property[:type])
+                values << self.class.build_value(statement,property[:type], @cache)
               end
             end
             attributes[:current][name] = values
             attributes[:original][name] = values.dup
           else
             statement = statements.query(:subject => @subject, :predicate => property[:predicate]).first unless statements.empty?
-            attributes[:current][name] = self.class.build_value(statement, property[:type])
+            attributes[:current][name] = self.class.build_value(statement, property[:type], @cache)
 
             # Lots of things like Fixnums and Nil can't be dup'd, but they are
             # all immutable, so if we can't dup, it's no problem for dirty tracking.

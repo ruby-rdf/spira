@@ -105,7 +105,7 @@ describe "Spira resources" do
 
   context "with a one-to-many relationship" do
   
-    before :all do
+    before :each do
       require 'rdf/ntriples'
       @cds_repository = RDF::Repository.load(fixture('relations.nt'))
       Spira.add_repository(:default, @cds_repository)
@@ -137,7 +137,7 @@ describe "Spira resources" do
     end
 
     it "should not reload an object for a simple reverse relationship" do
-      pending "Requires identity map implementation"
+      @artist.cds.first.artist.should equal @artist
       artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
       @cd.should equal artist_cd
     end

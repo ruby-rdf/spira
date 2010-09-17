@@ -132,15 +132,18 @@ module Spira
       # Build a Ruby value from an RDF value.
       #
       # @private
-      def build_value(statement, type)
+      def build_value(statement, type, cache)
         case
           when statement == nil
             nil
+          when !cache[statement.object].nil?
+            cache[statement.object]
           when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
             type.unserialize(statement.object)
           when type.is_a?(Symbol) || type.is_a?(String)
             klass = classize_resource(type)
-            promise { klass.for(statement.object) }
+            cache[statement.object] = promise { klass.for(statement.object, :_cache => cache) }
+            cache[statement.object]
           else
             raise TypeError, "Unable to unserialize #{statement.object} as #{type}"
         end
