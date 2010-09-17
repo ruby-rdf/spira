@@ -127,6 +127,23 @@ module Spira
       end
 
       ##
+      # A cache of iterated instances of this projection
+      #
+      # @return [RDF::Util::Cache]
+      # @private
+      def cache
+        @cache ||= RDF::Util::Cache.new
+      end
+
+      ##
+      # Clear the iteration cache
+      # 
+      # @return [void]
+      def reload
+        @cache = nil
+      end
+
+      ##
       # Enumerate over all resources projectable as this class.  This method is
       # only valid for classes which declare a `type` with the `type` method in
       # the DSL.
@@ -148,11 +165,11 @@ module Spira
             enum_for(:each)
           else
             repository_or_fail.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
-              block.call(self.for(subject))
+              self.cache[subject] ||= self.for(subject)
+              block.call(cache[subject])
             end
         end
       end
-
 
       ##
       # Returns true if the given property is a has_many property, false otherwise
