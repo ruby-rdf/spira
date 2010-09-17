@@ -8,7 +8,7 @@ describe Spira do
 
       property :name,       :predicate => FOAF.name
       property :label,      :predicate => RDFS.label
-      property :load_child, :predicate => FOAF.load_test, :type => 'LoadTest'
+      property :child, :predicate => FOAF.load_test, :type => 'LoadTest'
     end
   end
 
@@ -65,9 +65,12 @@ describe Spira do
 
     context "for relations" do
       before :each do
-        @repo << RDF::Statement.new(:subject => @uri, :predicate => RDF::FOAF.load_test, :object => RDF::URI("http://example.org/example2"))
+        @child_uri = RDF::URI("http://example.org/example2")
+        @repo << RDF::Statement.new(:subject => @uri, :predicate => RDF::FOAF.load_test, :object => @child_uri)
         @repo << RDF::Statement.new(:subject => @uri, :predicate => RDF::FOAF.name, :object => RDF::Literal.new("a name"))
         @repo << RDF::Statement.new(:subject => @uri, :predicate => RDF::RDFS.label, :object => RDF::Literal.new("a name"))
+        # @uri and @child_uri now point at each other
+        @repo << RDF::Statement.new(:subject => @child_uri, :predicate => RDF::FOAF.load_test, :object => @uri)
         # We need this copy to return from mocks, as the return value is itself queried inside spira
         @statements = RDF::Repository.new
         @statements.insert(*@repo)
@@ -82,7 +85,20 @@ describe Spira do
       it "should query the repository when loading a parent and accessing a field on a child" do
         @repo.should_receive(:query).twice.and_return(@statements, [])
         test = @uri.as(LoadTest)
-        child = test.load_child.name
+        child = test.child.name
+      end
+
+      it "should not re-query to access a child twice" do
+        @repo.should_receive(:query).twice.and_return(@statements, [])
+        test = @uri.as(LoadTest)
+        child = test.child.name
+        child = test.child.name
+      end
+
+      it "should not re-query to access a child's parent from the child" do
+        @repo.should_receive(:query).twice.and_return(@statements, @statements)
+        test = @uri.as(LoadTest)
+        test.child.child.name.should == "a name"
       end
     end
   end
