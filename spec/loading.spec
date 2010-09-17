@@ -104,6 +104,18 @@ describe Spira do
         @repo.should_receive(:query).twice.and_return(@statements)
         test = @uri.as(LoadTest)
         test.child.child.name.should == "a name"
+        test.child.child.name.should == "a name"
+        test.child.child.name.should == "a name"
+      end
+
+      it "should re-query for children after a #reload" do
+        @repo.should_receive(:query).exactly(4).times.and_return(@statements)
+        test = @uri.as(LoadTest)
+        test.child.child.name.should == "a name"
+        test.child.name.should be_nil
+        test.reload
+        test.child.child.name.should == "a name"
+        test.child.name.should be_nil
       end
 
       it "should not re-query to iterate by type twice" do

@@ -34,8 +34,6 @@ module Spira
       # @see RDF::Node#as
       def initialize(opts = {})
         @subject = opts[:_subject] || RDF::Node.new
-        @cache = opts[:_cache] || RDF::Util::Cache.new
-        @cache[subject] = self
         reload(opts)
         if block_given?
           yield(self)
@@ -51,6 +49,8 @@ module Spira
       # @param   [Hash{Symbol => Any}] opts
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
+        @cache = opts[:_cache] || RDF::Util::Cache.new
+        @cache[subject] = self
         @dirty = {}
         # We need to save all attributes twice to track state changes in
         # mutable objects, like lists
