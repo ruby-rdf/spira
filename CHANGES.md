@@ -1,4 +1,22 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
+## 0.0.8
+ * Remove type checking for repository addition.  More power in return for 
+   slightly more difficult error messages.
+ * Repositories added via klass, *arg are now only instantiated on first use
+   instead of immediately.
+ * RDF::URI#as, RDF::Node#as, Resource.for, and Resource#new can now all accept
+   a block, which yields the new instance and saves it after the block.
+ * Clarify error message when default repository is not setup
+ * Added a weak-reference identity map for each instance.  Any circular references in
+   relations will now return the original object instead of querying for a new 
+   one.
+ * Use a weak-reference identity map when iterating by class.
+ * When serializing/unserializing, duck typing (:serialize, :unserialize) is now
+   permitted.
+
+## 0.0.7
+ * Added Resource.[], an alias for Resource.for
+ * Resource.each now correctly raises an exception when a repository isn't found
 
 ## 0.0.6
  * Added #exists?, which returns a boolean if an instance exists in
