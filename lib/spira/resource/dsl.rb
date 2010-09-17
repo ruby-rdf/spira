@@ -138,7 +138,7 @@ module Spira
             nil
           when !cache[statement.object].nil?
             cache[statement.object]
-          when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
+          when type.respond_to?(:unserialize)
             type.unserialize(statement.object)
           when type.is_a?(Symbol) || type.is_a?(String)
             klass = classize_resource(type)
@@ -153,7 +153,7 @@ module Spira
       # @private
       def build_rdf_value(value, type)
         case
-          when type.is_a?(Class) && type.ancestors.include?(Spira::Type)
+          when type.respond_to?(:serialize)
             type.serialize(value)
           when value && value.class.ancestors.include?(Spira::Resource)
             klass = classize_resource(type)
