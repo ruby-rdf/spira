@@ -255,6 +255,26 @@ describe Spira do
         @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @test.age)
       end
     end
+
+    context "with #copy_resource!" do
+      it "supports #copy_resource!" do
+        @test.respond_to?(:copy_resource!).should be_true
+      end
+
+      it "copies all resource data to the new subject in the repository" do
+        @test.copy_resource!(@new_uri)
+        @update_repo.query(:subject => @test_uri).each do |statement|
+          @update_repo.should have_statement RDF::Statement(@new_uri, statement.predicate, statement.object)
+        end
+      end
+
+      it "returns an instance projecting the new copied resource" do
+        new = @test.copy_resource!(@new_uri)
+        new.should be_a ::UpdateTest
+        new.name.should == @test.name
+        new.age.should == @test.age
+      end
+    end
   end
 
   context "when renaming" do
@@ -286,6 +306,28 @@ describe Spira do
         @test.rename!(@new_uri)
         @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @name)
         @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @age)
+      end
+    end
+
+    context "with #rename_resource!" do
+      it "supports #rename_resource!" do
+        @test.respond_to?(:rename_resource!).should be_true
+      end
+
+      it "copies model data to the given subject" do
+        new = @test.rename_resource!(@new_uri)
+        new.name.should == @name
+        new.age.should == @age
+      end
+
+      it "copies non-model data to the given subject" do
+        new = @test.rename_resource!(@new_uri)
+        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.name, 'Not in model')
+      end
+
+      it "deletes all data about the old subject" do
+        new = @test.rename_resource!(@new_uri)
+        @update_repo.query(:subject => @test_uri).size.should == 0
       end
     end
   end

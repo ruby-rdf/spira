@@ -465,9 +465,25 @@ module Spira
       # self.subject after saving the new copy to the repository.
       #
       # @param [RDF::Resource] new_subject
-      # @return [Spira::Resource] copy
+      # @return [Spira::Resource, String] copy
       def copy!(new_subject)
         copy(new_subject).save!
+      end
+
+      ##
+      # Copies all data, including non-model data, about this resource to
+      # another URI.  The copy is immediately saved to the repository.
+      #
+      # @param [RDF::Resource] new_subject
+      # @return [Spira::Resource, String] copy
+      def copy_resource!(new_subject)
+        new_subject = self.class.id_for(new_subject)
+        update_repository = RDF::Repository.new
+        data.each do |statement|
+          update_repository << RDF::Statement.new(new_subject, statement.predicate, statement.object) 
+        end
+        self.class.repository.insert(update_repository)
+        new_subject.as(self.class)
       end
 
       ## 
@@ -475,12 +491,24 @@ module Spira
       # Changes are immediately saved to the repository.
       #
       # @param [RDF::Resource] new_subject
-      # @return [Spira::Resource] new_resource
+      # @return [Spira::Resource, String] new_resource
       def rename!(new_subject)
         new = copy!(new_subject)
         destroy!
         new
       end  
+
+      ##
+      # Rename this resource in the repository, including all non-model data.
+      # Changes are immediately saved to the repository.
+      #
+      # @param [RDF::Resource, String] new_subject]
+      # @return [Spira::Resource, String] new_resource
+      def rename_resource!(new_subject)
+        new = copy_resource!(new_subject) 
+        destroy!(:subject)
+        new
+      end
 
       ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
