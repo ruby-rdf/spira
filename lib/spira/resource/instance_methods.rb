@@ -12,8 +12,13 @@ module Spira
     # @see Spira::Resource::ClassMethods
     # @see Spira::Resource::DSL
     # @see Spira::Resource::Validations
-    module InstanceMethods 
- 
+    module InstanceMethods
+
+      # Marker for whether or not a field has been set or not; distinguishes
+      # nil and unset.
+      # @private
+      NOT_SET = ::Object.new.freeze
+
       ##
       # This instance's URI.
       #
@@ -39,6 +44,7 @@ module Spira
           yield(self)
           save!
         end
+        self
       end
   
       ##
@@ -52,12 +58,18 @@ module Spira
         @cache = opts[:_cache] || RDF::Util::Cache.new
         @cache[subject] = self
         @dirty = {}
-        # We need to save all attributes twice to track state changes in
-        # mutable objects, like lists
-        @attributes = promise { reload_attributes }
+        @attributes = {}
+        @attributes[:current] = {}
+        @attributes[:copied] = {}
         self.class.properties.each do |name, predicate|
-          attribute_set(name, opts[name]) unless opts[name].nil?
+          case opts[name].nil?
+            when false
+              attribute_set(name, opts[name])
+            when true
+              @attributes[:copied][name] = NOT_SET
+          end
         end
+        @attributes[:original] = promise { reload_attributes }
       end
 
       ##
@@ -68,8 +80,6 @@ module Spira
       def reload_attributes()
         statements = self.class.repository_or_fail.query(:subject => @subject)
         attributes = {}
-        attributes[:original] = {}
-        attributes[:current] = {}
 
         # Set attributes for each statement corresponding to a predicate
         self.class.properties.each do |name, property|
@@ -81,22 +91,12 @@ module Spira
                 values << self.class.build_value(statement,property[:type], @cache)
               end
             end
-            attributes[:current][name] = values
-            attributes[:original][name] = values.dup
+            attributes[name] = values
           else
             statement = statements.query(:subject => @subject, :predicate => property[:predicate]).first unless statements.empty?
-            attributes[:current][name] = self.class.build_value(statement, property[:type], @cache)
-
-            # Lots of things like Fixnums and Nil can't be dup'd, but they are
-            # all immutable, so if we can't dup, it's no problem for dirty tracking.
-            begin
-              attributes[:original][name] = attributes[:current][name].dup
-            rescue TypeError
-              attributes[:original][name] = attributes[:current][name]
-            end
+            attributes[name] = self.class.build_value(statement, property[:type], @cache)
           end
         end
-
         attributes
       end
 
@@ -225,11 +225,12 @@ module Spira
               end
               self.class.repository_or_fail.insert(*repo)
             else
-              self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type])))
+              self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type]))) unless attribute_get(property).nil?
             end
           end
-          @dirty[property] = nil
           @attributes[:original][property] = attribute_get(property)
+          @dirty[property] = nil
+          @attributes[:copied][property] = NOT_SET
         end
         self.class.repository_or_fail.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
       end
@@ -309,8 +310,13 @@ module Spira
             case
               when @dirty[name] == true
                 true
-              else 
-                @attributes[:current][name] != @attributes[:original][name]
+              else
+                case @attributes[:copied][name]
+                  when NOT_SET
+                    false
+                  else
+                    @attributes[:copied][name] != @attributes[:original][name]
+                end
             end
           end
       end
@@ -320,7 +326,26 @@ module Spira
       #
       # @private
       def attribute_get(name)
-        @attributes[:current][name]
+        case @dirty[name]
+          when true
+            @attributes[:current][name]
+          else
+            case @attributes[:copied][name].equal?(NOT_SET)
+              when true
+                dup = if @attributes[:original][name].is_a?(Spira::Resource)
+                  @attributes[:original][name]
+                else
+                  begin
+                    @attributes[:original][name].dup
+                  rescue TypeError
+                    @attributes[:original][name]
+                  end
+                end
+                @attributes[:copied][name] = dup
+              when false
+                @attributes[:copied][name]
+            end
+        end
       end
 
       ##
