@@ -140,6 +140,12 @@ describe Spira do
         @test.dirty?.should be_false
       end
 
+      it "removes items set to nil from the repository" do
+        @test.name = nil
+        @test.save!
+        @update_repo.query(:subject => @test_uri, :predicate => RDF::RDFS.label).size.should == 0
+      end
+
     end
   end
 
