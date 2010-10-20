@@ -1,4 +1,18 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
+
+## 0.0.9
+ * Fix a bug with Spira::Types::Any that prevented blank node objects
+ * Added Spira::Resource#copy, #copy!, #copy_resource!, and #rename!
+ * Fix a bug with fragment RDF::URI arguments that prevented correct URI
+   construction
+ * Added Spira::Resource.project(subject, attributes, &block), which creates a
+   new instance without attempting to perform any base_uri logic on the given
+   subject. This provides a supported API entry point for implementors to
+   create their own domain-specific URI construction.
+ * Updating a value to nil will now remove it from the repository on #save!
+ * Tweaks to dirty tracking to correctly catch both changed and updated values.
+   All tests pass for the first time with this change.
+
 ## 0.0.8
  * Remove type checking for repository addition.  More power in return for 
    slightly more difficult error messages.
