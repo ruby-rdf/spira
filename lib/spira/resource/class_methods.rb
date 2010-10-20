@@ -43,7 +43,7 @@ module Spira
       # Spira does not have 'find' or 'create' functions.  As RDF identifiers
       # are globally unique, they all simply 'are'.
       #
-      # On calling `for`, a new instance is created for the given URI.  The
+      # On calling `for`, a new projection is created for the given URI.  The
       # first time access is attempted on a field, the repository will be
       # queried for existing attributes, which will be used for the given URI.
       # Underlying repositories are not accessed at the time of calling `for`.
@@ -66,11 +66,28 @@ module Spira
       # @return  [Spira::Resource] The newly created instance
       # @see http://rdf.rubyforge.org/RDF/URI.html
       def for(identifier, attributes = {}, &block)
+        self.project(id_for(identifier), attributes, &block)
+      end
+
+      ##
+      # Create a new instance with the given subjet without any modification to
+      # the given subject at all.  This method exists to provide an entry point
+      # for implementing classes that want to create a more intelligent .for
+      # and/or .id_for for their given use cases, such as simple string
+      # appending to base URIs or calculated URIs from other representations.
+      #
+      # @example Using simple string concatentation with base_uri in .for instead of joining delimiters
+      #     def for(identifier, attributes = {}, &block)
+      #       self.project(RDF::URI(self.base_uri.to_s + identifier.to_s), attributes, &block)
+      #     end
+      # @param [RDF::URI, RDF::Node] subject
+      # @param [Hash{Symbol => Any}] attributes Initial attributes
+      # @return [Spira::Resource] the newly created instance
+      def project(subject, attributes = {}, &block)
         if !self.type.nil? && attributes[:type]
           raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
         end
-        subject = id_for(identifier)
-        instance = self.new(attributes.merge(:_subject => subject), &block)
+        self.new(attributes.merge(:_subject => subject), &block)
       end
 
       ##
