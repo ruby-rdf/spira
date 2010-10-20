@@ -449,6 +449,27 @@ module Spira
         self.class.repository.query(:subject => subject)
       end
 
+      ##
+      # Returns a new instance of this class with the new subject instead of self.subject
+      #
+      # @param [RDF::Resource] new_subject
+      # @return [Spira::Resource] copy
+      def copy(new_subject)
+        copy = self.class.for(new_subject)
+        self.class.properties.each_key { |property| copy.attribute_set(property, self.attribute_get(property)) }
+        copy
+      end
+
+      ##
+      # Returns a new instance of this class with the new subject instead of
+      # self.subject after saving the new copy to the repository.
+      #
+      # @param [RDF::Resource] new_subject
+      # @return [Spira::Resource] copy
+      def copy!(new_subject)
+        copy(new_subject).save!
+      end
+
       ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
 

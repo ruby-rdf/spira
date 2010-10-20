@@ -209,5 +209,52 @@ describe Spira do
     end
 
   end
+
+  context "when copying" do
+    before :each do
+      @new_uri = RDF::URI('http://example.org/people/test2')
+      @update_repo << RDF::Statement.new(@test_uri, RDF::FOAF.name, 'Not in model')
+    end
+
+    context "with #copy" do
+      it "supports #copy" do
+        @test.respond_to?(:copy).should be_true
+      end
+      
+      it "copies to a given subject" do
+        new = @test.copy(@new_uri)
+        new.subject.should == @new_uri
+      end
+
+      it "copies model data" do
+        new = @test.copy(@new_uri)
+        new.name.should == @test.name
+        new.age.should == @test.age
+      end
+    end
+
+    context "with #copy!" do
+      it "supports #copy!" do
+        @test.respond_to?(:copy!).should be_true
+      end
+
+      it "copies to a given subject" do
+        new = @test.copy!(@new_uri)
+        new.subject.should == @new_uri
+      end
+
+      it "copies model data" do
+        new = @test.copy!(@new_uri)
+        new.name.should == @test.name
+        new.age.should == @test.age
+      end
+
+      it "saves the copy immediately" do
+        new = @test.copy!(@new_uri)
+        @update_repo.should have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @test.name)
+        @update_repo.should have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @test.age)
+      end
+    end
+  end
     
 end
