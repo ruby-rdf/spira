@@ -56,13 +56,7 @@ describe Spira::Resource do
       end
 
       it "should allow other enumerables to be isomorphic to a resource" do
-        #pending "what to do here?  monkey-patching rdf::enumerable wont work for implementations which override that anyway."
         @enumerable_repository.should be_isomorphic_with @enumerable
-      end
-
-      it "should allow other enumerables to be == to a resource" do
-        pending "what to do here?  monkey-patching rdf::enumerable wont work for implementations which override that anyway."
-        @enumerable_repository.should == @enumerable
       end
 
     end
