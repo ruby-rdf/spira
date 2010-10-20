@@ -12,12 +12,12 @@ module Spira::Types
     include Spira::Type
 
     def self.unserialize(value)
-      value.respond_to?(:to_uri) ? value.to_uri : value.object
+      value.respond_to?(:object) ? value.object : value
     end
 
     def self.serialize(value)
       raise TypeError, "Spira::Types::Any cannot serialize collections" if value.is_a?(Array)
-      value.respond_to?(:to_uri) ? value.to_uri : RDF::Literal.new(value)
+      value.is_a?(RDF::Value) ? value : RDF::Literal.new(value)
     end
 
   end
