@@ -251,8 +251,41 @@ describe Spira do
 
       it "saves the copy immediately" do
         new = @test.copy!(@new_uri)
-        @update_repo.should have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @test.name)
-        @update_repo.should have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @test.age)
+        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::RDFS.label, @test.name)
+        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @test.age)
+      end
+    end
+  end
+
+  context "when renaming" do
+    before :each do
+      @new_uri = RDF::URI('http://example.org/people/test2')
+      @update_repo << RDF::Statement.new(@test_uri, RDF::FOAF.name, 'Not in model')
+      @name = @test.name
+      @age = @test.age
+    end
+
+    context "with #rename!" do
+      it "supports #rename!" do
+        @test.respond_to?(:rename!).should be_true
+      end
+
+      it "copies model data to a given subject" do
+        new = @test.rename!(@new_uri)
+        new.name.should == @name
+        new.age.should == @age
+      end
+
+      it "saves the copy immediately" do
+        @test.rename!(@new_uri)
+        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::RDFS.label, @name)
+        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @age)
+      end
+
+      it "deletes the old model data" do
+        @test.rename!(@new_uri)
+        @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @name)
+        @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @age)
       end
     end
   end

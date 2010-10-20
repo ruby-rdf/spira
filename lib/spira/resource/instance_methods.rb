@@ -470,6 +470,18 @@ module Spira
         copy(new_subject).save!
       end
 
+      ## 
+      # Rename this resource in the repository to the new given subject.
+      # Changes are immediately saved to the repository.
+      #
+      # @param [RDF::Resource] new_subject
+      # @return [Spira::Resource] new_resource
+      def rename!(new_subject)
+        new = copy!(new_subject)
+        destroy!
+        new
+      end  
+
       ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
 
