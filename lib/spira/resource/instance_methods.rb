@@ -493,22 +493,16 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource, String] new_resource
       def rename!(new_subject)
-        new = copy!(new_subject)
-        destroy!
+        new = copy_resource!(new_subject)
+        object_statements = self.class.repository.query(:object => subject)
+        update_repository = RDF::Repository.new
+        object_statements.each do |statement|
+          update_repository << RDF::Statement.new(statement.subject, statement.predicate, new.subject)
+        end
+        self.class.repository.insert(update_repository)
+        destroy!(:completely)
         new
       end  
-
-      ##
-      # Rename this resource in the repository, including all non-model data.
-      # Changes are immediately saved to the repository.
-      #
-      # @param [RDF::Resource, String] new_subject]
-      # @return [Spira::Resource, String] new_resource
-      def rename_resource!(new_subject)
-        new = copy_resource!(new_subject) 
-        destroy!(:subject)
-        new
-      end
 
       ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
