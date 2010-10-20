@@ -109,23 +109,40 @@ module Spira
       # @return [RDF::URI, RDF::Node]
       # @raise  [ArgumentError] If this class cannot create an identifier from the given argument
       # @see http://rdf.rubyforge.org/RDF/URI.html
+      # @see Spira::Resource.base_uri
+      # @see Spira::Resource.for
       def id_for(identifier)
-        case 
-          # Catches RDF::URI and implementing subclasses
-          when identifier.respond_to?(:to_uri)
-            identifier.to_uri
-          # Catches RDF::Nodes
+        case
+          # Absolute URI's go through unchanged
+          when identifier.is_a?(RDF::URI) && identifier.absolute?
+            identifier
+          # We don't have a base URI to join this fragment with, so go ahead and instantiate it as-is.
+          when identifier.is_a?(RDF::URI) && self.base_uri.nil?
+            identifier
+          # Blank nodes go through unchanged
           when identifier.respond_to?(:node?) && identifier.node?
             identifier
+          # Anything that can be an RDF::URI, we re-run this case statement
+          # on it for the fragment logic above.
+          when identifier.respond_to?(:to_uri) && !identifier.is_a?(RDF::URI)
+            id_for(identifier.to_uri)
+          # see comment with #to_uri above, this might be a fragment
           when identifier.is_a?(Addressable::URI)
-            RDF::URI.new(identifier)
-          # Treat identifier as a string, and create a URI out of it.
+            id_for(RDF::URI.new(identifier))
+          # This is a #to_s or a URI fragment with a base uri.  We'll treat them the same.
+          # FIXME: when #/ makes it into RDF.rb proper, this can all be wrapped
+          # into the one case statement above.
           else
-            uri = RDF::URI.new(identifier.to_s)
-            return uri if uri.absolute?
-            raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; RDF::URI required" if self.base_uri.nil?
-            separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-            RDF::URI.new(self.base_uri.to_s + separator + identifier.to_s)
+            uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.new(identifier.to_s)
+            case
+              when uri.absolute?
+                uri
+              when self.base_uri.nil?
+                raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; an RDF::URI is required" if self.base_uri.nil?
+              else
+                separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+                RDF::URI.new(self.base_uri.to_s + separator + identifier.to_s)
+            end
         end
       end
 
