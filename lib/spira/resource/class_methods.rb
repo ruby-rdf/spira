@@ -128,12 +128,12 @@ module Spira
             id_for(identifier.to_uri)
           # see comment with #to_uri above, this might be a fragment
           when identifier.is_a?(Addressable::URI)
-            id_for(RDF::URI.new(identifier))
+            id_for(RDF::URI.intern(identifier))
           # This is a #to_s or a URI fragment with a base uri.  We'll treat them the same.
           # FIXME: when #/ makes it into RDF.rb proper, this can all be wrapped
           # into the one case statement above.
           else
-            uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.new(identifier.to_s)
+            uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.intern(identifier.to_s)
             case
               when uri.absolute?
                 uri
@@ -141,7 +141,7 @@ module Spira
                 raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; an RDF::URI is required" if self.base_uri.nil?
               else
                 separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-                RDF::URI.new(self.base_uri.to_s + separator + identifier.to_s)
+                RDF::URI.intern(self.base_uri.to_s + separator + identifier.to_s)
             end
         end
       end

@@ -227,7 +227,7 @@ module Spira
             raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
           else @default_vocabulary
             separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-            RDF::URI.new(@default_vocabulary.to_s + separator + name.to_s)
+            RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
         end
         if !(predicate.respond_to?(:to_uri))
          raise ResourceDeclarationError, ":predicate options must be RDF::URIs or strings with a default vocabulary declared"
