@@ -1,4 +1,8 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
+## 0.0.10
+ * Use RDF::URI.intern on URIs generated via base URIs
+ * Added a Spira::Types::Native, which will return the RDF::Value for a given
+   predicate directly without any serialization or dserialization.
 
 ## 0.0.9
  * Fix a bug with Spira::Types::Any that prevented blank node objects
@@ -12,6 +16,7 @@
  * Updating a value to nil will now remove it from the repository on #save!
  * Tweaks to dirty tracking to correctly catch both changed and updated values.
    All tests pass for the first time with this change.
+ * Change gemspec name to work with bundler
 
 ## 0.0.8
  * Remove type checking for repository addition.  More power in return for 
