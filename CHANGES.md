@@ -1,4 +1,8 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
+
+## 0.0.11
+ * Bumped the version dependency on rdf-isomorphic to 0.3.0
+
 ## 0.0.10
  * Use RDF::URI.intern on URIs generated via base URIs
  * Added a Spira::Types::Native, which will return the RDF::Value for a given
