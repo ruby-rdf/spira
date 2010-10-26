@@ -21,6 +21,7 @@ module Spira
     require 'spira/types/float'
     require 'spira/types/uri'
     require 'spira/types/decimal'
+    require 'spira/types/native'
 
 
   end
