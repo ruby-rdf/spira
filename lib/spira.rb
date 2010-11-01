@@ -1,4 +1,5 @@
 require 'rdf'
+require 'promise'
 require 'spira/exceptions'
 
 ##

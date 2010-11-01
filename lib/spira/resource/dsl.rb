@@ -1,5 +1,3 @@
-require 'promise'
-
 module Spira
   module Resource
 
