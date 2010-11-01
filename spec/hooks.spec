@@ -128,7 +128,20 @@ describe 'Spira resources' do
   end
 
   context "with a before_save method" do
+    before :all do
+      class ::BeforeSaveTest < ::HookTest
+        def before_save
+          self.age = 15
+        end
+      end
+    end
+
     it "calls the before_save method before saving" do
+      test = @subject.as(::BeforeSaveTest)
+      test.age.should be_nil
+      test.save!
+      test.age.should == 15
+      @repository.should have_statement RDF::Statement(@subject, RDF::FOAF.age, 15)
     end
   end
 
