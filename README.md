@@ -359,6 +359,36 @@ built in `assert` and assert helpers such as `assert_set` and
     dancing_queen.artist = abba
     dancing_queen.save!  #=> true
 
+## Hooks
+
+Spira supports `before_create`, `after_create`, `after_update`, `before_save`,
+`after_save`, and `before_destroy` hooks:
+
+    class CD
+      def before_save
+        self.publisher = 'No publisher set' if self.publisher.nil?
+      end
+    end
+
+The `after_update` hook only fires on the `update` method, not simple property
+accessors (to allow you to easily set properties in these without going into a
+recursive loop):
+
+    class CD
+      def after_update
+        self.artist = 'Queen' # every artist should be Queen!
+      end
+    end
+    
+    # ...snip ...
+    dancing_queen.artist
+    #=> "ABBA"
+    dancing_queen.name = "Dancing Queen"
+    dancing_queen.artist
+    #=> "ABBA"
+    dancing_queen.update(:name => "Dancing Queen")
+    dancing_queen.artist
+    #=> "Queen"
 
 ## Inheritance
 
