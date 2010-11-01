@@ -146,7 +146,21 @@ describe 'Spira resources' do
   end
 
   context "with an after_save method" do
+
+    before :all do
+      class ::AfterSaveTest < ::HookTest
+        def after_save
+          self.age = 15
+        end
+      end
+    end
+ 
     it "calls the after_save method after saving" do
+      test = @subject.as(::AfterSaveTest)
+      test.age.should be_nil
+      test.save!
+      test.age.should == 15
+      @repository.should_not have_statement RDF::Statement(@subject, RDF::FOAF.age, 15)
     end
 
   end

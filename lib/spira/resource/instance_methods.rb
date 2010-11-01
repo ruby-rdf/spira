@@ -171,6 +171,7 @@ module Spira
           _update!
         end
         after_create if self.respond_to?(:after_create) && !self.type.nil? && !existed
+        after_save if self.respond_to?(:after_save)
         self
       end
 
