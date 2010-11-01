@@ -191,6 +191,7 @@ module Spira
         properties.each do |property, value|
           attribute_set(property, value)
         end
+        after_update if self.respond_to?(:after_update)
         self
       end
 

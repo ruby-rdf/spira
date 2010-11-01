@@ -5,8 +5,15 @@ describe 'Spira resources' do
   before :all do
     class ::HookTest < ::Spira::Base
       property :name, :predicate => FOAF.name
+      property :age,  :predicate => FOAF.age
     end
     @subject = RDF::URI.intern('http://example.org/test')
+  end
+
+  before :each do
+    @repository = RDF::Repository.new
+    @repository << RDF::Statement.new(@subject, RDF::FOAF.name, "A name")
+    Spira.add_repository(:default, @repository)
   end
 
   context "with a before_create method" do
@@ -27,10 +34,7 @@ describe 'Spira resources' do
     end
 
     before :each do
-      @repository = RDF::Repository.new
       @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.bc_test)
-      @repository << RDF::Statement.new(@subject, RDF::FOAF.name, "A name")
-      Spira.add_repository(:default, @repository)
     end
 
     it "calls the before_create method before saving a resouce for the first time" do
@@ -73,10 +77,7 @@ describe 'Spira resources' do
     end
 
     before :each do
-      @repository = RDF::Repository.new
       @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.bc_test)
-      @repository << RDF::Statement.new(@subject, RDF::FOAF.name, "A name")
-      Spira.add_repository(:default, @repository)
     end
 
     it "calls the after_create method after saving a resource for the first time" do
@@ -101,15 +102,28 @@ describe 'Spira resources' do
     end
   end
 
-  context "with a before_update method" do
-    it "calls the before_update method before updating a field" do
-
-    end
-  end
-
   context "with an after_update method" do
-    it "calls the after_update method after updating a field" do
 
+    before :all do
+      class ::AfterUpdateTest < ::HookTest
+        def after_update
+          self.age = 15
+        end
+      end
+    end
+
+    it "calls the after_update method after updating a field" do
+      test = @subject.as(AfterUpdateTest)
+      test.age.should be_nil
+      test.update(:name => "A new name")
+      test.age.should == 15
+    end
+
+    it "does not call the after_update method after simply setting a field" do
+      test = @subject.as(AfterUpdateTest)
+      test.age.should be_nil
+      test.name = "a new name"
+      test.age.should be_nil
     end
   end
 
