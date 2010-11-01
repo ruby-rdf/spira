@@ -156,6 +156,8 @@ module Spira
       #
       # @return [self] self
       def save!
+        existed = (self.respond_to?(:before_create) || self.respond_to(:after_create)) && !self.type.nil? && exists?
+        before_create if self.respond_to?(:before_create) && !self.type.nil? && !existed
         unless self.class.validators.empty?
           errors.clear
           self.class.validators.each do | validator | self.send(validator) end
