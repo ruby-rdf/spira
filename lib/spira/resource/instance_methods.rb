@@ -139,6 +139,7 @@ module Spira
       #     @object.destroy!(:completely)
       # @return [true, false] Whether or not the destroy was successful
       def destroy!(what = nil)
+        before_destroy if self.respond_to?(:before_destroy)
         case what
           when nil
             _destroy_attributes(attributes, :destroy_type => true) != nil

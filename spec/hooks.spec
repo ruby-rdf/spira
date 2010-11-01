@@ -166,12 +166,21 @@ describe 'Spira resources' do
   end
 
   context "with a before_destroy method" do
-    it "calls the before_destroy method before destroying" do
+    before :all do
+      class ::BeforeDestroyTest < ::HookTest
+        def before_destroy
+          self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.other,nil))
+        end
+      end
     end
-  end
 
-  context "with an after_destroy method" do
-    it "calls the after_destroy method after destroying" do
+    before :each do
+      @repository << RDF::Statement.new(RDF::URI('http://example.org/new'), RDF::FOAF.other, "test")
+    end
+
+    it "calls the before_destroy method before destroying" do
+      @subject.as(::BeforeDestroyTest).destroy!(:completely)
+      @repository.should be_empty
     end
   end
 
