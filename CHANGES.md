@@ -2,6 +2,9 @@
 
 ## 0.0.11
  * Bumped the version dependency on rdf-isomorphic to 0.3.0
+ * Added support for before_create, after_create, before_save, after_save,
+   after_update, before_destroy and after_destroy hooks.
+ * Switch RDF.rb dependency to >= instead of ~>
 
 ## 0.0.10
  * Use RDF::URI.intern on URIs generated via base URIs
