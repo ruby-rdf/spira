@@ -150,6 +150,7 @@ module Spira
           when :completely
             destroy!(:subject) && destroy!(:object)
         end
+        after_destroy if self.respond_to?(:after_destroy)
       end
 
       ##

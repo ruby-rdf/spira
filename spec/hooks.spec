@@ -184,4 +184,28 @@ describe 'Spira resources' do
     end
   end
 
+  context "with an after_destroy method" do
+    before :all do
+      class ::AfterDestroyTest < ::HookTest
+        def after_destroy
+          self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.other,nil))
+          raise Exception if self.class.repository.has_subject?(self.subject)
+        end
+      end
+    end
+
+    before :each do
+      @repository << RDF::Statement.new(RDF::URI('http://example.org/new'), RDF::FOAF.other, "test")
+    end
+
+    it "calls the after_destroy method after destroying" do
+      # This would raise an exception if after_destroy were called before deleting is confirmed
+      lambda { @subject.as(::AfterDestroyTest).destroy!(:completely) }.should_not raise_error
+      # This one makes sure that after_destory got called at all
+      @repository.should_not have_predicate RDF::FOAF.other
+    end
+
+
+  end
+
 end
