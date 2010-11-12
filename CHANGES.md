@@ -1,5 +1,8 @@
 # Changelog for Spira <http://github.com/datagraph/spira>
 
+## 0.0.12
+ * Implemented #validate, #validate! (refactored from #save!)
+
 ## 0.0.11
  * Bumped the version dependency on rdf-isomorphic to 0.3.0
  * Added support for before_create, after_create, before_save, after_save,
