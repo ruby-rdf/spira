@@ -1,6 +1,6 @@
 require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 
-describe Spira do
+describe 'A Spira resource' do
 
   before :all do
     class ::Bank
@@ -21,6 +21,96 @@ describe Spira do
     
     end
     Spira.add_repository(:default, RDF::Repository.new)
+  end
+
+  context "when validating" do
+
+    before :all do
+      class ::V2
+        include Spira::Resource
+        property :title, :predicate => DC.title
+        validate :title_is_bad
+        def title_is_bad
+          assert(title == 'xyz', :title, 'not xyz')
+        end
+      end
+    end
+
+    before :each do
+      @uri = RDF::URI.intern('http://example.org/bank1')
+      @uri2 = RDF::URI.intern('http://example.org/bank2')
+      @valid = V2.for(@uri, :title => 'xyz')
+      @invalid = V2.for(@uri, :title => 'not xyz')
+    end
+
+    it "responds to #validate" do
+      Bank.for(@uri).should respond_to :validate
+    end
+
+    it "responds to #validate!" do
+      Bank.for(@uri).should respond_to :validate!
+    end
+
+    context "with #validate" do
+      it "returns true when the model is valid" do
+        @valid.validate.should == true
+      end
+
+      it "returns an empty errors object after validating when the model is valid" do
+        @valid.validate
+        @valid.errors.should be_empty
+      end
+
+      it "returns false when the model is invalid" do
+        @invalid.validate.should == false
+      end
+
+      it "returns an errors object with errors after validating when the model is invalid" do
+        @invalid.validate
+        @invalid.errors.should_not be_empty
+      end
+    end
+
+    context "with #validate!" do
+      it "returns true when the model is valid" do
+        @valid.validate!.should == true
+      end
+
+      it "returns an empty errors object after validating" do
+        @valid.validate!
+        @valid.errors.should be_empty
+      end
+
+      it "raises a Spira::ValidationError when the model is invalid" do
+        lambda { @invalid.validate! }.should raise_error Spira::ValidationError
+      end
+
+      it "returns an errors object with errors after validating" do
+        begin @invalid.validate! rescue nil end
+        @invalid.errors.should_not be_empty
+      end
+    end
+
+    context "an invalid model" do
+      before :each do
+        @uri2 = RDF::URI.intern('http://example.org/bank2')
+        @invalid = V2.for(@uri, :title => 'not xyz')
+        @invalid.validate
+      end
+     
+      it "returns a non-empty errors object afterwards" do
+        @invalid.errors.should_not be_empty
+      end
+
+      it "has an error for an invalid field" do
+        @invalid.errors.any_for?(:title).should be_true
+      end
+
+      it "has the correct error string for the invalid field" do
+        @invalid.errors.for(:title).first.should == 'not xyz'
+      end
+
+    end
   end
 
   context "when saving with validations, " do
