@@ -1,6 +1,6 @@
 require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 
-describe 'validations' do
+describe Spira do
 
   before :all do
     class ::Bank
@@ -23,22 +23,22 @@ describe 'validations' do
     Spira.add_repository(:default, RDF::Repository.new)
   end
 
-  context "when validating" do
-    it "should not save an invalid model" do
+  context "when saving with validations, " do
+    it "does not save an invalid model" do
       bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
       lambda { bank.save! }.should raise_error Spira::ValidationError
     end
 
-    it "should save a valid model" do
+    it "saves a valid model" do
       bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
       bank.title = "A bank"
       bank.balance = 1000
+      lambda { bank.save! }.should_not raise_error
     end
-
   end
 
-  context "included validations" do
-    context "provides a working assert" do
+  context "using the included validation" do
+    context "assert, " do
 
       before :all do
         class ::V1
@@ -55,19 +55,19 @@ describe 'validations' do
         @v1 = V1.for RDF::URI.new('http://example.org/v1/first')
       end 
 
-      it "should fail when false" do
+      it "does not save when the assertion is false" do
         @v1.title = 'abc'
         lambda { @v1.save! }.should raise_error Spira::ValidationError
       end
 
-      it "should pass when true" do
+      it "saves when the assertion is true" do
         @v1.title = 'xyz'
-        lambda { @v1.save! }.should_not raise_error Spira::ValidationError
+        lambda { @v1.save! }.should_not raise_error
       end
 
     end
 
-    context "provides a working assert_set" do
+    context "assert_set, " do
       before :all do
         class ::V2
           include Spira::Resource
@@ -83,18 +83,18 @@ describe 'validations' do
         @v2 = V2.for RDF::URI.new('http://example.org/v2/first')
       end 
 
-      it "should fail when nil" do
+      it "does not save when the field is nil" do
         lambda { @v2.save! }.should raise_error Spira::ValidationError
       end
 
-      it "should pass when set" do
+      it "saves when the field is not nil" do
         @v2.title = 'xyz'
         lambda { @v2.save! }.should_not raise_error Spira::ValidationError
       end
 
     end
 
-    context "provides a working assert_numeric" do
+    context "assert_numeric, " do
       before :all do
         class ::V3
           include Spira::Resource
@@ -110,22 +110,20 @@ describe 'validations' do
         @v3 = V3.for RDF::URI.new('http://example.org/v3/first')
       end 
 
-      it "should fail when nil" do
+      it "does not save when the field is nil" do
         lambda { @v3.save! }.should raise_error Spira::ValidationError
       end
 
-      it "should fail when non-numeric" do
+      it "does not save when the field is not numeric" do
         @v3.title = 'xyz'
         lambda { @v3.save! }.should raise_error Spira::ValidationError
       end
 
-      it "should pass when numeric" do
+      it "saves when the field is numeric" do
         @v3.title = 15
-        lambda { @v3.save! }.should_not raise_error Spira::ValidationError
+        lambda { @v3.save! }.should_not raise_error
       end
-
     end
-
   end
 
 end
