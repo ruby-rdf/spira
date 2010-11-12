@@ -162,16 +162,12 @@ module Spira
         existed = (self.respond_to?(:before_create) || self.respond_to?(:after_create)) && !self.type.nil? && exists?
         before_create if self.respond_to?(:before_create) && !self.type.nil? && !existed
         before_save if self.respond_to?(:before_save)
-        unless self.class.validators.empty?
-          errors.clear
-          self.class.validators.each do | validator | self.send(validator) end
-          if errors.empty?
+        # we use the non-raising validate and check it to make a slightly different error message.  worth it?...
+        case validate
+          when true
             _update!
-          else
+          when false
             raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
-          end
-        else
-          _update!
         end
         after_create if self.respond_to?(:after_create) && !self.type.nil? && !existed
         after_save if self.respond_to?(:after_save)
@@ -462,6 +458,28 @@ module Spira
       # @see Spira::Errors
       def errors
         @errors ||= Spira::Errors.new
+      end
+
+      ##
+      # Run any model validations and populate the errors object accordingly.  
+      # Returns true if the model is valid, false otherwise
+      #
+      # @return [True, False]
+      def validate
+        unless self.class.validators.empty?
+          errors.clear
+          self.class.validators.each do | validator | self.send(validator) end
+        end
+        errors.empty?
+      end
+
+      ## 
+      # Run validations on this model and raise a Spira::ValidationError if the validations fail.
+      #
+      # @see #validate
+      # @return true
+      def validate!
+        validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
       end
 
       ##
