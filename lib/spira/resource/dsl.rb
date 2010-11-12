@@ -70,7 +70,7 @@ module Spira
       # @see Spira::Type
       # @return [Void]
       def property(name, opts = {} )
-        add_accessors(name,opts,:hash_accessors)
+        add_accessors(name,opts)
       end
 
       ##
@@ -82,7 +82,7 @@ module Spira
       #
       # @see Spira::Resource::DSL#property
       def has_many(name, opts = {})
-        add_accessors(name,opts,:hash_accessors)
+        add_accessors(name,opts)
         @lists[name] = true
       end
 
@@ -217,7 +217,7 @@ module Spira
       ##
       # Add getters and setters for a property or list.
       # @private
-      def add_accessors(name, opts, accessors_method)
+      def add_accessors(name, opts)
         predicate = case
           when opts[:predicate]
             opts[:predicate]
