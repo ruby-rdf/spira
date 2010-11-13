@@ -33,6 +33,7 @@ describe 'default vocabularies' do
       }.should raise_error Spira::ResourceDeclarationError
     end
 
+    # FIXME: reexamine this behavior.  Static typing in the DSL?  Why?  Why not create a URI out of anything we can #to_s?
     it "should raise a ResourceDelcarationError to set a predicate without a default vocabulary that is not an RDF::URI" do
       lambda {
         class VocabTestY
@@ -55,13 +56,6 @@ describe 'default vocabularies' do
         property :year, :type => Integer
         property :name
         property :title, :predicate => DC.title, :type => String
-      end
-      class ::DefaultVocabVocab < ::RDF::Vocabulary('http://example.org/test#') ; end
-      class ::HashVocabTest
-        include Spira::Resource
-        default_vocabulary DefaultVocabVocab
-        base_uri "http://example.org/testing/"
-        property :name
       end
     end
 
@@ -90,6 +84,17 @@ describe 'default vocabularies' do
     end
 
     context "that ends in a hash seperator" do
+      before :all do
+        class ::DefaultVocabVocab < ::RDF::Vocabulary('http://example.org/test#') ; end
+
+        class ::HashVocabTest
+          include Spira::Resource
+          default_vocabulary DefaultVocabVocab
+          base_uri "http://example.org/testing/"
+          property :name
+        end
+      end
+
       before :each do
         @name = RDF::URI("http://example.org/test#name")
       end
