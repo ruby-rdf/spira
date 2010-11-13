@@ -70,19 +70,25 @@ module Spira
       # @see Spira::Type
       # @return [Void]
       def property(name, opts = {} )
+        predicate = predicate_for(opts[:predicate], name)
+        type = type_for(opts[:type])
+        @properties[name] = { :predicate => predicate, :type => type }
         add_accessors(name,opts)
       end
 
       ##
       # The plural form of `property`.  `Has_many` has the same options as
       # `property`, but instead of a single value, a Ruby Array of objects will
-      # be created instead.  Be warned that this should be a Set to match RDF
-      # semantics, but this is not currently implemented.  Duplicate values of
-      # an array will be lost on save.  
+      # be created instead.
+      #
+      # has_many corresponds to an RDF subject with several triples of the same
+      # predicate.  This corresponds to a Ruby Set, which will be returned when
+      # the property is accessed.  Arrays will be accepted for new values, but
+      # ordering and duplicate values will be lost on save.
       #
       # @see Spira::Resource::DSL#property
       def has_many(name, opts = {})
-        add_accessors(name,opts)
+        property(name, opts)
         @lists[name] = true
       end
 
@@ -215,34 +221,48 @@ module Spira
       end
 
       ##
-      # Add getters and setters for a property or list.
+      # Determine the type for a property based on the given type option
+      #
+      # @param [nil, Spira::Type, Constant] type
+      # @return Spira::Type
       # @private
-      def add_accessors(name, opts)
-        predicate = case
-          when opts[:predicate]
-            opts[:predicate]
+      def type_for(type) 
+        case
+            when type.nil?
+              Spira::Types::Any
+            when type.is_a?(Symbol) || type.is_a?(String)
+              type
+            when !(Spira.types[type].nil?)
+              Spira.types[type]
+            else
+              raise TypeError, "Unrecognized type: #{type}"
+          end
+      end
+
+      ##
+      # Determine the predicate for a property based on the given predicate, name, and default vocabulary
+      #
+      # @param  [#to_s, #to_uri] predicate
+      # @param  [Symbol] name
+      # @return [RDF::URI]
+      # @private
+      def predicate_for(predicate, name)
+        case
+          when predicate.respond_to?(:to_uri) && predicate.to_uri.absolute?
+            predicate
           when @default_vocabulary.nil?
             raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
-          else @default_vocabulary
+          else
+            # FIXME: use rdf.rb smart separator after 0.3.0 release
             separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
             RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
         end
-        if !(predicate.respond_to?(:to_uri))
-         raise ResourceDeclarationError, ":predicate options must be RDF::URIs or strings with a default vocabulary declared"
-        end
-        type = case
-            when opts[:type].nil?
-              Spira::Types::Any
-            when opts[:type].is_a?(Symbol) || opts[:type].is_a?(String)
-              opts[:type]
-            when !(Spira.types[opts[:type]].nil?)
-              Spira.types[opts[:type]]
-            else
-              raise TypeError, "Unrecognized type: #{opts[:type]}"
-          end
-        @properties[name] = {}
-        @properties[name][:predicate] = predicate
-        @properties[name][:type] = type
+      end
+
+      ##
+      # Add getters and setters for a property or list.
+      # @private
+      def add_accessors(name, opts)
         name_equals = (name.to_s + "=").to_sym
 
         self.send(:define_method,name_equals) do |arg|
