@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -rubygems
 # -*- encoding: utf-8 -*-
 
-GEMSPEC = Gem::Specification.new do |gem|
+Gem::Specification.new do |gem|
   gem.version            = File.read('VERSION').chomp
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
@@ -24,7 +24,7 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.extensions         = %w()
   gem.test_files         = %w()
   gem.has_rdoc           = false
-  gem.has_yardoc         = true
+  gem.has_yardoc         = true if gem.respond_to?(:has_yardoc)
 
   gem.required_ruby_version      = '>= 1.8.2'
   gem.requirements               = []
