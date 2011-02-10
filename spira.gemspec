@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby -rubygems
 # -*- encoding: utf-8 -*-
+$:.unshift File.expand_path('../lib', __FILE__)
+require 'spira/version'
+
 
 Gem::Specification.new do |gem|
-  gem.version            = File.read('VERSION').chomp
-  gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
+  gem.version            = Spira::VERSION.to_s
+  gem.date               = Time.now.strftime('%Y-%m-%d')
 
   gem.name               = 'spira'
   gem.homepage           = 'http://spira.rubyforge.org'
