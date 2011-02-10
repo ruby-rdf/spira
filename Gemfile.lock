@@ -1,0 +1,32 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    addressable (2.2.4)
+    diff-lcs (1.1.2)
+    promise (0.3.0)
+    rdf (0.3.1)
+      addressable (>= 2.2)
+    rdf-isomorphic (0.3.4)
+      rdf (>= 0.2.3)
+    rdf-spec (0.3.1)
+      rspec (>= 2.1)
+    rspec (2.5.0)
+      rspec-core (~> 2.5.0)
+      rspec-expectations (~> 2.5.0)
+      rspec-mocks (~> 2.5.0)
+    rspec-core (2.5.1)
+    rspec-expectations (2.5.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.5.0)
+    yard (0.6.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  promise
+  rdf
+  rdf-isomorphic (>= 0.3.2)
+  rdf-spec
+  rspec (~> 2.5)
+  yard
