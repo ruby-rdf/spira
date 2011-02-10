@@ -2,7 +2,7 @@ module Spira
   module VERSION
     MAJOR = 0
     MINOR = 0
-    TINY  = 12
+    TINY  = 13
     EXTRA = nil
 
     STRING = [MAJOR, MINOR, TINY].join('.')
