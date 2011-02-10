@@ -2,6 +2,8 @@
 
 ## 0.0.12
  * Implemented #validate, #validate! (refactored from #save!)
+ * Force to_a on query results when constructing to force the promise-like
+   semantics of SPARQL::Client
 
 ## 0.0.11
  * Bumped the version dependency on rdf-isomorphic to 0.3.0
