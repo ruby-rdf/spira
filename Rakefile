@@ -1,31 +1,31 @@
 require 'rubygems'
-require 'spec'
-require 'spec/rake/spectask'
+require 'rspec'
+require 'rspec/core/rake_task'
 
 desc 'Run specs'
 task 'spec' do
-  Spec::Rake::SpecTask.new("spec") do |t|
-    t.spec_files = FileList["spec/**/*.spec","spec/*.rb"]
+  RSpec::Core::RakeTask.new("spec") do |t|
+    t.pattern = 'spec/**/*.{spec,rb}'
     t.rcov = false
-    t.spec_opts = ["-c"]
+    t.rspec_opts = ["-c"]
   end
 end
 
 desc 'Run specs with backtrace'
 task 'tracespec' do
-  Spec::Rake::SpecTask.new("tracespec") do |t|
-    t.spec_files = FileList["spec/**/*.spec", "spec/*.rb"]
+  RSpec::Core::RakeTask.new("tracespec") do |t|
+    t.pattern = 'spec/**/*.{spec,rb}'
     t.rcov = false
-    t.spec_opts = ["-bcfn"]
+    t.rspec_opts = ["-bcfn"]
   end
 end
 
 desc 'Run coverage'
 task 'coverage' do
-  Spec::Rake::SpecTask.new("coverage") do |t|
-    t.spec_files = FileList["spec/**/*.spec","spec/*.rb"]
+  RSpec::Core::RakeTask.new("coverage") do |t|
+    t.pattern = 'spec/**/*.{spec,rb}'
     t.rcov = true
-    t.spec_opts = ["-c"]
+    t.rspec_opts = ["-c"]
   end
 end
 
