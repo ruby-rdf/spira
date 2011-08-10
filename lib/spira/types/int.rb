@@ -2,10 +2,10 @@ module Spira::Types
 
   ##
   # A {Spira::Type} for integer values.  Values will be associated with the
-  # `XSD.integer` type.
+  # `XSD.int` type.
   #
   # A {Spira::Resource} property can reference this type as
-  # `Spira::Types::Integer`, `Integer`, or `XSD.integer`.
+  # `Spira::Types::Int`, `Int`, or `XSD.int`.
   #
   # @see Spira::Type
   # @see http://rdf.rubyforge.org/RDF/Literal.html

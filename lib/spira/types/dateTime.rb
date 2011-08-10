@@ -3,11 +3,11 @@ require 'bigdecimal'
 module Spira::Types
 
   ##
-  # A {Spira::Type} for integer values.  Values will be associated with the
-  # `XSD.integer` type.
+  # A {Spira::Type} for dateTimes.  Values will be associated with the
+  # `XSD.dateTime` type.
   #
   # A {Spira::Resource} property can reference this type as
-  # `Spira::Types::Integer`, `Integer`, or `XSD.integer`.
+  # `Spira::Types::DateTime`, `DateTime`, or `XSD.dateTime`.
   #
   # @see Spira::Type
   # @see http://rdf.rubyforge.org/RDF/Literal.html
