@@ -4,7 +4,8 @@ module Spira
   # Spira::Types is a set of default Spira::Type classes.
   #
   # @see Spira::Type
-  # @see Spira::Types::Integer
+  # @see Spira::Types::Int
+  # @see Spira::Types::Integer  
   # @see Spira::Types::Boolean
   # @see Spira::Types::String
   # @see Spira::Types::Float
