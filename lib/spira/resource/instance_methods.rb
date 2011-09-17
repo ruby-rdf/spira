@@ -361,21 +361,18 @@ module Spira
       # @param [Hash] attributes The attributes to create a repository for
       # @private
       def repository_for_attributes(attributes)
-        repo = RDF::Repository.new
-        attributes.each do | name, attribute |
-          if self.class.is_list?(name)
-            new = []
-            attribute.each do |value|
-              value = self.class.build_rdf_value(value, self.class.properties[name][:type])
-              new << RDF::Statement.new(@subject, self.class.properties[name][:predicate], value)
+        RDF::Repository.new.tap do |repo|
+          attributes.each do | name, attribute |
+            predicate = self.class.properties[name][:predicate]
+            if self.class.is_list?(name)
+              attribute.each do |value|
+                store_attribute(name, value, predicate, repo)
+              end
+            else
+              store_attribute(name, attribute, predicate, repo)
             end
-            repo.insert(*new)
-          else
-            value = self.class.build_rdf_value(attribute, self.class.properties[name][:type])
-            repo.insert(RDF::Statement.new(@subject, self.class.properties[name][:predicate], value))
           end
         end
-        repo
       end
 
       ##
