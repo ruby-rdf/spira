@@ -220,24 +220,24 @@ module Spira
       #
       # @private
       def _update!
+        repo = self.class.repository_or_fail
         self.class.properties.each do |property, predicate|
+          value = attribute_get(property)
           if dirty?(property)
-            self.class.repository_or_fail.delete([subject, predicate[:predicate], nil])
+            repo.delete([subject, predicate[:predicate], nil])
             if self.class.is_list?(property)
-              repo = RDF::Repository.new
-              attribute_get(property).each do |value|
-                repo << RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(value, self.class.properties[property][:type]))
+              value.each do |val|
+                store_attribute(property, val, predicate[:predicate], repo)
               end
-              self.class.repository_or_fail.insert(*repo)
             else
-              self.class.repository_or_fail.insert(RDF::Statement.new(subject, predicate[:predicate], self.class.build_rdf_value(attribute_get(property), self.class.properties[property][:type]))) unless attribute_get(property).nil?
+              store_attribute(property, value, predicate[:predicate], repo)
             end
           end
-          @attributes[:original][property] = attribute_get(property)
+          @attributes[:original][property] = value
           @dirty[property] = nil
           @attributes[:copied][property] = NOT_SET
         end
-        self.class.repository_or_fail.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
+        repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
       end
  
       ## 
@@ -561,6 +561,16 @@ module Spira
 
       ## Include the base validation functions
       include Spira::Resource::Validations
+
+
+      private
+
+      def store_attribute(property, value, predicate, repository)
+        if value
+          val = self.class.build_rdf_value(value, self.class.properties[property][:type])
+          repository.insert(RDF::Statement.new(subject, predicate, val))
+        end
+      end
 
     end  
   end
