@@ -204,8 +204,61 @@ describe 'Spira resources' do
       # This one makes sure that after_destory got called at all
       @repository.should_not have_predicate RDF::FOAF.other
     end
-
-
   end
 
+  context "when the hook methods are private" do
+    before :all do
+      class ::PrivateHookTest < ::HookTest
+        type FOAF.bc_test
+
+        def counter
+          @counter ||= {}
+        end
+
+        private
+
+        def before_create
+          self.counter[__method__] = true
+        end
+
+        def before_save
+          self.counter[__method__] = true
+        end
+
+        def before_destroy
+          self.counter[__method__] = true
+        end
+
+        def after_create
+          self.counter[__method__] = true
+        end
+
+        def after_save
+          self.counter[__method__] = true
+        end
+
+        def after_update
+          self.counter[__method__] = true
+        end
+
+        def after_destroy
+          self.counter[__method__] = true
+        end
+      end
+    end
+
+    before :each do
+      @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.bc_test)
+    end
+
+    it "should call the hook methods" do
+      subject = RDF::URI.new('http://example.org/test1').as(::PrivateHookTest)
+
+      subject.save!
+      subject.update!(:name => "Jay")
+      subject.destroy!
+
+      subject.counter.keys.count.should eql(7)
+    end
+  end
 end

@@ -139,7 +139,7 @@ module Spira
       #     @object.destroy!(:completely)
       # @return [true, false] Whether or not the destroy was successful
       def destroy!(what = nil)
-        before_destroy if self.respond_to?(:before_destroy)
+        before_destroy if self.respond_to?(:before_destroy, true)
         result = case what
           when nil
             _destroy_attributes(attributes, :destroy_type => true) != nil
@@ -150,7 +150,7 @@ module Spira
           when :completely
             destroy!(:subject) && destroy!(:object)
         end
-        after_destroy if self.respond_to?(:after_destroy) if result
+        after_destroy if self.respond_to?(:after_destroy, true) if result
         result
       end
 
@@ -159,9 +159,9 @@ module Spira
       #
       # @return [self] self
       def save!
-        existed = (self.respond_to?(:before_create) || self.respond_to?(:after_create)) && !self.type.nil? && exists?
-        before_create if self.respond_to?(:before_create) && !self.type.nil? && !existed
-        before_save if self.respond_to?(:before_save)
+        existed = (self.respond_to?(:before_create, true) || self.respond_to?(:after_create, true)) && !self.type.nil? && exists?
+        before_create if self.respond_to?(:before_create, true) && !self.type.nil? && !existed
+        before_save if self.respond_to?(:before_save, true)
         # we use the non-raising validate and check it to make a slightly different error message.  worth it?...
         case validate
           when true
@@ -169,8 +169,8 @@ module Spira
           when false
             raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
         end
-        after_create if self.respond_to?(:after_create) && !self.type.nil? && !existed
-        after_save if self.respond_to?(:after_save)
+        after_create if self.respond_to?(:after_create, true) && !self.type.nil? && !existed
+        after_save if self.respond_to?(:after_save, true)
         self
       end
 
@@ -192,7 +192,7 @@ module Spira
         properties.each do |property, value|
           attribute_set(property, value)
         end
-        after_update if self.respond_to?(:after_update)
+        after_update if self.respond_to?(:after_update, true)
         self
       end
 
