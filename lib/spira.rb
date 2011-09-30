@@ -28,7 +28,7 @@ module Spira
   # @see Spira::Types
   # @return [Hash{Symbol => Spira::Type}]
   def types
-    settings[:types] ||= {}
+    @types ||= {}
   end
   module_function :types
 
