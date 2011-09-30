@@ -7,6 +7,33 @@ describe 'types for properties' do
 
 
   context "when declaring type classes" do
+    context "in a separate thread" do
+      it "should be available" do
+        types = {}
+        t = Thread.new { types = Spira.types }
+        t.join
+
+        types.should satisfy do |ts|
+          ts.any? && ts == Spira.types
+        end
+      end
+
+      it "should be declared" do
+        lambda {
+          t = Thread.new do
+            class ::PropTypeA
+              include Spira::Resource
+              default_vocabulary RDF::URI.new('http://example.org/vocab')
+              base_uri RDF::URI.new('http://example.org/props')
+
+              property :test, :type => XSD.string
+            end
+          end
+          t.join
+        }.should_not raise_error TypeError
+      end
+    end
+
     it "should raise a type error to use a type that has not been declared" do
       lambda {
         class ::PropTypeA
