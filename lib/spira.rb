@@ -18,7 +18,7 @@ module Spira
   # @return [Hash{Symbol => RDF::Repository}]
   # @private
   def repositories
-    settings[:repositories] ||= {}
+    @repositories ||= {}
   end
   module_function :repositories
 
@@ -31,17 +31,6 @@ module Spira
     @types ||= {}
   end
   module_function :types
-
-  ##
-  # A thread-local hash for storing settings.  Used by Resource classes.
-  #
-  # @see Spira::Resource
-  # @see Spira.repositories
-  # @see Spira.types
-  def settings
-    Thread.current[:spira] ||= {}
-  end
-  module_function :settings
 
   ##
   # Add a repository to Spira's list of repositories.
@@ -66,7 +55,7 @@ module Spira
       else
         klass
      end
-     if (name == :default) && settings[:repositories][name].nil?
+     if (name == :default) && repository(name).nil?
         warn "WARNING: Adding nil default repository"
      end
   end
@@ -91,7 +80,7 @@ module Spira
   # @return [Void]
   # @private
   def clear_repositories!
-    settings[:repositories] = {}
+    @repositories = {}
   end
   module_function :clear_repositories!
 

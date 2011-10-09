@@ -24,6 +24,23 @@ describe Spira do
       Spira.clear_repositories!
     end
 
+    context "in a different thread" do
+      before :each do
+        Spira.add_repository :default, @repo
+      end
+
+      it "should be available" do
+        repo = nil
+
+        t = Thread.new {
+          repo = Spira.repository(:default)
+        }
+        t.join
+
+        repo.should eql(@repo)
+      end
+    end
+
     it "should construct a repository from a class name" do
       lambda {Spira.add_repository(:test_class_name, ::RDF::Repository)}.should_not raise_error
       Spira.repository(:test_class_name).should be_a ::RDF::Repository
