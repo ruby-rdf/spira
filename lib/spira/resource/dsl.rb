@@ -73,6 +73,7 @@ module Spira
         predicate = predicate_for(opts[:predicate], name)
         type = type_for(opts[:type])
         @properties[name] = { :predicate => predicate, :type => type }
+        @lists.delete(name)
         add_accessors(name,opts)
       end
 
