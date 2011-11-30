@@ -14,7 +14,7 @@ module Spira::Types
     include Spira::Type
 
     def self.unserialize(value)
-      value.object
+      value.object.to_i
     end
 
     def self.serialize(value)

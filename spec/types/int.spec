@@ -14,9 +14,11 @@ describe Spira::Types::Int do
 
   context "when unserializing" do
     it "should unserialize XSD int to integers" do
-      value = Spira::Types::Int.unserialize(RDF::Literal.new(5, :datatype => RDF::XSD.int))
-      value.should be_a Fixnum
-      value.should == 5
+      [5, "5"].each do |num|
+        value = Spira::Types::Int.unserialize(RDF::Literal.new(num, :datatype => RDF::XSD.int))
+        value.should be_a Fixnum
+        value.should == num.to_i
+      end
     end
   end
 
