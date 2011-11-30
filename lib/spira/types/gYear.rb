@@ -1,27 +1,26 @@
 module Spira::Types
 
   ##
-  # A {Spira::Type} for integer values.  Values will be associated with the
-  # `XSD.int` type.
+  # A {Spira::Type} for gYear.  Values will be associated with the
+  # `XSD.gYear` type.
   #
   # A {Spira::Resource} property can reference this type as
-  # `Spira::Types::Int`, `Int`, or `XSD.int`.
+  # `Spira::Types::GYear`, `GYear`, or `XSD.gYear`.
   #
   # @see Spira::Type
   # @see http://rdf.rubyforge.org/RDF/Literal.html
-  class Int
-
+  class GYear
     include Spira::Type
 
     def self.unserialize(value)
-      value.object.to_i
+      object = value.object.to_i
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => RDF::XSD.int)
+      RDF::Literal.new(value, :datatype => XSD.gYear)
     end
 
-    register_alias XSD.int
+    register_alias XSD.gYear
 
   end
 end

@@ -8,6 +8,7 @@ module Spira
   # @see Spira::Types::Integer  
   # @see Spira::Types::Boolean
   # @see Spira::Types::String
+  # @see Spira::Types::GYear
   # @see Spira::Types::Date
   # @see Spira::Types::DateTime
   # @see Spira::Types::Float
