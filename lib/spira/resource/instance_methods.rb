@@ -44,7 +44,6 @@ module Spira
           yield(self)
           save!
         end
-        self
       end
   
       ##
