@@ -71,7 +71,7 @@ module Spira
       end
 
       ##
-      # Load this instance's attributes.  Overwrite loaded values with attributes in the given options.
+      # Reload this instance's attributes.
       #
       # @return [Hash{Symbol => Any}] attributes
       # @private
@@ -329,24 +329,23 @@ module Spira
       # @private
       def attribute_get(name)
         case @dirty[name]
-          when true
-            @attributes[:current][name]
-          else
-            case @attributes[:copied][name].equal?(NOT_SET)
-              when true
-                dup = if @attributes[:original][name].is_a?(Spira::Resource)
-                  @attributes[:original][name]
-                else
-                  begin
-                    @attributes[:original][name].dup
-                  rescue TypeError
+        when true
+          @attributes[:current][name]
+        else
+          if @attributes[:copied][name].equal?(NOT_SET)
+            dup = if @attributes[:original][name].is_a?(Spira::Resource)
                     @attributes[:original][name]
+                  else
+                    begin
+                      @attributes[:original][name].dup
+                    rescue TypeError
+                      @attributes[:original][name]
+                    end
                   end
-                end
-                @attributes[:copied][name] = dup
-              when false
-                @attributes[:copied][name]
-            end
+            @attributes[:copied][name] = dup
+          else
+            @attributes[:copied][name]
+          end
         end
       end
 
