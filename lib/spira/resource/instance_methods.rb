@@ -61,11 +61,10 @@ module Spira
         @attributes[:current] = {}
         @attributes[:copied] = {}
         self.class.properties.each do |name, predicate|
-          case opts[name].nil?
-            when false
-              attribute_set(name, opts[name])
-            when true
-              @attributes[:copied][name] = NOT_SET
+          if opts[name].nil?
+            @attributes[:copied][name] = NOT_SET
+          else
+            attribute_set(name, opts[name])
           end
         end
         @attributes[:original] = promise { reload_attributes }
@@ -76,7 +75,7 @@ module Spira
       #
       # @return [Hash{Symbol => Any}] attributes
       # @private
-      def reload_attributes()
+      def reload_attributes
         statements = self.class.repository_or_fail.query(:subject => @subject).to_a
         attributes = {}
 
@@ -162,11 +161,10 @@ module Spira
         before_create if self.respond_to?(:before_create, true) && !self.type.nil? && !existed
         before_save if self.respond_to?(:before_save, true)
         # we use the non-raising validate and check it to make a slightly different error message.  worth it?...
-        case validate
-          when true
-            _update!
-          when false
-            raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
+        if validate
+          _update!
+        else
+          raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
         end
         after_create if self.respond_to?(:after_create, true) && !self.type.nil? && !existed
         after_save if self.respond_to?(:after_save, true)
