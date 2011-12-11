@@ -25,7 +25,7 @@ module Spira
       # @return [RDF::URI]
       attr_reader :subject
 
-      ## 
+      ##
       # Initialize a new Spira::Resource instance of this resource class using
       # a new blank node subject.  Accepts a hash of arguments for initial
       # attributes.  To use a URI or existing blank node as a subject, use
@@ -45,7 +45,7 @@ module Spira
           save!
         end
       end
-  
+
       ##
       # Reload all attributes for this instance, overwriting or setting
       # defaults with the given opts.  This resource will block if the
@@ -101,11 +101,11 @@ module Spira
       #
       # @return [Hash{Symbol => Any}] attributes
       def attributes
-        attributes = {}
+        attrs = {}
         self.class.properties.keys.each do |property|
-          attributes[property] = attribute_get(property)
+          attrs[property] = attribute_get(property)
         end
-        attributes
+        attrs
       end
 
       ##
@@ -115,12 +115,12 @@ module Spira
       # @param [Hash{Symbol => Any}] opts Options for deletion
       # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
       # @private
-      def _destroy_attributes(attributes, opts = {})
-        repository = repository_for_attributes(attributes)
+      def _destroy_attributes(attrs, opts = {})
+        repository = repository_for_attributes(attrs)
         repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
         self.class.repository_or_fail.delete(*repository)
       end
- 
+
       ##
       # Delete this instance from the repository.
       #
@@ -234,18 +234,18 @@ module Spira
         end
         repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
       end
- 
-      ## 
+
+      ##
       # The `RDF.type` associated with this class.
       #
       # @return [nil,RDF::URI] The RDF type associated with this instance's class.
       def type
         self.class.type
       end
- 
+
       ##
       # `type` is a special property which is associated with the class and not
-      # the instance.  Always raises a TypeError to try and assign it.  
+      # the instance.  Always raises a TypeError to try and assign it.
       #
       # @raise [TypeError] always
       def type=(type)
@@ -259,7 +259,7 @@ module Spira
       def to_rdf
         self
       end
-      
+
       ##
       # A developer-friendly view of this projection
       #
@@ -267,7 +267,7 @@ module Spira
       def inspect
         "<#{self.class}:#{self.object_id} @subject: #{@subject}>"
       end
- 
+
       ##
       # Enumerate each RDF statement that makes up this projection.  This makes
       # each instance an `RDF::Enumerable`, with all of the nifty benefits
@@ -350,13 +350,13 @@ module Spira
       ##
       # Create an RDF::Repository for the given attributes hash.  This could
       # just as well be a class method but is only used here in #save! and
-      # #destroy!, so it is defined here for simplicity.  
+      # #destroy!, so it is defined here for simplicity.
       #
       # @param [Hash] attributes The attributes to create a repository for
       # @private
-      def repository_for_attributes(attributes)
+      def repository_for_attributes(attrs)
         RDF::Repository.new.tap do |repo|
-          attributes.each do | name, attribute |
+          attrs.each do | name, attribute |
             predicate = self.class.properties[name][:predicate]
             if self.class.is_list?(name)
               attribute.each do |value|
@@ -373,14 +373,14 @@ module Spira
       # Compare this instance with another instance.  The comparison is done on
       # an RDF level, and will work across subclasses as long as the attributes
       # are the same.
-      # 
+      #
       # @see http://rdf.rubyforge.org/isomorphic/
       def ==(other)
         case other
           # TODO: define behavior for equality on subclasses.
           # TODO: should we compare attributes here?
           when self.class
-            @subject == other.uri 
+            @subject == other.uri
           when RDF::Enumerable
             self.isomorphic_with?(other)
           else
@@ -452,7 +452,7 @@ module Spira
       end
 
       ##
-      # Run any model validations and populate the errors object accordingly.  
+      # Run any model validations and populate the errors object accordingly.
       # Returns true if the model is valid, false otherwise
       #
       # @return [True, False]
@@ -464,7 +464,7 @@ module Spira
         errors.empty?
       end
 
-      ## 
+      ##
       # Run validations on this model and raise a Spira::ValidationError if the validations fail.
       #
       # @see #validate
@@ -481,7 +481,7 @@ module Spira
         !data.empty?
       end
       alias_method :exist?, :exists?
-    
+
       ##
       # Returns an Enumerator of all RDF data for this subject, not just model data.
       #
@@ -523,13 +523,13 @@ module Spira
         new_subject = self.class.id_for(new_subject)
         update_repository = RDF::Repository.new
         data.each do |statement|
-          update_repository << RDF::Statement.new(new_subject, statement.predicate, statement.object) 
+          update_repository << RDF::Statement.new(new_subject, statement.predicate, statement.object)
         end
         self.class.repository.insert(update_repository)
         new_subject.as(self.class)
       end
 
-      ## 
+      ##
       # Rename this resource in the repository to the new given subject.
       # Changes are immediately saved to the repository.
       #
@@ -545,7 +545,7 @@ module Spira
         self.class.repository.insert(update_repository)
         destroy!(:completely)
         new
-      end  
+      end
 
       ## We have defined #each and can do this fun RDF stuff by default
       include ::RDF::Enumerable, ::RDF::Queryable
@@ -563,6 +563,6 @@ module Spira
         end
       end
 
-    end  
+    end
   end
 end
