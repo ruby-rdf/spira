@@ -76,26 +76,24 @@ module Spira
       # @return [Hash{Symbol => Any}] attributes
       # @private
       def reload_attributes
-        statements = self.class.repository_or_fail.query(:subject => @subject).to_a
-        attributes = {}
+        statements = self.class.repository_or_fail.query(:subject => @subject)
 
-        # Set attributes for each statement corresponding to a predicate
+        attrs = {}
         self.class.properties.each do |name, property|
           if self.class.is_list?(name)
-            values = Set.new
-            collection = statements.select{|s| s.subject == @subject && s.predicate == property[:predicate]} unless statements.empty?
-            unless collection.nil?
-              collection.each do |statement|
-                values << self.class.build_value(statement,property[:type], @cache)
+            value = Set.new
+            statements.each do |st|
+              if st.predicate == property[:predicate]
+                value << self.class.build_value(st, property[:type], @cache)
               end
             end
-            attributes[name] = values
           else
-            statement = statements.select{|s| s.subject == @subject && s.predicate == property[:predicate]}.first unless statements.empty?
-            attributes[name] = self.class.build_value(statement, property[:type], @cache)
+            statement = statements.detect {|st| st.predicate == property[:predicate] }
+            value = self.class.build_value(statement, property[:type], @cache)
           end
+          attrs[name] = value
         end
-        attributes
+        attrs
       end
 
       ##
