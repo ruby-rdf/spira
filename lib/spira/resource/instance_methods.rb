@@ -76,9 +76,9 @@ module Spira
       # @return [Hash{Symbol => Any}] attributes
       # @private
       def reload_attributes
-        statements = self.class.repository_or_fail.query(:subject => @subject)
-
+        statements = data
         attrs = {}
+
         self.class.properties.each do |name, property|
           if self.class.is_list?(name)
             value = Set.new
@@ -489,7 +489,7 @@ module Spira
       # @see http://rdf.rubyforge.org/RDF/Enumerable.html
       # @return [Enumerator]
       def data
-        self.class.repository.query(:subject => subject)
+        self.class.repository_or_fail.query(:subject => subject)
       end
 
       ##
