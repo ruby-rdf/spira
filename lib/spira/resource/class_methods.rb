@@ -199,8 +199,8 @@ module Spira
             enum_for(:each)
           else
             repository_or_fail.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
-              self.cache[subject] ||= self.for(subject)
-              block.call(cache[subject])
+              self.cache["#{subject}_#{@type}"] ||= self.for(subject)
+              block.call(cache["#{subject}_#{@type}"])
             end
         end
       end

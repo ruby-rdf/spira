@@ -141,14 +141,14 @@ module Spira
         case
           when statement == nil
             nil
-          when !cache[statement.object].nil?
-            cache[statement.object]
+          when !cache["#{statement.object}_#{type}"].nil?
+            cache["#{statement.object}_#{type}"]
           when type.respond_to?(:unserialize)
             type.unserialize(statement.object)
           when type.is_a?(Symbol) || type.is_a?(String)
             klass = classize_resource(type)
-            cache[statement.object] = promise { klass.for(statement.object, :_cache => cache) }
-            cache[statement.object]
+            cache["#{statement.object}_#{type}"] = promise { klass.for(statement.object, :_cache => cache) }
+            cache["#{statement.object}_#{type}"]
           else
             raise TypeError, "Unable to unserialize #{statement.object} as #{type}"
         end
