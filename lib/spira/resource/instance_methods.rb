@@ -26,6 +26,13 @@ module Spira
       attr_reader :subject
 
       ##
+      # The validation errors collection associated with this instance.
+      #
+      # @return [Spira::Errors]
+      # @see Spira::Errors
+      attr_reader :errors
+
+      ##
       # Initialize a new Spira::Resource instance of this resource class using
       # a new blank node subject.  Accepts a hash of arguments for initial
       # attributes.  To use a URI or existing blank node as a subject, use
@@ -54,6 +61,7 @@ module Spira
       # @param   [Hash{Symbol => Any}] opts
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
+        @errors = Spira::Errors.new
         @cache = opts[:_cache] || RDF::Util::Cache.new
         @cache[subject] = self
         @dirty = {}
@@ -440,15 +448,6 @@ module Spira
       # @raise [NoMethodError]
       def to_node
         @subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
-      end
-
-      ##
-      # The validation errors collection associated with this instance.
-      #
-      # @return [Spira::Errors]
-      # @see Spira::Errors
-      def errors
-        @errors ||= Spira::Errors.new
       end
 
       ##
