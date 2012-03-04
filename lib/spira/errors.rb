@@ -38,7 +38,7 @@ module Spira
     # @param [Symbol] name The name of the property or list
     # @return [true, false]
     def any_for?(property)
-      !(@errors[property].nil?) && !(@errors[property].empty?)
+      !self.for(property).empty?
     end
  
     ##
@@ -63,8 +63,9 @@ module Spira
     # @param [Symbol] property The property or list to check
     # @return [Array<String>] The list of errors
     def for(property)
-      @errors[property]
+      @errors[property] || []
     end
+    alias_method :[], :for
 
     ##
     # Clear all errors
