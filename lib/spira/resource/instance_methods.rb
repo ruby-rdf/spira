@@ -64,15 +64,16 @@ module Spira
         @errors = Spira::Errors.new
         @cache = opts[:_cache] || RDF::Util::Cache.new
         @cache[subject] = self
-        @dirty = {}
+        @dirty = HashWithIndifferentAccess.new
         @attributes = {}
-        @attributes[:current] = {}
-        @attributes[:copied] = {}
+        @attributes[:current] = HashWithIndifferentAccess.new
+        @attributes[:copied] = HashWithIndifferentAccess.new
         self.class.properties.each do |name, predicate|
-          if opts[name].nil?
+          set_value = opts[name.to_s] || opts[name.to_sym]
+          if set_value.nil?
             @attributes[:copied][name] = NOT_SET
           else
-            attribute_set(name, opts[name])
+            attribute_set(name, set_value)
           end
         end
         @attributes[:original] = promise { reload_attributes }
@@ -85,7 +86,7 @@ module Spira
       # @private
       def reload_attributes
         statements = data
-        attrs = {}
+        attrs = HashWithIndifferentAccess.new
 
         self.class.properties.each do |name, property|
           if self.class.is_list?(name)
@@ -109,7 +110,7 @@ module Spira
       #
       # @return [Hash{Symbol => Any}] attributes
       def attributes
-        attrs = {}
+        attrs = HashWithIndifferentAccess.new
         self.class.properties.keys.each do |property|
           attrs[property] = attribute_get(property)
         end
