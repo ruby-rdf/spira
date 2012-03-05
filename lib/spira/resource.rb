@@ -1,3 +1,5 @@
+require "active_support/hash_with_indifferent_access"
+
 module Spira
 
   ##
@@ -57,8 +59,8 @@ module Spira
           class << self
             attr_accessor :properties, :lists
           end
-          @properties = {}
-          @lists      = {}
+          @properties = HashWithIndifferentAccess.new
+          @lists      = HashWithIndifferentAccess.new
         end
       end
     end
