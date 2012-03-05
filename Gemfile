@@ -1,4 +1,6 @@
 source :rubygems
+
+gem 'rake'
 gem 'rdf'
 gem 'rspec', '~>2.5'
 gem 'rdf-spec'
