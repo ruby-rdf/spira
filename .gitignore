@@ -6,3 +6,5 @@ doc
 TAGS
 *~
 .*~
+.bundle
+bin/
