@@ -14,6 +14,13 @@ module Spira
     # @see Spira::Resource::Validations
     module InstanceMethods
 
+      ## We have defined #each and can do this fun RDF stuff by default
+      include ::RDF::Enumerable, ::RDF::Queryable
+
+      ## Include the base validation functions
+      include Spira::Resource::Validations
+
+
       # Marker for whether or not a field has been set or not; distinguishes
       # nil and unset.
       # @private
@@ -45,9 +52,9 @@ module Spira
       # @see RDF::URI#as
       # @see RDF::Node#as
       def initialize(opts = {})
-        @subject = opts[:_subject] || RDF::Node.new
-        reload(opts)
-        yield self if block_given?
+	@subject = opts[:_subject] || RDF::Node.new
+	reload opts
+	yield self if block_given?
       end
 
       ##
@@ -58,48 +65,22 @@ module Spira
       # @param   [Hash{Symbol => Any}] opts
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
-        @errors = Spira::Errors.new
-        @cache = opts[:_cache] || RDF::Util::Cache.new
-        @cache[subject] = self
-        @dirty = HashWithIndifferentAccess.new
-        @attributes = {}
-        @attributes[:current] = HashWithIndifferentAccess.new
-        @attributes[:copied] = HashWithIndifferentAccess.new
-        self.class.properties.each do |name, predicate|
-          set_value = opts[name.to_s] || opts[name.to_sym]
-          if set_value.nil?
-            @attributes[:copied][name] = NOT_SET
-          else
-            attribute_set(name, set_value)
-          end
-        end
-        @attributes[:original] = promise { reload_attributes }
-      end
-
-      ##
-      # Reload this instance's attributes.
-      #
-      # @return [Hash{Symbol => Any}] attributes
-      # @private
-      def reload_attributes
-        statements = data
-        attrs = HashWithIndifferentAccess.new
-
-        self.class.properties.each do |name, property|
-          if self.class.is_list?(name)
-            value = Set.new
-            statements.each do |st|
-              if st.predicate == property[:predicate]
-                value << self.class.build_value(st, property[:type], @cache)
-              end
-            end
-          else
-            statement = statements.detect {|st| st.predicate == property[:predicate] }
-            value = self.class.build_value(statement, property[:type], @cache)
-          end
-          attrs[name] = value
-        end
-        attrs
+	@errors = Spira::Errors.new
+	@cache = opts[:_cache] || RDF::Util::Cache.new
+	@cache[subject] = self
+	@dirty = HashWithIndifferentAccess.new
+	@attributes = {}
+	@attributes[:current] = HashWithIndifferentAccess.new
+	@attributes[:copied] = HashWithIndifferentAccess.new
+	self.class.properties.each do |name, predicate|
+	  set_value = opts[name.to_s] || opts[name.to_sym]
+	  if set_value.nil?
+	    @attributes[:copied][name] = NOT_SET
+	  else
+	    write_attribute name, set_value
+	  end
+	end
+	@attributes[:original] = promise { reload_attributes }
       end
 
       ##
@@ -107,24 +88,11 @@ module Spira
       #
       # @return [Hash{Symbol => Any}] attributes
       def attributes
-        attrs = HashWithIndifferentAccess.new
-        self.class.properties.keys.each do |property|
-          attrs[property] = attribute_get(property)
-        end
-        attrs
-      end
-
-      ##
-      # Remove the given attributes from the repository
-      #
-      # @param [Hash] attributes The hash of attributes to delete
-      # @param [Hash{Symbol => Any}] opts Options for deletion
-      # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
-      # @private
-      def _destroy_attributes(attrs, opts = {})
-        repository = repository_for_attributes(attrs)
-        repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
-        self.class.repository_or_fail.delete(*repository)
+	attrs = HashWithIndifferentAccess.new
+	self.class.properties.keys.each do |property|
+	  attrs[property] = attribute_get(property)
+	end
+	attrs
       end
 
       ##
@@ -141,16 +109,16 @@ module Spira
       #     @object.destroy!(:completely)
       # @return [true, false] Whether or not the destroy was successful
       def destroy!(what = nil)
-        case what
-        when nil
-          _destroy_attributes(attributes, :destroy_type => true) != nil
-        when :subject
-          self.class.repository_or_fail.delete([subject, nil, nil]) != nil
-        when :object
-          self.class.repository_or_fail.delete([nil, nil, subject]) != nil
-        when :completely
-          destroy!(:subject) && destroy!(:object)
-        end
+	case what
+	when nil
+	  _destroy_attributes(attributes, :destroy_type => true) != nil
+	when :subject
+	  self.class.repository_or_fail.delete([subject, nil, nil]) != nil
+	when :object
+	  self.class.repository_or_fail.delete([nil, nil, subject]) != nil
+	when :completely
+	  destroy!(:subject) && destroy!(:object)
+	end
       end
 
       ##
@@ -168,17 +136,10 @@ module Spira
       # @param  [Hash{Symbol => Any}] properties
       # @return [self]
       def update(properties)
-        properties.each do |property, value|
-          if respond_to? "#{property}="
-            # using an attribute setter instead of "attribute_set"
-            # in order to mimic ActiveRecord behavior
-            # (see attribute_assignment.rb in ActiveRecord gem)
-            send "#{property}=", value
-          else
-            raise Spira::PropertyMissingError, "attempt to assign a value to a non-existing property '#{property}'"
-          end
-        end
-        self
+	properties.each do |property, value|
+	  write_attribute property, value
+	end
+	self
       end
 
       ##
@@ -196,34 +157,8 @@ module Spira
       # @param  [Hash{Symbol => Any}] properties
       # @return [self]
       def update!(properties)
-        update(properties)
-        save!
-      end
-
-      ##
-      # Save changes to the repository
-      #
-      # @private
-      def persist!
-        repo = self.class.repository_or_fail
-        self.class.properties.each do |property, predicate|
-          value = attribute_get(property)
-          if dirty?(property)
-            repo.delete([subject, predicate[:predicate], nil])
-            if self.class.is_list?(property)
-              value.each do |val|
-                store_attribute(property, val, predicate[:predicate], repo)
-              end
-            else
-              store_attribute(property, value, predicate[:predicate], repo)
-            end
-          end
-          @attributes[:original][property] = value
-          @dirty[property] = nil
-          @attributes[:copied][property] = NOT_SET
-        end
-        repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
-        self
+	update(properties)
+	save!
       end
 
       ##
@@ -231,7 +166,7 @@ module Spira
       #
       # @return [nil,RDF::URI] The RDF type associated with this instance's class.
       def type
-        self.class.type
+	self.class.type
       end
 
       ##
@@ -240,7 +175,7 @@ module Spira
       #
       # @raise [TypeError] always
       def type=(type)
-        raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
+	raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
       end
 
       ##
@@ -248,15 +183,14 @@ module Spira
       #
       # @return [RDF::Enumerable]
       def to_rdf
-        self
+	self
       end
 
       ##
       # A developer-friendly view of this projection
       #
-      # @private
       def inspect
-        "<#{self.class}:#{self.object_id} @subject: #{@subject}>"
+	"<#{self.class}:#{self.object_id} @subject: #{@subject}>"
       end
 
       ##
@@ -267,10 +201,10 @@ module Spira
       #
       # @see http://rdf.rubyforge.org/RDF/Enumerable.html
       def each(*args, &block)
-        return enum_for(:each) unless block_given?
-        repository = repository_for_attributes(attributes)
-        repository.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
-        repository.each(*args, &block)
+	return enum_for(:each) unless block_given?
+	repository = repository_for_attributes(attributes)
+	repository.insert(RDF::Statement.new(@subject, RDF.type, type)) unless type.nil?
+	repository.each(*args, &block)
       end
 
       ##
@@ -278,83 +212,26 @@ module Spira
       #
       # @see http://rdf.rubyforge.org/RDF/Enumerable.html#count
       def count
-        each.size
-      end
-
-      ##
-      # Sets the given attribute to the given value.
-      #
-      # @private
-      def attribute_set(name, value)
-        @dirty[name] = true
-        @attributes[:current][name] = value
+	each.size
       end
 
       ##
       # Returns true if the given attribute has been changed from the backing store
       #
       def dirty?(name = nil)
-        case name
-          when nil
-            self.class.properties.keys.any? { |key| dirty?(key) }
-          else
-            case
-              when @dirty[name] == true
-                true
-              else
-                case @attributes[:copied][name]
-                  when NOT_SET
-                    false
-                  else
-                    @attributes[:copied][name] != @attributes[:original][name]
-                end
-            end
-          end
-      end
-
-      ##
-      # Get the current value for the given attribute
-      #
-      # @private
-      def attribute_get(name)
-        case @dirty[name]
-        when true
-          @attributes[:current][name]
+	case name
+        when nil
+          self.class.properties.keys.any? { |key| dirty?(key) }
         else
-          if @attributes[:copied][name].equal?(NOT_SET)
-            dup = if @attributes[:original][name].is_a?(Spira::Resource)
-                    @attributes[:original][name]
-                  else
-                    begin
-                      @attributes[:original][name].dup
-                    rescue TypeError
-                      @attributes[:original][name]
-                    end
-                  end
-            @attributes[:copied][name] = dup
+          case
+          when @dirty[name] == true
+            true
           else
-            @attributes[:copied][name]
-          end
-        end
-      end
-
-      ##
-      # Create an RDF::Repository for the given attributes hash.  This could
-      # just as well be a class method but is only used here in #save! and
-      # #destroy!, so it is defined here for simplicity.
-      #
-      # @param [Hash] attributes The attributes to create a repository for
-      # @private
-      def repository_for_attributes(attrs)
-        RDF::Repository.new.tap do |repo|
-          attrs.each do | name, attribute |
-            predicate = self.class.properties[name][:predicate]
-            if self.class.is_list?(name)
-              attribute.each do |value|
-                store_attribute(name, value, predicate, repo)
-              end
+            case @attributes[:copied][name]
+            when NOT_SET
+              false
             else
-              store_attribute(name, attribute, predicate, repo)
+              @attributes[:copied][name] != @attributes[:original][name]
             end
           end
         end
@@ -367,16 +244,16 @@ module Spira
       #
       # @see http://rdf.rubyforge.org/isomorphic/
       def ==(other)
-        case other
-          # TODO: define behavior for equality on subclasses.
-          # TODO: should we compare attributes here?
-          when self.class
-            @subject == other.uri
-          when RDF::Enumerable
-            self.isomorphic_with?(other)
-          else
-            false
-        end
+	case other
+	  # TODO: define behavior for equality on subclasses.
+	  # TODO: should we compare attributes here?
+        when self.class
+          @subject == other.uri
+        when RDF::Enumerable
+          self.isomorphic_with?(other)
+        else
+          false
+	end
       end
 
       ##
@@ -384,16 +261,15 @@ module Spira
       # Returns true for :to_node if this instance's subject is a Node, and false if it is not.
       # Calls super otherwise.
       #
-      # @private
       def respond_to?(*args)
-        case args[0]
-          when :to_uri
-            @subject.respond_to?(:to_uri)
-          when :to_node
-            @subject.node?
-          else
-            super(*args)
-        end
+	case args[0]
+        when :to_uri
+          @subject.respond_to?(:to_uri)
+        when :to_node
+          @subject.node?
+        else
+          super(*args)
+	end
       end
 
       ##
@@ -402,7 +278,7 @@ module Spira
       #
       # @return [RDF::URI,nil]
       def uri
-        @subject.respond_to?(:to_uri) ? @subject : nil
+	@subject.respond_to?(:to_uri) ? @subject : nil
       end
 
       ##
@@ -412,7 +288,7 @@ module Spira
       # @return [RDF::URI]
       # @raise [NoMethodError]
       def to_uri
-        uri || (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
+	uri || (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
       end
 
       ##
@@ -420,7 +296,7 @@ module Spira
       #
       # @return [true, false]
       def node?
-        @subject.node?
+	@subject.node?
       end
 
       ##
@@ -430,7 +306,7 @@ module Spira
       # @return [RDF::Node]
       # @raise [NoMethodError]
       def to_node
-        @subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
+	@subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
       end
 
       ##
@@ -439,11 +315,11 @@ module Spira
       #
       # @return [True, False]
       def validate
-        unless self.class.validators.empty?
-          errors.clear
-          self.class.validators.each do | validator | self.send(validator) end
-        end
-        errors.empty?
+	unless self.class.validators.empty?
+	  errors.clear
+	  self.class.validators.each do | validator | self.send(validator) end
+	end
+	errors.empty?
       end
 
       ##
@@ -452,7 +328,7 @@ module Spira
       # @see #validate
       # @return true
       def validate!
-        validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
+	validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
       end
 
       ##
@@ -463,7 +339,7 @@ module Spira
       #
       # @return [Boolean]
       def exists?
-        !data.empty?
+	!data.empty?
       end
       alias_method :exist?, :exists?
 
@@ -474,7 +350,7 @@ module Spira
       # @see http://rdf.rubyforge.org/RDF/Enumerable.html
       # @return [Enumerator]
       def data
-        self.class.repository_or_fail.query(:subject => subject)
+	self.class.repository_or_fail.query(:subject => subject)
       end
 
       ##
@@ -483,9 +359,9 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource] copy
       def copy(new_subject)
-        copy = self.class.for(new_subject)
-        self.class.properties.each_key { |property| copy.attribute_set(property, self.attribute_get(property)) }
-        copy
+	copy = self.class.for(new_subject)
+	self.class.properties.each_key { |property| copy.send :write_attribute, property, attribute_get(property) }
+	copy
       end
 
       ##
@@ -495,7 +371,7 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource, String] copy
       def copy!(new_subject)
-        copy(new_subject).save!
+	copy(new_subject).save!
       end
 
       ##
@@ -505,13 +381,13 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource, String] copy
       def copy_resource!(new_subject)
-        new_subject = self.class.id_for(new_subject)
-        update_repository = RDF::Repository.new
-        data.each do |statement|
-          update_repository << RDF::Statement.new(new_subject, statement.predicate, statement.object)
-        end
-        self.class.repository.insert(update_repository)
-        new_subject.as(self.class)
+	new_subject = self.class.id_for(new_subject)
+	update_repository = RDF::Repository.new
+	data.each do |statement|
+	  update_repository << RDF::Statement.new(new_subject, statement.predicate, statement.object)
+	end
+	self.class.repository.insert(update_repository)
+	new_subject.as(self.class)
       end
 
       ##
@@ -521,31 +397,158 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource, String] new_resource
       def rename!(new_subject)
-        new = copy_resource!(new_subject)
-        object_statements = self.class.repository.query(:object => subject)
-        update_repository = RDF::Repository.new
-        object_statements.each do |statement|
-          update_repository << RDF::Statement.new(statement.subject, statement.predicate, new.subject)
-        end
-        self.class.repository.insert(update_repository)
-        destroy!(:completely)
-        new
+	new = copy_resource!(new_subject)
+	object_statements = self.class.repository.query(:object => subject)
+	update_repository = RDF::Repository.new
+	object_statements.each do |statement|
+	  update_repository << RDF::Statement.new(statement.subject, statement.predicate, new.subject)
+	end
+	self.class.repository.insert(update_repository)
+	destroy!(:completely)
+	new
       end
-
-      ## We have defined #each and can do this fun RDF stuff by default
-      include ::RDF::Enumerable, ::RDF::Queryable
-
-      ## Include the base validation functions
-      include Spira::Resource::Validations
 
 
       private
 
       def store_attribute(property, value, predicate, repository)
-        if value
-          val = self.class.build_rdf_value(value, self.class.properties[property][:type])
-          repository.insert(RDF::Statement.new(subject, predicate, val))
-        end
+	if value
+	  val = self.class.build_rdf_value(value, self.class.properties[property][:type])
+	  repository.insert(RDF::Statement.new(subject, predicate, val))
+	end
+      end
+
+      def write_attribute(name, value)
+	if respond_to? "#{name}="
+	  # using an attribute setter instead of "attribute_set"
+	  # in order to mimic ActiveRecord behavior
+	  # (see attribute_assignment.rb in ActiveRecord gem)
+	  send "#{name}=", value
+	else
+	  raise Spira::PropertyMissingError, "attempt to assign a value to a non-existing property '#{name}'"
+	end
+      end
+
+      ##
+      # Sets the given attribute to the given value.
+      #
+      # @private
+      def attribute_set(name, value)
+	@dirty[name] = true
+	@attributes[:current][name] = value
+      end
+
+      ##
+      # Reload this instance's attributes.
+      #
+      # @return [Hash{Symbol => Any}] attributes
+      # @private
+      def reload_attributes
+	statements = data
+	attrs = HashWithIndifferentAccess.new
+
+	self.class.properties.each do |name, property|
+	  if self.class.is_list?(name)
+	    value = Set.new
+	    statements.each do |st|
+	      if st.predicate == property[:predicate]
+		value << self.class.build_value(st, property[:type], @cache)
+	      end
+	    end
+	  else
+	    statement = statements.detect {|st| st.predicate == property[:predicate] }
+	    value = self.class.build_value(statement, property[:type], @cache)
+	  end
+	  attrs[name] = value
+	end
+	attrs
+      end
+
+      ##
+      # Remove the given attributes from the repository
+      #
+      # @param [Hash] attributes The hash of attributes to delete
+      # @param [Hash{Symbol => Any}] opts Options for deletion
+      # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
+      # @private
+      def _destroy_attributes(attrs, opts = {})
+	repository = repository_for_attributes(attrs)
+	repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
+	self.class.repository_or_fail.delete(*repository)
+      end
+
+      ##
+      # Save changes to the repository
+      #
+      # @private
+      def persist!
+	repo = self.class.repository_or_fail
+	self.class.properties.each do |property, predicate|
+	  value = attribute_get(property)
+	  if dirty?(property)
+	    repo.delete([subject, predicate[:predicate], nil])
+	    if self.class.is_list?(property)
+	      value.each do |val|
+		store_attribute(property, val, predicate[:predicate], repo)
+	      end
+	    else
+	      store_attribute(property, value, predicate[:predicate], repo)
+	    end
+	  end
+	  @attributes[:original][property] = value
+	  @dirty[property] = nil
+	  @attributes[:copied][property] = NOT_SET
+	end
+	repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
+	self
+      end
+
+      ##
+      # Get the current value for the given attribute
+      #
+      # @private
+      def attribute_get(name)
+	case @dirty[name]
+	when true
+	  @attributes[:current][name]
+	else
+	  if @attributes[:copied][name].equal?(NOT_SET)
+	    dup = if @attributes[:original][name].is_a?(Spira::Resource)
+		    @attributes[:original][name]
+		  else
+		    begin
+		      @attributes[:original][name].dup
+		    rescue TypeError
+		      @attributes[:original][name]
+		    end
+		  end
+	    @attributes[:copied][name] = dup
+	  else
+	    @attributes[:copied][name]
+	  end
+	end
+      end
+
+      ##
+      # Create an RDF::Repository for the given attributes hash.  This could
+      # just as well be a class method but is only used here in #save! and
+      # #destroy!, so it is defined here for simplicity.
+      #
+      # @param [Hash] attributes The attributes to create a repository for
+      # @private
+      def repository_for_attributes(attrs)
+	RDF::Repository.new.tap do |repo|
+	  attrs.each do | name, attribute |
+	    predicate = self.class.properties[name][:predicate]
+	    if self.class.is_list?(name)
+	      attribute.each do |value|
+		store_attribute(name, value, predicate, repo)
+	      end
+	    else
+	      store_attribute(name, attribute, predicate, repo)
+	    end
+	  end
+	end
       end
 
     end
