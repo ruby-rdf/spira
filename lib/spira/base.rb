@@ -93,6 +93,10 @@ module Spira
           # "create" callback is triggered only when persisting a resource definition
           persistance_callback = new_record? && type ? :create : :update
           run_callbacks persistance_callback do
+            if new_record? && subject.anonymous? && type
+              # "materialize" the resource
+              @subject = self.class.id_for(subject.id)
+            end
             persist!
           end
         end
