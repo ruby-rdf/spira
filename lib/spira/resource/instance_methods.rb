@@ -39,7 +39,7 @@ module Spira
       # {Spira::Resource::ClassMethods#for} instead.
       #
       # @param [Hash{Symbol => Any}] opts Default attributes for this instance
-      # @yield [self] Executes a given block and calls `#save!`
+      # @yield [self] Executes a given block
       # @yieldparam [self] self The newly created instance
       # @see Spira::Resource::ClassMethods#for
       # @see RDF::URI#as
@@ -47,10 +47,7 @@ module Spira
       def initialize(opts = {})
         @subject = opts[:_subject] || RDF::Node.new
         reload(opts)
-        if block_given?
-          yield(self)
-          save!
-        end
+        yield self if block_given?
       end
 
       ##
@@ -144,38 +141,16 @@ module Spira
       #     @object.destroy!(:completely)
       # @return [true, false] Whether or not the destroy was successful
       def destroy!(what = nil)
-        before_destroy if self.respond_to?(:before_destroy, true)
-        result = case what
-          when nil
-            _destroy_attributes(attributes, :destroy_type => true) != nil
-          when :subject
-            self.class.repository_or_fail.delete([subject, nil, nil]) != nil
-          when :object
-            self.class.repository_or_fail.delete([nil, nil, subject]) != nil
-          when :completely
-            destroy!(:subject) && destroy!(:object)
+        case what
+        when nil
+          _destroy_attributes(attributes, :destroy_type => true) != nil
+        when :subject
+          self.class.repository_or_fail.delete([subject, nil, nil]) != nil
+        when :object
+          self.class.repository_or_fail.delete([nil, nil, subject]) != nil
+        when :completely
+          destroy!(:subject) && destroy!(:object)
         end
-        after_destroy if self.respond_to?(:after_destroy, true) if result
-        result
-      end
-
-      ##
-      # Save changes in this instance to the repository.
-      #
-      # @return [self] self
-      def save!
-        existed = (self.respond_to?(:before_create, true) || self.respond_to?(:after_create, true)) && !self.type.nil? && exists?
-        before_create if self.respond_to?(:before_create, true) && !self.type.nil? && !existed
-        before_save if self.respond_to?(:before_save, true)
-        # we use the non-raising validate and check it to make a slightly different error message.  worth it?...
-        if validate
-          _update!
-        else
-          raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
-        end
-        after_create if self.respond_to?(:after_create, true) && !self.type.nil? && !existed
-        after_save if self.respond_to?(:after_save, true)
-        self
       end
 
       ##
@@ -196,7 +171,6 @@ module Spira
         properties.each do |property, value|
           attribute_set(property, value)
         end
-        after_update if self.respond_to?(:after_update, true)
         self
       end
 
@@ -223,7 +197,7 @@ module Spira
       # Save changes to the repository
       #
       # @private
-      def _update!
+      def persist!
         repo = self.class.repository_or_fail
         self.class.properties.each do |property, predicate|
           value = attribute_get(property)
@@ -242,6 +216,7 @@ module Spira
           @attributes[:copied][property] = NOT_SET
         end
         repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
+        self
       end
 
       ##
@@ -475,6 +450,9 @@ module Spira
 
       ##
       # Returns true if any data exists for this subject in the backing RDF store
+      # TODO: This method *maybe* should be obsoleted by #persisted? from ActiveModel;
+      #       the name is also misleading because "exists?" is not the same as "!new_record?",
+      #       which, unlike "exists?" cares only for the resource definition.
       #
       # @return [Boolean]
       def exists?

@@ -1,3 +1,33 @@
+# FOREWORD
+
+This is a branch of Spira that makes use of ActiveModel. The goal of this branch is
+to replace all the internals of Spira with ActiveModel hooks, and thus get rid of
+superfluous code and increase compatibility with Rails stack.
+
+Although I've been trying to make the impact of this transition to be as little
+as possible, there are a few changes that you should be aware of:
+
+ * Customary record manipulation methods are preferred now.
+   This means you should use "save", "destroy", "update_attributes", etc.
+   instead of "save!", "destroy!", "update", "update!" and others.
+ * Callbacks are now handled by ActiveModel. Previous ways of defining them is
+   no longer valid. This also introduces the before_, after_ and around_ callbacks
+   as well as their _validation, _save, _update and _create companions for you to enjoy.
+ * A spira resource must be *inherited* from Spira::Base.
+   Do not use "include Spira::Resource" as a way to define your Spira resource -
+   it is broken and will be gone soon.
+ * Take note about the difference of "new_record?" and "exists?" methods.
+   Read the comments on those.
+ * "after/before_create" callbacks are *not* called when only the properties of your
+   Spira resource are getting persisted. You may create a "type"-less Spira resource,
+   assign properties to it, then #save it -- "_create" callbacks will not be triggered,
+   because Spira cannot infer a resource definition ("resource - RDF.type - type")
+   for such resource and will only persist its properties.
+   Although this is how the original Spira behaves too, I thought I'd state it
+   explicitly here for when you start freaking out.
+ * Older validation mechanism is still there, but it is going away at some point too.
+
+
 # Spira
 
 It's time to breathe life into your linked data.

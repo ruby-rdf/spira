@@ -5,8 +5,7 @@ describe Spira do
   context "inheritance" do
 
     before :all do
-      class ::InheritanceItem
-        include Spira::Resource
+      class ::InheritanceItem < Spira::Base
 
         property :title, :predicate => DC.title, :type => String
         type  SIOC.item
@@ -23,8 +22,7 @@ describe Spira do
       class ::InheritanceForumPost < ::InheritancePost
       end
 
-      class ::InheritanceContainer
-        include Spira::Resource
+      class ::InheritanceContainer < Spira::Base
         type SIOC.container
 
         has_many :items, :type => 'InheritanceItem', :predicate => SIOC.container_of
@@ -137,15 +135,13 @@ describe Spira do
           property :author, :predicate => DC.author, :type => String
         end
 
-        class ::ModuleIncluder1
-          include Spira::Resource
+        class ::ModuleIncluder1 < Spira::Base
           include SpiraModule1
           has_many :ages, :predicate => FOAF.ages
           property :age, :predicate => FOAF.age, :type => Integer
         end
 
-        class ::ModuleIncluder2
-          include Spira::Resource
+        class ::ModuleIncluder2 < Spira::Base
           include SpiraModule1
           include SpiraModule2
           has_many :ages, :predicate => FOAF.ages

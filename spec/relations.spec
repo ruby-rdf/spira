@@ -11,15 +11,13 @@ describe "Spira resources" do
       property :has_cd
     end
     
-    class ::CD
-      include Spira::Resource
+    class ::CD < Spira::Base
       base_uri CDs.cds
       property :name,   :predicate => DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
     
-    class ::Artist
-      include Spira::Resource
+    class ::Artist < Spira::Base
       base_uri CDs.artists
       property :name, :predicate => DC.title, :type => String
       has_many :cds, :predicate => CDs.has_cd, :type => :CD
@@ -29,8 +27,7 @@ describe "Spira resources" do
   context "when referencing relationships" do
     context "in the root namespace" do
       before :all do
-        class ::RootNSTest
-          include Spira::Resource
+        class ::RootNSTest < Spira::Base
           property :name, :predicate => DC.title, :type => 'RootNSTest'
         end
         Spira.add_repository!(:default, RDF::Repository.new)
@@ -51,12 +48,10 @@ describe "Spira resources" do
     context "in the same namespace" do
       before :all do
         module ::NSTest
-          class X
-            include Spira::Resource
+          class X < Spira::Base
             property :name, :predicate => DC.title, :type => 'Y'
           end
-          class Y
-            include Spira::Resource
+          class Y < Spira::Base
           end
         end
         Spira.add_repository!(:default, RDF::Repository.new)
@@ -77,14 +72,12 @@ describe "Spira resources" do
     context "in another namespace" do
       before :all do
         module ::NSTest
-          class Z
-            include Spira::Resource
+          class Z < Spira::Base
             property :name, :predicate => DC.title, :type => 'NSTestA::A'
           end
         end
         module ::NSTestA
-          class A
-            include Spira::Resource
+          class A < Spira::Base
           end
         end
       end 
@@ -167,8 +160,7 @@ describe "Spira resources" do
     context "when accessing a field named for a non-existant class" do
       
       before :all do
-        class ::RelationsTestA
-          include Spira::Resource
+        class ::RelationsTestA < Spira::Base
           base_uri CDs.cds
           property :invalid, :predicate => CDs.artist, :type => :non_existant_type
         end
@@ -190,8 +182,7 @@ describe "Spira resources" do
 
     context "when accessing a field for a class that is not a Spira::Resource" do
       before :all do
-        class ::RelationsTestB
-          include Spira::Resource
+        class ::RelationsTestB < Spira::Base
           property :invalid, :predicate => DC.title, :type => 'Object'
         end
       end

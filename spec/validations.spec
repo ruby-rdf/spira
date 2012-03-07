@@ -3,9 +3,7 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 describe 'A Spira resource' do
 
   before :all do
-    class ::Bank
-    
-      include Spira::Resource
+    class ::Bank < Spira::Base
     
       default_vocabulary URI.new('http://example.org/banks/vocab')
     
@@ -26,8 +24,7 @@ describe 'A Spira resource' do
   context "when validating" do
 
     before :all do
-      class ::V2
-        include Spira::Resource
+      class ::V2 < Spira::Base
         property :title, :predicate => DC.title
         validate :title_is_bad
         def title_is_bad
@@ -131,8 +128,7 @@ describe 'A Spira resource' do
     context "assert, " do
 
       before :all do
-        class ::V1
-          include Spira::Resource
+        class ::V1 < Spira::Base
           property :title, :predicate => DC.title
           validate :title_is_bad
           def title_is_bad
@@ -159,8 +155,7 @@ describe 'A Spira resource' do
 
     context "assert_set, " do
       before :all do
-        class ::V2
-          include Spira::Resource
+        class ::V2 < Spira::Base
           property :title, :predicate => DC.title
           validate :title_is_set
           def title_is_set
@@ -186,8 +181,7 @@ describe 'A Spira resource' do
 
     context "assert_numeric, " do
       before :all do
-        class ::V3
-          include Spira::Resource
+        class ::V3 < Spira::Base
           property :title, :predicate => DC.title, :type => Integer
           validate :title_is_numeric
           def title_is_numeric

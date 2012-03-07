@@ -1,13 +1,13 @@
 module Spira
- module Resource
+  module Resource
 
-   ##
-   # This module contains all class methods available to a declared Spira::Resource class.
-   # {Spira::Resource} contains more information about Spira resources.
-   #
-   # @see Spira::Resource
-   # @see Spira::Resource::InstanceMethods
-   # @see Spira::Resource::DSL
+    ##
+    # This module contains all class methods available to a declared Spira::Resource class.
+    # {Spira::Resource} contains more information about Spira resources.
+    #
+    # @see Spira::Resource
+    # @see Spira::Resource::InstanceMethods
+    # @see Spira::Resource::DSL
     module ClassMethods
 
       ##
@@ -114,35 +114,35 @@ module Spira
       def id_for(identifier)
         case
           # Absolute URI's go through unchanged
-          when identifier.is_a?(RDF::URI) && identifier.absolute?
-            identifier
+        when identifier.is_a?(RDF::URI) && identifier.absolute?
+          identifier
           # We don't have a base URI to join this fragment with, so go ahead and instantiate it as-is.
-          when identifier.is_a?(RDF::URI) && self.base_uri.nil?
-            identifier
+        when identifier.is_a?(RDF::URI) && self.base_uri.nil?
+          identifier
           # Blank nodes go through unchanged
-          when identifier.respond_to?(:node?) && identifier.node?
-            identifier
+        when identifier.respond_to?(:node?) && identifier.node?
+          identifier
           # Anything that can be an RDF::URI, we re-run this case statement
           # on it for the fragment logic above.
-          when identifier.respond_to?(:to_uri) && !identifier.is_a?(RDF::URI)
-            id_for(identifier.to_uri)
+        when identifier.respond_to?(:to_uri) && !identifier.is_a?(RDF::URI)
+          id_for(identifier.to_uri)
           # see comment with #to_uri above, this might be a fragment
-          when identifier.is_a?(Addressable::URI)
-            id_for(RDF::URI.intern(identifier))
+        when identifier.is_a?(Addressable::URI)
+          id_for(RDF::URI.intern(identifier))
           # This is a #to_s or a URI fragment with a base uri.  We'll treat them the same.
           # FIXME: when #/ makes it into RDF.rb proper, this can all be wrapped
           # into the one case statement above.
+        else
+          uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.intern(identifier.to_s)
+          case
+          when uri.absolute?
+            uri
+          when self.base_uri.nil?
+            raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; an RDF::URI is required"
           else
-            uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.intern(identifier.to_s)
-            case
-              when uri.absolute?
-                uri
-              when self.base_uri.nil?
-                raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; an RDF::URI is required" if self.base_uri.nil?
-              else
-                separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-                RDF::URI.intern(self.base_uri.to_s + separator + identifier.to_s)
-            end
+            separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+            RDF::URI.intern(self.base_uri.to_s + separator + identifier.to_s)
+          end
         end
       end
 
@@ -195,13 +195,13 @@ module Spira
       def each(&block)
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
         case block_given?
-          when false
-            enum_for(:each)
-          else
-            repository_or_fail.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
-              self.cache[subject] ||= self.for(subject)
-              block.call(cache[subject])
-            end
+        when false
+          enum_for(:each)
+        else
+          repository_or_fail.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
+            self.cache[subject] ||= self.for(subject)
+            block.call(cache[subject])
+          end
         end
       end
 
@@ -218,6 +218,9 @@ module Spira
       #
       # @private
       def inherited(child)
+        # FIXME: avoid inheriting if you can,
+        # as the ActiveModel-ish approach is no longer happy
+        # with defining a Spira resource by "include Spira::Resource"
         child.instance_eval do
           include Spira::Resource
         end

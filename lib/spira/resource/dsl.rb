@@ -69,10 +69,10 @@ module Spira
       # @see Spira::Types
       # @see Spira::Type
       # @return [Void]
-      def property(name, opts = {} )
+      def property(name, opts = {})
         predicate = predicate_for(opts[:predicate], name)
         type = type_for(opts[:type])
-        @properties[name] = { :predicate => predicate, :type => type }
+        @properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
         @lists.delete(name)
         add_accessors(name,opts)
       end

@@ -5,8 +5,7 @@ describe Spira do
 
 
   before :all do
-    class ::DirtyTest
-      include Spira::Resource
+    class ::DirtyTest < Spira::Base
       property :name,  :predicate => RDFS.label
       property :age,   :predicate => FOAF.age,  :type => Integer
       has_many :items, :predicate => RDFS.seeAlso

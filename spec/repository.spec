@@ -8,13 +8,11 @@ describe Spira do
 
     before :all do
       @repo = RDF::Repository.new
-      class ::Event
-        include Spira::Resource
+      class ::Event < Spira::Base
         property :name, :predicate => DC.title
       end
       
-      class ::Stadium
-        include Spira::Resource
+      class ::Stadium < Spira::Base
         property :name, :predicate => DC.title
         default_source :stadium
       end

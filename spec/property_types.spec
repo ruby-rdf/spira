@@ -21,8 +21,7 @@ describe 'types for properties' do
       it "should be declared" do
         lambda {
           t = Thread.new do
-            class ::PropTypeA
-              include Spira::Resource
+            class ::PropTypeA < Spira::Base
               default_vocabulary RDF::URI.new('http://example.org/vocab')
               base_uri RDF::URI.new('http://example.org/props')
 
@@ -36,8 +35,7 @@ describe 'types for properties' do
 
     it "should raise a type error to use a type that has not been declared" do
       lambda {
-        class ::PropTypeA
-          include Spira::Resource
+        class ::PropTypeA < Spira::Base
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
 
@@ -48,8 +46,7 @@ describe 'types for properties' do
 
     it "should not raise a type error to use a symbol type, even if the class has not been declared yet" do
       lambda {
-        class ::PropTypeB
-          include Spira::Resource
+        class ::PropTypeB < Spira::Base
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
 
@@ -60,8 +57,7 @@ describe 'types for properties' do
 
     it "should not raise an error to use an included XSD type aliased to a Spira type" do
       lambda {
-        class ::PropTypeD
-          include Spira::Resource
+        class ::PropTypeD < Spira::Base
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
 
@@ -72,8 +68,7 @@ describe 'types for properties' do
 
     it "should not raise an error to use an included Spira type" do
       lambda {
-        class ::PropTypeC
-          include Spira::Resource
+        class ::PropTypeC < Spira::Base
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
 
@@ -107,9 +102,7 @@ describe 'types for properties' do
         register_alias XSD.test_type
       end
 
-      class ::PropTest
-      
-        include Spira::Resource
+      class ::PropTest < Spira::Base
         
         default_vocabulary RDF::URI.new('http://example.org/vocab')
         base_uri RDF::URI.new('http://example.org/props')

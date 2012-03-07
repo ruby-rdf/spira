@@ -5,8 +5,7 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 describe 'Spira resources' do
 
   before :all do
-    class ::NodeTest
-      include Spira::Resource
+    class ::NodeTest < Spira::Base
       property :name, :predicate => FOAF.name
     end
   end

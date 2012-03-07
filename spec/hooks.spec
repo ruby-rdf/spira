@@ -19,17 +19,18 @@ describe 'Spira resources' do
   context "with a before_create method" do
     before :all do
       class ::BeforeCreateTest < ::HookTest
-        type FOAF.bc_test
+	type FOAF.bc_test
+	before_create :update_name
 
-       def before_create
-          self.name = "Everyone has this name"
-        end
+	def update_name
+	  self.name = "Everyone has this name"
+	end
       end
 
       class ::BeforeCreateWithoutTypeTest < ::HookTest
-        def before_create
-          self.name = "Everyone has this name"
-        end
+	def before_create
+	  self.name = "Everyone has this name"
+	end
       end
     end
 
@@ -39,14 +40,14 @@ describe 'Spira resources' do
 
     it "calls the before_create method before saving a resouce for the first time" do
       test = RDF::URI('http://example.org/new').as(::BeforeCreateTest)
-      test.save!
+      test.save
       test.name.should == "Everyone has this name"
       @repository.should have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
     end
 
     it "does not call the before_create method if the resource previously existed" do
       test = @subject.as(::BeforeCreateTest)
-      test.save!
+      test.save
       test.name.should == "A name"
       @repository.should have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "A name")
       @repository.should_not have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
@@ -54,7 +55,7 @@ describe 'Spira resources' do
 
     it "does not call the before_create method without a type declaration" do
       test = RDF::URI('http://example.org/new').as(::BeforeCreateWithoutTypeTest)
-      test.save!
+      test.save
       @repository.should_not have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
     end
   end
@@ -62,34 +63,37 @@ describe 'Spira resources' do
   context "with an after_create method" do
     before :all do
       class ::AfterCreateTest < ::HookTest
-        type FOAF.ac_test
+	type FOAF.ac_test
+	after_create :update_name
 
-       def after_create
-          self.name = "Everyone has this unsaved name"
-        end
+	def update_name
+	  self.name = "Everyone has this unsaved name"
+	end
       end
 
       class ::AfterCreateWithoutTypeTest < ::HookTest
-        def after_create
-          self.name = "Everyone has this unsaved name"
-        end
+	after_create :update_name
+
+	def update_name
+	  self.name = "Everyone has this unsaved name"
+	end
       end
     end
 
     before :each do
-      @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.bc_test)
+      @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.ac_test)
     end
 
     it "calls the after_create method after saving a resource for the first time" do
       test = RDF::URI('http://example.org/new').as(::AfterCreateTest)
-      test.save!
+      test.save
       test.name.should == "Everyone has this unsaved name"
       @repository.should_not have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
     end
 
     it "does not call after_create if the resource previously existed" do
       test = @subject.as(::AfterCreateTest)
-      test.save!
+      test.save
       test.name.should == "A name"
       @repository.should have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "A name")
       @repository.should_not have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
@@ -97,7 +101,7 @@ describe 'Spira resources' do
 
     it "does not call the after_create method without a type declaration" do
       test = RDF::URI('http://example.org/new').as(::AfterCreateWithoutTypeTest)
-      test.save!
+      test.save
       test.name.should be_nil
     end
   end
@@ -106,16 +110,18 @@ describe 'Spira resources' do
 
     before :all do
       class ::AfterUpdateTest < ::HookTest
-        def after_update
-          self.age = 15
-        end
+	after_update :update_age
+
+	def update_age
+	  self.age = 15
+	end
       end
     end
 
     it "calls the after_update method after updating a field" do
       test = @subject.as(AfterUpdateTest)
       test.age.should be_nil
-      test.update(:name => "A new name")
+      test.update_attributes(:name => "A new name")
       test.age.should == 15
     end
 
@@ -130,16 +136,18 @@ describe 'Spira resources' do
   context "with a before_save method" do
     before :all do
       class ::BeforeSaveTest < ::HookTest
-        def before_save
-          self.age = 15
-        end
+	before_save :update_age
+
+	def update_age
+	  self.age = 15
+	end
       end
     end
 
     it "calls the before_save method before saving" do
       test = @subject.as(::BeforeSaveTest)
       test.age.should be_nil
-      test.save!
+      test.save
       test.age.should == 15
       @repository.should have_statement RDF::Statement(@subject, RDF::FOAF.age, 15)
     end
@@ -149,16 +157,18 @@ describe 'Spira resources' do
 
     before :all do
       class ::AfterSaveTest < ::HookTest
-        def after_save
-          self.age = 15
-        end
+	after_save :update_age
+
+	def update_age
+	  self.age = 15
+	end
       end
     end
- 
+
     it "calls the after_save method after saving" do
       test = @subject.as(::AfterSaveTest)
       test.age.should be_nil
-      test.save!
+      test.save
       test.age.should == 15
       @repository.should_not have_statement RDF::Statement(@subject, RDF::FOAF.age, 15)
     end
@@ -168,9 +178,11 @@ describe 'Spira resources' do
   context "with a before_destroy method" do
     before :all do
       class ::BeforeDestroyTest < ::HookTest
-        def before_destroy
-          self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.other,nil))
-        end
+	before_destroy :cleanup
+
+	def cleanup
+	  self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.other,nil))
+	end
       end
     end
 
@@ -179,7 +191,7 @@ describe 'Spira resources' do
     end
 
     it "calls the before_destroy method before destroying" do
-      @subject.as(::BeforeDestroyTest).destroy!(:completely)
+      @subject.as(::BeforeDestroyTest).destroy(:completely)
       @repository.should be_empty
     end
   end
@@ -187,10 +199,12 @@ describe 'Spira resources' do
   context "with an after_destroy method" do
     before :all do
       class ::AfterDestroyTest < ::HookTest
-        def after_destroy
-          self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.other,nil))
-          raise Exception if self.class.repository.has_subject?(self.subject)
-        end
+	after_destroy :cleanup
+
+	def cleanup
+	  self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.other,nil))
+	  raise Exception if self.class.repository.has_subject?(self.subject)
+	end
       end
     end
 
@@ -200,7 +214,7 @@ describe 'Spira resources' do
 
     it "calls the after_destroy method after destroying" do
       # This would raise an exception if after_destroy were called before deleting is confirmed
-      lambda { @subject.as(::AfterDestroyTest).destroy!(:completely) }.should_not raise_error
+      lambda { @subject.as(::AfterDestroyTest).destroy(:completely) }.should_not raise_error
       # This one makes sure that after_destory got called at all
       @repository.should_not have_predicate RDF::FOAF.other
     end
@@ -208,57 +222,79 @@ describe 'Spira resources' do
 
   context "when the hook methods are private" do
     before :all do
+      class Counter
+	class << self
+	  attr_accessor :called_methods
+	end
+	self.called_methods = Set.new
+      end
+
       class ::PrivateHookTest < ::HookTest
-        type FOAF.bc_test
+	type FOAF.bc_test
 
-        def counter
-          @counter ||= {}
-        end
+	before_create :add_bc_counter
+	after_create :add_ac_counter
 
-        private
+	before_save :add_bs_counter
+	after_save :add_as_counter
 
-        def before_create
-          self.counter[__method__] = true
-        end
+	before_destroy :add_bd_counter
+	after_destroy :add_ad_counter
 
-        def before_save
-          self.counter[__method__] = true
-        end
+	before_update :add_bu_counter
+	after_update :add_au_counter
 
-        def before_destroy
-          self.counter[__method__] = true
-        end
+	private
 
-        def after_create
-          self.counter[__method__] = true
-        end
-
-        def after_save
-          self.counter[__method__] = true
-        end
-
-        def after_update
-          self.counter[__method__] = true
-        end
-
-        def after_destroy
-          self.counter[__method__] = true
-        end
+	def add_counter(name)
+	  Counter.called_methods << name.to_s
+	end
+	def add_bc_counter
+	  add_counter(__method__)
+	end
+	def add_ac_counter
+	  add_counter(__method__)
+	end
+	def add_bs_counter
+	  add_counter(__method__)
+	end
+	def add_as_counter
+	  add_counter(__method__)
+	end
+	def add_bd_counter
+	  add_counter(__method__)
+	end
+	def add_ad_counter
+	  add_counter(__method__)
+	end
+	def add_bu_counter
+	  add_counter(__method__)
+	end
+	def add_au_counter
+	  add_counter(__method__)
+	end
       end
     end
 
     before :each do
-      @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.bc_test)
+      # @repository << RDF::Statement.new(@subject, RDF.type, RDF::FOAF.bc_test)
     end
 
     it "should call the hook methods" do
       subject = RDF::URI.new('http://example.org/test1').as(::PrivateHookTest)
 
-      subject.save!
-      subject.update!(:name => "Jay")
-      subject.destroy!
+      subject.save
+      subject.update_attributes(:name => "Jay")
+      subject.destroy
 
-      subject.counter.keys.count.should eql(7)
+      Counter.called_methods.should include "add_bc_counter"
+      Counter.called_methods.should include "add_ac_counter"
+      Counter.called_methods.should include "add_bu_counter"
+      Counter.called_methods.should include "add_au_counter"
+      Counter.called_methods.should include "add_bs_counter"
+      Counter.called_methods.should include "add_as_counter"
+      Counter.called_methods.should include "add_bd_counter"
+      Counter.called_methods.should include "add_ad_counter"
     end
   end
 end
