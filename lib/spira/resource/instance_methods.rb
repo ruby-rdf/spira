@@ -169,7 +169,14 @@ module Spira
       # @return [self]
       def update(properties)
         properties.each do |property, value|
-          attribute_set(property, value)
+          if respond_to? "#{property}="
+            # using an attribute setter instead of "attribute_set"
+            # in order to mimic ActiveRecord behavior
+            # (see attribute_assignment.rb in ActiveRecord gem)
+            send "#{property}=", value
+          else
+            raise Spira::PropertyMissingError, "attempt to assign a value to a non-existing property '#{property}'"
+          end
         end
         self
       end

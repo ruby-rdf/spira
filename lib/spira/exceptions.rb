@@ -16,4 +16,8 @@ module Spira
   ##
   # For errors in the DSL, such as invalid predicates
   class ResourceDeclarationError < StandardError ; end
+
+  ##
+  # Raised when user tries to assign a non-existing property
+  class PropertyMissingError < StandardError ; end
 end

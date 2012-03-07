@@ -37,4 +37,12 @@ describe "RDF::Resource attributes" do
       @person.should have(1).friends
     end
   end
+
+  context "when assigning a value to a non-existing property" do
+    it "should raise a PropertyMissingError" do
+      lambda {
+        @person.update_attributes(:nonexisting_attribute => 0)
+      }.should raise_error Spira::PropertyMissingError
+    end
+  end
 end
