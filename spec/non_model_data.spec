@@ -4,8 +4,7 @@ describe 'Resources with data not associated with a model' do
 
   before :all do
     require 'rdf/ntriples'
-    class ::ExtraDataTest
-      include Spira::Resource
+    class ::ExtraDataTest < Spira::Base
       base_uri "http://example.org/example"
 
       property :property, :predicate => FOAF.age, :type => Integer

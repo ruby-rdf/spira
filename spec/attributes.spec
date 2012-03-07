@@ -4,8 +4,7 @@ describe "RDF::Resource attributes" do
   before do
     Spira.add_repository :default, RDF::Repository.new
 
-    class Person
-      include Spira::Resource
+    class Person < Spira::Base
       property :name, :predicate => RDFS.label
       has_many :friends, :predicate => FOAF.knows, :type => :Person
     end

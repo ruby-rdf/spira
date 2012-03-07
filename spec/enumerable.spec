@@ -10,8 +10,7 @@ describe Spira::Resource do
       require 'rdf/ntriples'
       Spira.add_repository(:default, ::RDF::Repository)
       
-      class ::EnumerableSpec
-        include Spira::Resource
+      class ::EnumerableSpec < Spira::Base
       
         base_uri "http://example.org/example/people"
       

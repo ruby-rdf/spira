@@ -8,31 +8,27 @@ describe "has_many" do
 
   before :all do
     require 'rdf/ntriples'
-    class ::Post
-    
-      include Spira::Resource
-    
+    class ::Post < Spira::Base
+
       type URI.new('http://rdfs.org/sioc/types#Post')
-    
+
       has_many :comments, :predicate => SIOC.has_reply, :type => :Comment
       property :title,    :predicate => DC.title
       property :body,     :predicate => SIOC.content
-    
+
     end
-    
-    
-    
-    class ::Comment
-    
-      include Spira::Resource
-    
+
+
+
+    class ::Comment < Spira::Base
+
       type URI.new('http://rdfs.org/sioc/types#Comment')
-    
+
       property :post,     :predicate => SIOC.reply_of, :type => :Post
       property :title,    :predicate => DC.title
       property :body,     :predicate => SIOC.content
       has_many :ratings,  :predicate => Posts.rating, :type => Integer
-    
+
     end
   end
 
@@ -47,7 +43,7 @@ describe "has_many" do
     end
 
     it "should have a ratings method" do
-      @comment.should respond_to :ratings      
+      @comment.should respond_to :ratings
     end
 
     it "should having a ratings= method" do
@@ -143,7 +139,7 @@ describe "has_many" do
     it "should return an array of comments for an object with some" do
       @post.comments.size.should == 2
       @post.comments.each do |comment|
-        comment.should be_a Comment
+	comment.should be_a Comment
       end
     end
 
@@ -166,11 +162,11 @@ describe "has_many" do
       @post.save!
       @post.comments.size.should == 3
       @post.comments.each do |comment|
-        comments.should include comment
+	comments.should include comment
       end
     end
   end
-  
+
 
 
 

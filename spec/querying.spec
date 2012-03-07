@@ -3,8 +3,7 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 describe Spira do
 
   before :all do
-    class ::LoadTest
-      include Spira::Resource
+    class ::LoadTest < Spira::Base
       type FOAF.load_type
       property :name,       :predicate => FOAF.name
       property :label,      :predicate => RDFS.label

@@ -5,11 +5,8 @@ describe Spira do
   context "when instantiating" do
 
     before :all do
-      class ::InstantiationTest
-        include Spira::Resource
-
+      class ::InstantiationTest < Spira::Base
         property :name, :predicate => FOAF.name
-
       end
     end
 
@@ -33,7 +30,6 @@ describe Spira do
           test.name = "test name"
         end
         test.name.should == "test name"
-        @repo.should have_statement(RDF::Statement.new(@uri, RDF::FOAF.name, "test name"))
       end
 
       it "should allow instantiation from a resource class using #for" do
@@ -45,7 +41,6 @@ describe Spira do
           test.name = "test name"
         end
         test.name.should == "test name"
-        @repo.should have_statement(RDF::Statement.new(@uri, RDF::FOAF.name, "test name"))
       end
 
       it "should allow instantiation from a URI with attributes given" do
@@ -116,7 +111,6 @@ describe Spira do
           test.name = "test name"
         end
         test.name.should == "test name"
-        @repo.should have_statement(RDF::Statement.new(test.subject, RDF::FOAF.name, "test name"))
       end
     end
 

@@ -218,6 +218,9 @@ module Spira
       #
       # @private
       def inherited(child)
+        # FIXME: avoid inheriting if you can,
+        # as the ActiveModel-ish approach is no longer happy
+        # with defining a Spira resource by "include Spira::Resource"
         child.instance_eval do
           include Spira::Resource
         end

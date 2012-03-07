@@ -6,15 +6,13 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 describe Spira do
 
   before :all do
-    class ::Person
-      include Spira::Resource
+    class ::Person < Spira::Base
       base_uri "http://example.org/example/people"
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age,  :type => Integer
     end
     
-    class Employee
-      include Spira::Resource
+    class Employee < Spira::Base
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age, :type => Integer
     end

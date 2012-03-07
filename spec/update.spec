@@ -5,8 +5,7 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 describe Spira do
 
   before :all do
-    class ::UpdateTest
-      include Spira::Resource
+    class ::UpdateTest < Spira::Base
       base_uri "http://example.org/example/people"
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age,  :type => Integer
