@@ -52,7 +52,7 @@ module Spira
       # @see RDF::URI#as
       # @see RDF::Node#as
       def initialize(opts = {})
-	@subject = opts[:_subject] || RDF::Node.new
+	@subject = opts.delete(:_subject) || RDF::Node.new
 	reload opts
 	yield self if block_given?
       end
@@ -66,20 +66,14 @@ module Spira
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
 	@errors = Spira::Errors.new
-	@cache = opts[:_cache] || RDF::Util::Cache.new
+	@cache = opts.delete(:_cache) || RDF::Util::Cache.new
 	@cache[subject] = self
 	@dirty = HashWithIndifferentAccess.new
 	@attributes = {}
 	@attributes[:current] = HashWithIndifferentAccess.new
 	@attributes[:copied] = HashWithIndifferentAccess.new
-	self.class.properties.each do |name, predicate|
-	  set_value = opts[name.to_s] || opts[name.to_sym]
-	  if set_value.nil?
-	    @attributes[:copied][name] = NOT_SET
-	  else
-	    write_attribute name, set_value
-	  end
-	end
+        reset_properties
+        update opts
 	@attributes[:original] = promise { reload_attributes }
       end
 
@@ -88,11 +82,11 @@ module Spira
       #
       # @return [Hash{Symbol => Any}] attributes
       def attributes
-	attrs = HashWithIndifferentAccess.new
-	self.class.properties.keys.each do |property|
-	  attrs[property] = attribute_get(property)
+	HashWithIndifferentAccess.new.tap do |attrs|
+          self.class.properties.keys.each do |property|
+            attrs[property] = attribute_get(property)
+          end
 	end
-	attrs
       end
 
       ##
@@ -359,9 +353,11 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource] copy
       def copy(new_subject)
-	copy = self.class.for(new_subject)
-	self.class.properties.each_key { |property| copy.send :write_attribute, property, attribute_get(property) }
-	copy
+	self.class.for(new_subject).tap do |res|
+          self.class.properties.each_key do |property|
+            res.send :write_attribute, property, attribute_get(property)
+          end
+	end
       end
 
       ##
@@ -549,6 +545,12 @@ module Spira
 	    end
 	  end
 	end
+      end
+
+      def reset_properties
+        self.class.properties.each do |name, _|
+          @attributes[:copied][name] = NOT_SET
+        end
       end
 
     end
