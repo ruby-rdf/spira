@@ -82,11 +82,11 @@ module Spira
       #
       # @return [Hash{Symbol => Any}] attributes
       def attributes
-	attrs = HashWithIndifferentAccess.new
-	self.class.properties.keys.each do |property|
-	  attrs[property] = attribute_get(property)
+	HashWithIndifferentAccess.new.tap do |attrs|
+          self.class.properties.keys.each do |property|
+            attrs[property] = attribute_get(property)
+          end
 	end
-	attrs
       end
 
       ##
@@ -353,9 +353,11 @@ module Spira
       # @param [RDF::Resource] new_subject
       # @return [Spira::Resource] copy
       def copy(new_subject)
-	copy = self.class.for(new_subject)
-	self.class.properties.each_key { |property| copy.send :write_attribute, property, attribute_get(property) }
-	copy
+	self.class.for(new_subject).tap do |res|
+          self.class.properties.each_key do |property|
+            res.send :write_attribute, property, attribute_get(property)
+          end
+	end
       end
 
       ##
