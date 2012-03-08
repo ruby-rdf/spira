@@ -1,9 +1,6 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 describe Spira::Errors do
-
-  before :all do
-  end
 
   context "when instantiating" do
 

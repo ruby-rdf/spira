@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 describe 'Resources with data not associated with a model' do
 

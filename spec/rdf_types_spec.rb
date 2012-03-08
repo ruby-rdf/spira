@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 # These classes are to test finding based on rdfs.type
 
 

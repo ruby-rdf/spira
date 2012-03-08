@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 # Tests in terms of RDF::Enumerable, and interaction with other enumerables
 

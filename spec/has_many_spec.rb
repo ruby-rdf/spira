@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 class Posts < RDF::Vocabulary('http://example.org/posts/predicates/')
   property :rating
