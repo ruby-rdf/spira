@@ -72,9 +72,9 @@ module Spira
 	@attributes = {}
 	@attributes[:current] = HashWithIndifferentAccess.new
 	@attributes[:copied] = HashWithIndifferentAccess.new
+	@attributes[:original] = promise { reload_attributes }
         reset_properties
         update opts
-	@attributes[:original] = promise { reload_attributes }
       end
 
       ##
