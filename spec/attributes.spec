@@ -45,4 +45,9 @@ describe "RDF::Resource attributes" do
       }.should raise_error Spira::PropertyMissingError
     end
   end
+
+  it "should set all attributes to 'NOT_SET'" do
+    @person.reload
+    @person.attributes.all? {|_, value| value == Spira::Resource::InstanceMethods::NOT_SET }
+  end
 end
