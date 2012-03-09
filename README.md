@@ -35,7 +35,7 @@ as possible, there are a few changes that you should be aware of:
  * Use Validations module (and Errors) from ActiveModel instead of the home-brewn ones.
  * Implementation of TYPES needs revision: I don't want to "reload" them,
    I want them just "to be there". See "spira/types.rb"
-
+ * "Finding" is quite rudimentary and is crying for SPARQL support.
 
 # Spira
 
