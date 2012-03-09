@@ -32,6 +32,10 @@ as possible, there are a few changes that you should be aware of:
  * Association reflections and friends: get rid of @lists, use ActiveRecord
    approach to associations (WIP)
  * Speed (and sanity) optimizations for several "sketchy" methods
+ * Use Validations module (and Errors) from ActiveModel instead of the home-brewn ones.
+ * Implementation of TYPES needs revision: I don't want to "reload" them,
+   I want them just "to be there". See "spira/types.rb"
+
 
 # Spira
 
