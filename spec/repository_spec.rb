@@ -79,7 +79,7 @@ describe Spira do
       end
 
       it "should return nil for a repository which does not exist" do
-        Event.repository.should == nil
+        lambda { Event.repository }.should raise_error Spira::NoRepositoryError
       end
   
       it "should raise an error when accessing an attribute" do
@@ -128,7 +128,7 @@ describe Spira do
       end
   
       it "should return nil for a repository which does not exist" do
-        Stadium.repository.should == nil
+        lambda { Stadium.repository }.should raise_error Spira::NoRepositoryError
       end
   
       it "should raise an error when accessing an attribute" do

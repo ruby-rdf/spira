@@ -1,6 +1,5 @@
 require "spec_helper"
 
-
 describe 'types' do
 
   context "when declaring a new type" do

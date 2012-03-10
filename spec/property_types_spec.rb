@@ -2,10 +2,6 @@ require "spec_helper"
 
 describe 'types for properties' do
 
-  before :all do
-  end
-
-
   context "when declaring type classes" do
     context "in a separate thread" do
       it "should be available" do

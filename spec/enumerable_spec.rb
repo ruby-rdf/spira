@@ -2,7 +2,7 @@ require "spec_helper"
 
 # Tests in terms of RDF::Enumerable, and interaction with other enumerables
 
-describe Spira::Resource do
+describe Spira::Base do
 
   context "as an RDF::Enumerable" do
 
