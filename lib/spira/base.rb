@@ -5,6 +5,7 @@ require 'set'
 
 require "spira/dsl"
 require "spira/validations"
+require "spira/reflections"
 
 module Spira
 
@@ -18,13 +19,15 @@ module Spira
     include ActiveModel::Conversion
 
     extend Spira::DSL
+    extend Spira::Reflections
     include Spira::Types
     include Spira::Validations
     include ::RDF, ::RDF::Enumerable, ::RDF::Queryable
 
     define_model_callbacks :save, :destroy, :create, :update, :validation
 
-    class_attribute :properties, :lists, :instance_reader => false, :instance_writer => false
+    class_attribute :properties, :reflections, :instance_reader => false, :instance_writer => false
+    self.reflections = HashWithIndifferentAccess.new
 
     ##
     # This instance's URI.
@@ -74,15 +77,7 @@ module Spira
       # @return [RDF::Repository, nil]
       def repository
 	name = @repository_name || :default
-	Spira.repository(name) || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{@repository_name || 'default'} as a repository, but it has not been set.")
-      end
-
-      ##
-      # Returns true if the given property is a has_many property, false otherwise
-      #
-      # @return [true, false]
-      def is_list?(property)
-	self.lists.has_key?(property)
+	Spira.repository(name) || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{name} as a repository, but it has not been set.")
       end
 
       ##
@@ -242,7 +237,6 @@ module Spira
 
       def inherited(child)
         child.properties ||= HashWithIndifferentAccess.new
-        child.lists ||= HashWithIndifferentAccess.new
         # TODO: get rid of this
         # (shouldn't use "type" both as a DSL setter and class getter)
         child.instance_variable_set(:@type, type) if type
@@ -395,7 +389,7 @@ module Spira
       def add_accessors(name, opts)
 	name_equals = (name.to_s + "=").to_sym
 
-	self.send(:define_method,name_equals) do |arg|
+	self.send(:define_method, name_equals) do |arg|
 	  attribute_set(name, arg)
 	end
 	self.send(:define_method,name) do
@@ -894,7 +888,7 @@ module Spira
       attrs = HashWithIndifferentAccess.new
 
       self.class.properties.each do |name, property|
-        if self.class.is_list?(name)
+        if self.class.reflections.keys.include?(name)
           value = Set.new
           statements.each do |st|
             if st.predicate == property[:predicate]
@@ -931,7 +925,7 @@ module Spira
         value = attribute_get(property)
         if dirty?(property)
           repo.delete([subject, predicate[:predicate], nil])
-          if self.class.is_list?(property)
+          if self.class.reflections.keys.include?(property)
             value.each do |val|
               store_attribute(property, val, predicate[:predicate], repo)
             end
@@ -982,7 +976,7 @@ module Spira
       RDF::Repository.new.tap do |repo|
         attrs.each do | name, attribute |
           predicate = self.class.properties[name][:predicate]
-          if self.class.is_list?(name)
+          if self.class.reflections.include?(name)
             attribute.each do |value|
               store_attribute(name, value, predicate, repo)
             end

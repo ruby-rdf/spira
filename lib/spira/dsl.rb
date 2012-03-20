@@ -1,3 +1,5 @@
+require "spira/association_reflection"
+
 module Spira
   ##
   # This module consists of Spira::Base class methods which correspond to
@@ -70,7 +72,6 @@ module Spira
       predicate = predicate_for(opts[:predicate], name)
       type = type_for(opts[:type])
       properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
-      lists.delete(name)
       add_accessors(name, opts)
     end
 
@@ -87,7 +88,17 @@ module Spira
     # @see Spira::Base::DSL#property
     def has_many(name, opts = {})
       property(name, opts)
-      lists[name] = true
+
+      reflections[name] = AssociationReflection.new(:has_many, name, opts)
+
+      define_method "#{name.to_s.singularize}_ids" do
+        ids = send(name).map(&:id)
+        Set.new ids
+      end
+      define_method "#{name.to_s.singularize}_ids=" do |ids|
+        records = ids.map {|id| self.class.reflect_on_association(name).klass.for(id) }
+        send "#{name}=", Set.new(records)
+      end
     end
 
     ##
@@ -118,6 +129,9 @@ module Spira
     # @see http://rdf.rubyforge.net/RDF/URI.html
     # @see http://rdf.rubyforge.org/RDF.html#type-class_method
     # @see Spira::Base.count
+    # TODO: it really shouldn't be used as a setter/getter,
+    #       as it prevents the inheritance mechanism from working properly
+    #       (type is not inherited, so we have to workaround it in Base.inherited)
     def type(uri = nil)
       unless uri.nil?
         @type = case uri

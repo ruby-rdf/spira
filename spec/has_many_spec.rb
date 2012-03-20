@@ -50,16 +50,12 @@ describe "has_many" do
       @comment.should respond_to :ratings=
     end
 
-    it "should support is_list?" do
-      Comment.should respond_to :is_list?
-    end
-
-    it "should report that ratings are a list" do
-      Comment.is_list?(:ratings).should == true
+    it "should report that ratings is an association" do
+      Comment.reflect_on_association(:ratings).should be_a AssociationReflection
     end
 
     it "should report that bodies are not a list" do
-      Comment.is_list?(:body).should == false
+      Comment.reflect_on_association(:body).should be_nil
     end
 
     it "should return an empty array of ratings for comments with none" do
