@@ -1,7 +1,7 @@
 require "active_model"
 require "active_support/hash_with_indifferent_access"
-require 'rdf/isomorphic'
-require 'set'
+require "rdf/isomorphic"
+require "set"
 
 require "spira/dsl"
 require "spira/validations"
@@ -887,7 +887,7 @@ module Spira
       attrs = HashWithIndifferentAccess.new
 
       self.class.properties.each do |name, property|
-        if self.class.reflections.keys.include?(name)
+        if self.class.reflections[name]
           value = Set.new
           statements.each do |st|
             if st.predicate == property[:predicate]
@@ -926,7 +926,7 @@ module Spira
         value = attribute_get(property)
         if dirty?(property)
           repo.delete([subject, predicate[:predicate], nil])
-          if self.class.reflections.keys.include?(property)
+          if self.class.reflections[property]
             value.each do |val|
               store_attribute(property, val, predicate[:predicate], repo)
             end
@@ -975,9 +975,9 @@ module Spira
     # @param [Hash] attributes The attributes to create a repository for
     def repository_for_attributes(attrs)
       RDF::Repository.new.tap do |repo|
-        attrs.each do | name, attribute |
+        attrs.each do |name, attribute|
           predicate = self.class.properties[name][:predicate]
-          if self.class.reflections.include?(name)
+          if self.class.reflections[name]
             attribute.each do |value|
               store_attribute(name, value, predicate, repo)
             end
