@@ -887,7 +887,7 @@ module Spira
       attrs = HashWithIndifferentAccess.new
 
       self.class.properties.each do |name, property|
-        if self.class.reflections[name]
+        if self.class.reflect_on_association(name)
           value = Set.new
           statements.each do |st|
             if st.predicate == property[:predicate]
@@ -926,7 +926,7 @@ module Spira
         value = attribute_get(property)
         if dirty?(property)
           repo.delete([subject, predicate[:predicate], nil])
-          if self.class.reflections[property]
+          if self.class.reflect_on_association(property)
             value.each do |val|
               store_attribute(property, val, predicate[:predicate], repo)
             end
@@ -977,7 +977,7 @@ module Spira
       RDF::Repository.new.tap do |repo|
         attrs.each do |name, attribute|
           predicate = self.class.properties[name][:predicate]
-          if self.class.reflections[name]
+          if self.class.reflect_on_association(name)
             attribute.each do |value|
               store_attribute(name, value, predicate, repo)
             end
