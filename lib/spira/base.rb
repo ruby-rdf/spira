@@ -262,20 +262,18 @@ module Spira
       # Build a Ruby value from an RDF value.
       #
       # @private
-      def build_value(statement, type, cache)
+      def build_value(node, type, cache)
 	case
-	when statement == nil
-	  nil
-	when !cache[statement.object].nil?
-	  cache[statement.object]
+	when !cache[node].nil?
+	  cache[node]
 	when type.respond_to?(:unserialize)
-	  type.unserialize(statement.object)
+	  type.unserialize(node)
 	when type.is_a?(Symbol) || type.is_a?(String)
 	  klass = classize_resource(type)
-	  cache[statement.object] = promise { klass.for(statement.object, :_cache => cache) }
-	  cache[statement.object]
+	  cache[node] = promise { klass.for(node, :_cache => cache) }
+	  cache[node]
 	else
-	  raise TypeError, "Unable to unserialize #{statement.object} as #{type}"
+	  raise TypeError, "Unable to unserialize #{node} as #{type}"
 	end
       end
 
@@ -892,12 +890,14 @@ module Spira
           value = Set.new
           statements.each do |st|
             if st.predicate == property[:predicate]
-              value << self.class.send(:build_value, st, property[:type], @cache)
+              value << self.class.send(:build_value, st.object, property[:type], @cache)
             end
           end
         else
           statement = statements.detect {|st| st.predicate == property[:predicate] }
-          value = self.class.send(:build_value, statement, property[:type], @cache)
+          if statement
+            value = self.class.send(:build_value, statement.object, property[:type], @cache)
+          end
         end
         attrs[name] = value
       end
