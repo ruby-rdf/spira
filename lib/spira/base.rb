@@ -221,14 +221,14 @@ module Spira
       #   @return [Enumerator]
       def each(&block)
 	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
-	case block_given?
-	when false
-	  enum_for(:each)
-	else
+
+	if block_given?
 	  repository.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
 	    cache[subject] ||= self.for(subject)
-	    block.call(cache[subject])
+	    block.call cache[subject]
 	  end
+	else
+	  enum_for(:each)
 	end
       end
 
