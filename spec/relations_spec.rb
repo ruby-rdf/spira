@@ -170,12 +170,15 @@ describe "Spira resources" do
       end
 
       it "should raise a NameError when saving an object with the invalid property" do
-#        RelationsTestA.for('invalid_a', :invalid => Object.new).save!
-        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new).save! }.should raise_error NameError
+        lambda {
+          RelationsTestA.for('invalid_a', :invalid => Object.new).save!
+        }.should raise_error TypeError
       end
 
       it "should raise a NameError when accessing the invalid property on an existing object" do
-        lambda { RelationsTestA.for('invalid_b').invalid }.should raise_error NameError
+        lambda {
+          RelationsTestA.for('invalid_b').invalid
+        }.should raise_error NameError
       end
 
     end

@@ -263,37 +263,39 @@ module Spira
       #
       # @private
       def build_value(node, type, cache)
-	case
-	when !cache[node].nil?
-	  cache[node]
-	when type.respond_to?(:unserialize)
-	  type.unserialize(node)
-	when type.is_a?(Symbol) || type.is_a?(String)
-	  klass = classize_resource(type)
-	  cache[node] = promise { klass.for(node, :_cache => cache) }
-	  cache[node]
-	else
-	  raise TypeError, "Unable to unserialize #{node} as #{type}"
-	end
+        if cache[node]
+          cache[node]
+        else
+          if type.respond_to?(:unserialize)
+            type.unserialize(node)
+          elsif type.is_a?(Symbol) || type.is_a?(String)
+            klass = classize_resource(type)
+            cache[node] = promise { klass.for(node, :_cache => cache) }
+            cache[node]
+          else
+            raise TypeError, "Unable to unserialize #{node} as #{type}"
+          end
+        end
       end
 
       # Build an RDF value from a Ruby value for a property
       # @private
       def build_rdf_value(value, type)
-	case
-	when type.respond_to?(:serialize)
+        if type.respond_to?(:serialize)
 	  type.serialize(value)
-	when value && value.class.ancestors.include?(Spira::Base)
-	  klass = classize_resource(type)
-	  unless klass.ancestors.include?(value.class)
-	    raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
-	  end
-	  value.subject
-	when type.is_a?(Symbol) || type.is_a?(String)
-	  klass = classize_resource(type)
 	else
-	  raise TypeError, "Unable to serialize #{value} as #{type}"
-	end
+          # value is a Spira resource of "type"?
+          if value.class.ancestors.include?(Spira::Base)
+            klass = classize_resource(type)
+            if klass.ancestors.include?(value.class)
+              value.subject
+            else
+              raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
+            end
+          else
+            raise TypeError, "Unable to serialize #{value} as #{type}"
+          end
+        end
       end
 
       # Return the appropriate class object for a string or symbol
@@ -306,7 +308,6 @@ module Spira
 	  klass = qualified_const_get(type.to_s)
 	rescue NameError
 	  raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
-	  klass.is_a?(Class) && klass.ancestors.include?(Spira::Base)
 	end
 	unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Base)
 	  raise TypeError, "#{type} is not a Spira Resource (referenced as #{type} by #{self})"
