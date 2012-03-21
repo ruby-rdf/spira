@@ -39,10 +39,20 @@ describe "RDF::Resource attributes" do
   end
 
   context "when assigning a value to a non-existing property" do
-    it "should raise a PropertyMissingError" do
-      lambda {
-        @person.update_attributes(:nonexisting_attribute => 0)
-      }.should raise_error Spira::PropertyMissingError
+    context "via #update_attributes" do
+      it "should raise a NoMethodError" do
+        lambda {
+          @person.update_attributes(:nonexisting_attribute => 0)
+        }.should raise_error NoMethodError
+      end
+    end
+
+    context "via #write_attribute" do
+      it "should raise a Spira::PropertyMissingError" do
+        lambda {
+          @person.send :write_attribute, :nonexisting_attribute, 0
+        }.should raise_error Spira::PropertyMissingError
+      end
     end
   end
 

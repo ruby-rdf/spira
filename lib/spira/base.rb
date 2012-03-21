@@ -556,7 +556,10 @@ module Spira
     # @return [self]
     def update(properties)
       properties.each do |property, value|
-        write_attribute property, value
+        # using a setter instead of write_attribute
+        # to account for user-defined setter methods
+        # (usually overriding standard ones)
+        send "#{property}=", value
       end
       self
     end
