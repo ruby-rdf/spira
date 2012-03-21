@@ -9,26 +9,20 @@ describe "has_many" do
   before :all do
     require 'rdf/ntriples'
     class ::Post < Spira::Base
-
       type URI.new('http://rdfs.org/sioc/types#Post')
 
       has_many :comments, :predicate => SIOC.has_reply, :type => :Comment
       property :title,    :predicate => DC.title
       property :body,     :predicate => SIOC.content
-
     end
 
-
-
     class ::Comment < Spira::Base
-
       type URI.new('http://rdfs.org/sioc/types#Comment')
 
       property :post,     :predicate => SIOC.reply_of, :type => :Post
       property :title,    :predicate => DC.title
       property :body,     :predicate => SIOC.content
       has_many :ratings,  :predicate => Posts.rating, :type => Integer
-
     end
   end
 
@@ -135,7 +129,7 @@ describe "has_many" do
     it "should return an array of comments for an object with some" do
       @post.comments.size.should == 2
       @post.comments.each do |comment|
-	comment.should be_a Comment
+        comment.should be_a Comment
       end
     end
 
@@ -158,12 +152,27 @@ describe "has_many" do
       @post.save!
       @post.comments.size.should == 3
       @post.comments.each do |comment|
-	comments.should include comment
+        comments.should include comment
+      end
+    end
+
+    context "given all associations have a base_uri" do
+      before do
+        Post.class_eval {
+          base_uri "http://example.org/posts"
+        }
+
+        Comment.class_eval {
+          base_uri "http://example.org/comments"
+        }
+      end
+
+      it "should assign comments by their IDs" do
+        cids = @post.comment_ids.first
+        @post.comment_ids = [cids, ""]
+
+        @post.comment_ids.should eql Set.new([cids])
       end
     end
   end
-
-
-
-
 end
