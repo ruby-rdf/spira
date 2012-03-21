@@ -98,7 +98,7 @@ describe Spira do
         @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
 
         test = @uri.as(LoadTest)
-        name = test.name
+        test.name
       end
 
       it "should query the repository when loading a parent and accessing a field on a child" do
@@ -106,7 +106,7 @@ describe Spira do
         @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
-        child = test.child.name
+        test.child.name
       end
 
       it "should not re-query to access a child twice" do
@@ -114,8 +114,7 @@ describe Spira do
         @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
-        child = test.child.name
-        child = test.child.name
+        2.times { test.child.name }
       end
 
       it "should not re-query to access a child's parent from the child" do
@@ -123,9 +122,9 @@ describe Spira do
         @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
-        test.child.child.name.should == "a name"
-        test.child.child.name.should == "a name"
-        test.child.child.name.should == "a name"
+        3.times do
+          test.child.child.name.should == "a name"
+        end
       end
 
       it "should re-query for children after a #reload" do
@@ -151,8 +150,9 @@ describe Spira do
 
         # need to map to touch a property on each to make sure they actually
         # get loaded due to lazy evaluation
-        LoadTest.each.map { |lt| lt.name }.size.should == 2
-        LoadTest.each.map { |lt| lt.name }.size.should == 2
+        2.times do
+          LoadTest.each.map { |lt| lt.name }.size.should == 2
+        end
       end
 
       it "should not touch the repository to reload" do
