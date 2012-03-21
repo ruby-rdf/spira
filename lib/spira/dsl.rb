@@ -98,8 +98,7 @@ module Spira
       reflections[name] = AssociationReflection.new(:has_many, name, opts)
 
       define_method "#{name.to_s.singularize}_ids" do
-        ids = send(name).map(&:id).compact
-        Set.new ids
+        send(name).map(&:id).compact
       end
       define_method "#{name.to_s.singularize}_ids=" do |ids|
         records = ids.map {|id| self.class.reflect_on_association(name).klass.unserialize(id) }.compact
