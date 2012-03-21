@@ -236,6 +236,13 @@ module Spira
         self.for id
       end
 
+      def serialize(node, options = {})
+        node
+      end
+
+      def unserialize(value, options = {})
+        self.for value, options
+      end
 
       private
 
@@ -270,12 +277,13 @@ module Spira
         if cache[node]
           cache[node]
         else
-          if type.respond_to?(:unserialize)
-            type.unserialize(node)
-          elsif type.is_a?(Symbol) || type.is_a?(String)
-            klass = classize_resource(type)
-            cache[node] = promise { klass.for(node, :_cache => cache) }
-            cache[node]
+          klass = classize_resource(type)
+          if klass.respond_to?(:unserialize)
+            if klass.ancestors.include?(Spira::Base)
+              cache[node] = promise { klass.unserialize(node, :_cache => cache) }
+            else
+              klass.unserialize(node)
+            end
           else
             raise TypeError, "Unable to unserialize #{node} as #{type}"
           end
@@ -285,20 +293,20 @@ module Spira
       # Build an RDF value from a Ruby value for a property
       # @private
       def build_rdf_value(value, type)
-        if type.respond_to?(:serialize)
-	  type.serialize(value)
-	else
+        klass = classize_resource(type)
+        if klass.respond_to?(:serialize)
           # value is a Spira resource of "type"?
           if value.class.ancestors.include?(Spira::Base)
-            klass = classize_resource(type)
             if klass.ancestors.include?(value.class)
               value.subject
             else
               raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
             end
           else
-            raise TypeError, "Unable to serialize #{value} as #{type}"
+            klass.serialize(value)
           end
+	else
+          raise TypeError, "Unable to serialize #{value} as #{type}"
         end
       end
 
@@ -307,14 +315,13 @@ module Spira
       # located, or if it is not a Spira::Base
       #
       def classize_resource(type)
+        return type unless type.is_a?(Symbol) || type.is_a?(String)
+
 	klass = nil
 	begin
 	  klass = qualified_const_get(type.to_s)
 	rescue NameError
 	  raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
-	end
-	unless klass.is_a?(Class) && klass.ancestors.include?(Spira::Base)
-	  raise TypeError, "#{type} is not a Spira Resource (referenced as #{type} by #{self})"
 	end
 	klass
       end
