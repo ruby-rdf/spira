@@ -386,18 +386,6 @@ module Spira
 	end
       end
 
-      ##
-      # Add getters and setters for a property or list.
-      # @private
-      def add_accessors(name, opts)
-	self.send(:define_method, "#{name}=") do |arg|
-	  attribute_set(name, arg)
-	end
-	self.send(:define_method, name) do
-	  attribute_get(name)
-	end
-      end
-
       def find_all conditions, options = {}
         patterns = [[:subject, RDF.type, type]]
         conditions.each do |name, value|
@@ -520,8 +508,8 @@ module Spira
     # @return [Hash{Symbol => Any}] attributes
     def attributes
       HashWithIndifferentAccess.new.tap do |attrs|
-        self.class.properties.keys.each do |property|
-          attrs[property] = attribute_get(property)
+        self.class.properties.each do |name, _|
+          attrs[name] = read_attribute name
         end
       end
     end
@@ -792,7 +780,7 @@ module Spira
     def copy(new_subject)
       self.class.for(new_subject).tap do |res|
         self.class.properties.each_key do |property|
-          res.send :write_attribute, property, attribute_get(property)
+          res.send :write_attribute, property, read_attribute(property)
         end
       end
     end
@@ -852,53 +840,18 @@ module Spira
     end
 
     def write_attribute(name, value)
-      if respond_to? "#{name}="
-        # using an attribute setter instead of "attribute_set"
-        # in order to mimic ActiveRecord behavior
-        # (see attribute_assignment.rb in ActiveRecord gem)
-        send "#{name}=", value
+      if self.class.properties[name]
+        @dirty[name] = true
+        @attributes[:current][name] = value
       else
         raise Spira::PropertyMissingError, "attempt to assign a value to a non-existing property '#{name}'"
       end
     end
 
     ##
-    # Sets the given attribute to the given value.
-    #
-    def attribute_set(name, value)
-      @dirty[name] = true
-      @attributes[:current][name] = value
-    end
-
-    ##
-    # Save changes to the repository
-    #
-    def persist!
-      repo = self.class.repository
-      self.class.properties.each do |property, predicate|
-        value = attribute_get(property)
-        if dirty?(property)
-          repo.delete([subject, predicate[:predicate], nil])
-          if self.class.reflect_on_association(property)
-            value.each do |val|
-              store_attribute(property, val, predicate[:predicate], repo)
-            end
-          else
-            store_attribute(property, value, predicate[:predicate], repo)
-          end
-        end
-        @attributes[:original][property] = value
-        @dirty[property] = nil
-        @attributes[:copied][property] = NOT_SET
-      end
-      repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
-      self
-    end
-
-    ##
     # Get the current value for the given attribute
     #
-    def attribute_get(name)
+    def read_attribute(name)
       case @dirty[name]
       when true
         @attributes[:current][name]
@@ -918,6 +871,31 @@ module Spira
           @attributes[:copied][name]
         end
       end
+    end
+
+    ##
+    # Save changes to the repository
+    #
+    def persist!
+      repo = self.class.repository
+      self.class.properties.each do |property, predicate|
+        value = read_attribute property
+        if dirty?(property)
+          repo.delete([subject, predicate[:predicate], nil])
+          if self.class.reflect_on_association(property)
+            value.each do |val|
+              store_attribute(property, val, predicate[:predicate], repo)
+            end
+          else
+            store_attribute(property, value, predicate[:predicate], repo)
+          end
+        end
+        @attributes[:original][property] = value
+        @dirty[property] = nil
+        @attributes[:copied][property] = NOT_SET
+      end
+      repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
+      self
     end
 
     ##

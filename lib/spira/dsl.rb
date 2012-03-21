@@ -72,7 +72,13 @@ module Spira
       predicate = predicate_for(opts[:predicate], name)
       type = type_for(opts[:type])
       properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
-      add_accessors(name, opts)
+
+      define_method "#{name}=" do |arg|
+        write_attribute name, arg
+      end
+      define_method name do
+        read_attribute name
+      end
     end
 
     ##
