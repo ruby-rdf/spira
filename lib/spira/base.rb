@@ -549,7 +549,7 @@ module Spira
     def destroy!(what = nil)
       case what
       when nil
-        _destroy_attributes(attributes, :destroy_type => true) != nil
+        destroy_properties(attributes, :destroy_type => true) != nil
       when :subject
         self.class.repository.delete([subject, nil, nil]) != nil
       when :object
@@ -981,7 +981,7 @@ module Spira
     # @param [Hash] attributes The hash of attributes to delete
     # @param [Hash{Symbol => Any}] opts Options for deletion
     # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
-    def _destroy_attributes(attrs, opts = {})
+    def destroy_properties(attrs, opts = {})
       repository = repository_for_attributes(attrs)
       repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
       self.class.repository.delete(*repository)
