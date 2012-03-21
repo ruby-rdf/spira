@@ -516,9 +516,8 @@ module Spira
       @dirty = HashWithIndifferentAccess.new
       @attributes = {}
       @attributes[:current] = HashWithIndifferentAccess.new
-      @attributes[:copied] = HashWithIndifferentAccess.new
-      @attributes[:original] = promise { reload_attributes }
-      reset_properties
+      @attributes[:copied] = reset_properties
+      @attributes[:original] = promise { reload_properties }
       update opts
     end
 
@@ -879,45 +878,6 @@ module Spira
     end
 
     ##
-    # Reload this instance's attributes.
-    #
-    # @return [Hash{Symbol => Any}] attributes
-    def reload_attributes
-      statements = data
-      attrs = HashWithIndifferentAccess.new
-
-      self.class.properties.each do |name, property|
-        if self.class.reflect_on_association(name)
-          value = Set.new
-          statements.each do |st|
-            if st.predicate == property[:predicate]
-              value << self.class.send(:build_value, st.object, property[:type], @cache)
-            end
-          end
-        else
-          statement = statements.detect {|st| st.predicate == property[:predicate] }
-          if statement
-            value = self.class.send(:build_value, statement.object, property[:type], @cache)
-          end
-        end
-        attrs[name] = value
-      end
-      attrs
-    end
-
-    ##
-    # Remove the given attributes from the repository
-    #
-    # @param [Hash] attributes The hash of attributes to delete
-    # @param [Hash{Symbol => Any}] opts Options for deletion
-    # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
-    def _destroy_attributes(attrs, opts = {})
-      repository = repository_for_attributes(attrs)
-      repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
-      self.class.repository.delete(*repository)
-    end
-
-    ##
     # Save changes to the repository
     #
     def persist!
@@ -988,10 +948,52 @@ module Spira
       end
     end
 
-    def reset_properties
-      self.class.properties.each do |name, _|
-        @attributes[:copied][name] = NOT_SET
+    ##
+    # Reload this instance's attributes.
+    #
+    # @return [Hash{Symbol => Any}] attributes
+    def reload_properties
+      statements = data
+
+      HashWithIndifferentAccess.new.tap do |attrs|
+        self.class.properties.each do |name, property|
+          if self.class.reflect_on_association(name)
+            value = Set.new
+            statements.each do |st|
+              if st.predicate == property[:predicate]
+                value << self.class.send(:build_value, st.object, property[:type], @cache)
+              end
+            end
+          else
+            statement = statements.detect {|st| st.predicate == property[:predicate] }
+            if statement
+              value = self.class.send(:build_value, statement.object, property[:type], @cache)
+            end
+          end
+          attrs[name] = value
+        end
       end
     end
+
+    ##
+    # Remove the given attributes from the repository
+    #
+    # @param [Hash] attributes The hash of attributes to delete
+    # @param [Hash{Symbol => Any}] opts Options for deletion
+    # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
+    def _destroy_attributes(attrs, opts = {})
+      repository = repository_for_attributes(attrs)
+      repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
+      self.class.repository.delete(*repository)
+    end
+
+    def reset_properties
+      HashWithIndifferentAccess.new.tap do |attrs|
+        self.class.properties.each do |name, _|
+          attrs[name] = NOT_SET
+        end
+      end
+    end
+
   end
 end
