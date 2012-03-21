@@ -171,7 +171,7 @@ describe "has_many" do
         cids = @post.comment_ids.first
         @post.comment_ids = [cids, ""]
 
-        @post.comment_ids.should eql Set.new([cids])
+        @post.comment_ids.should eql [cids]
       end
     end
   end
