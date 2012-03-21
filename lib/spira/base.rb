@@ -836,7 +836,7 @@ module Spira
     private
 
     def store_attribute(property, value, predicate, repository)
-      if value
+      unless value.nil?
         val = self.class.send(:build_rdf_value, value, self.class.properties[property][:type])
         repository.insert(RDF::Statement.new(subject, predicate, val))
       end
