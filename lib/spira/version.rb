@@ -1,9 +1,9 @@
 module Spira
   module VERSION
-    MAJOR = 0
+    MAJOR = 1
     MINOR = 0
-    TINY  = 13
-    EXTRA = nil
+    TINY  = 0
+    EXTRA = "am"
 
     STRING = [MAJOR, MINOR, TINY].join('.')
     STRING << ".#{EXTRA}" if EXTRA

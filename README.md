@@ -8,16 +8,17 @@ Although I've been trying to make the impact of this transition to be as little
 as possible, there are a few changes that you should be aware of:
 
  * Customary record manipulation methods are preferred now.
-   This means you should use "save", "destroy", "update_attributes", etc.
-   instead of "save!", "destroy!", "update", "update!" and others.
- * Callbacks are now handled by ActiveModel. Previous ways of defining them is
-   no longer valid. This also introduces the before_, after_ and around_ callbacks
-   as well as their _validation, _save, _update and _create companions for you to enjoy.
- * A spira resource must be *inherited* from Spira::Base.
+   This means, you should use more habitual "save", "destroy", "update_attributes", etc.
+   instead of the "save!", "destroy!", "update", "update!" and others, as introduced
+   by the original Spira gem.
+ * Callbacks are now handled by ActiveModel. Previous ways of defining them are
+   no longer valid. This also introduces the "before_", "after_" and "around_" callbacks
+   as well as their "_validation", "_save", "_update" and "_create" companions for you to enjoy.
+ * A spira resource (class) must be defined by *inheriting* it from Spira::Base.
    Do not use "include Spira::Resource" as a way to define your Spira resource -
    it is broken and will be gone soon.
  * Take note about the difference of "new_record?" and "exists?" methods.
-   Read the comments on those.
+   Read the comments on those. And "#exists?" (instance method) is going away soon, too.
  * "after/before_create" callbacks are *not* called when only the properties of your
    Spira resource are getting persisted. You may create a "type"-less Spira resource,
    assign properties to it, then #save it -- "_create" callbacks will not be triggered,
@@ -27,6 +28,14 @@ as possible, there are a few changes that you should be aware of:
    explicitly here for when you start freaking out.
  * Older validation mechanism is still there, but it is going away at some point too.
 
+## TODO
+ * Association reflections and friends: get rid of @lists, use ActiveRecord
+   approach to associations (WIP)
+ * Speed (and sanity) optimizations for several "sketchy" methods
+ * Use Validations module (and Errors) from ActiveModel instead of the home-brewn ones.
+ * Implementation of TYPES needs revision: I don't want to "reload" them,
+   I want them just "to be there". See "spira/types.rb"
+ * "Finding" is quite rudimentary and is crying for SPARQL support.
 
 # Spira
 
