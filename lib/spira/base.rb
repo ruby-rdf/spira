@@ -232,6 +232,10 @@ module Spira
 	end
       end
 
+      def find_by_id id
+        self.for id
+      end
+
 
       private
 
@@ -386,25 +390,12 @@ module Spira
       # Add getters and setters for a property or list.
       # @private
       def add_accessors(name, opts)
-	name_equals = (name.to_s + "=").to_sym
-
-	self.send(:define_method, name_equals) do |arg|
+	self.send(:define_method, "#{name}=") do |arg|
 	  attribute_set(name, arg)
 	end
-	self.send(:define_method,name) do
+	self.send(:define_method, name) do
 	  attribute_get(name)
 	end
-      end
-
-      def find_by_id id
-        self.for id
-      end
-
-      # TODO: optimize this method,
-      # make it directly query the repository
-      # for the subjects with the given IDs
-      def find_by_ids ids
-        ids.map {|id| find_by_id(id) }.delete_if(&:new_record?)
       end
 
       def find_all conditions, options = {}
@@ -427,7 +418,9 @@ module Spira
           end
         end
       end
-    end
+
+    end # class methods
+
 
     def id
       new_record? ? nil : subject.path.split(/\//).last
