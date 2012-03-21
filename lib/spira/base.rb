@@ -241,8 +241,13 @@ module Spira
       end
 
       def unserialize(value, options = {})
-        self.for value, options
+        if value.respond_to?(:blank?) && value.blank?
+          nil
+        else
+          self.for value, options
+        end
       end
+
 
       private
 
