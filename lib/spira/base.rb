@@ -881,21 +881,21 @@ module Spira
     #
     def persist!
       repo = self.class.repository
-      self.class.properties.each do |property, predicate|
-        value = read_attribute property
-        if dirty?(property)
-          repo.delete([subject, predicate[:predicate], nil])
-          if self.class.reflect_on_association(property)
+      self.class.properties.each do |name, property|
+        value = read_attribute name
+        if dirty?(name)
+          repo.delete([subject, property[:predicate], nil])
+          if self.class.reflect_on_association(name)
             value.each do |val|
-              store_attribute(property, val, predicate[:predicate], repo)
+              store_attribute(name, val, property[:predicate], repo)
             end
           else
-            store_attribute(property, value, predicate[:predicate], repo)
+            store_attribute(name, value, property[:predicate], repo)
           end
         end
-        @attributes[:original][property] = value
-        @dirty[property] = nil
-        @attributes[:copied][property] = NOT_SET
+        @attributes[:original][name] = value
+        @dirty[name] = nil
+        @attributes[:copied][name] = NOT_SET
       end
       repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
       self
