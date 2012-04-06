@@ -1,3 +1,5 @@
+require "active_support/core_ext/module/aliasing"
+
 module Spira
   ##
   # Instance methods relating to validations for a Spira resource.  This
@@ -19,6 +21,10 @@ module Spira
         def self.validators
           @validators ||= []
         end
+
+        alias_method_chain :save, :validation
+
+        define_model_callbacks :validation
       end
     end
 
@@ -43,6 +49,21 @@ module Spira
     def validate!
       validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
     end
+
+    def save_with_validation(*args)
+      if run_callbacks(:validation) { validate }
+        save_without_validation(*args)
+      else
+        nil
+      end
+    end
+
+    def save!(*args)
+      save(*args) || raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
+    end
+
+
+    private
 
     ##
     # Assert a fact about this instance.  If the given expression is false,
@@ -75,6 +96,5 @@ module Spira
     def assert_numeric(name)
       assert(self.send(name).is_a?(Numeric), name, "#{name.to_s} must be numeric (was #{self.send(name)})")
     end
-
   end
 end

@@ -21,10 +21,9 @@ module Spira
     extend Spira::DSL
     extend Spira::Reflections
     include Spira::Types
-    include Spira::Validations
     include ::RDF, ::RDF::Enumerable, ::RDF::Queryable
 
-    define_model_callbacks :save, :destroy, :create, :update, :validation
+    define_model_callbacks :save, :destroy, :create, :update
 
     class_attribute :properties, :reflections, :instance_reader => false, :instance_writer => false
     self.reflections = HashWithIndifferentAccess.new
@@ -427,28 +426,18 @@ module Spira
     end
 
     def save(*)
-      if run_callbacks(:validation) { validate }
-        run_callbacks :save do
-          # "create" callback is triggered only when persisting a resource definition
-          persistance_callback = new_record? && type ? :create : :update
-          run_callbacks persistance_callback do
-            if new_record? && subject.anonymous? && type
-              # "materialize" the resource
-              @subject = self.class.id_for(subject.id)
-            end
-            persist!
+      run_callbacks :save do
+        # "create" callback is triggered only when persisting a resource definition
+        persistance_callback = new_record? && type ? :create : :update
+        run_callbacks persistance_callback do
+          if new_record? && subject.anonymous? && type
+            # "materialize" the resource
+            @subject = self.class.id_for(subject.id)
           end
+          persist!
         end
-        self
-      else
-        # return nil if could not save the record
-        # (i.e. there are validation errors)
-        nil
       end
-    end
-
-    def save!
-      save || raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
+      self
     end
 
     def destroy(*args)
@@ -944,5 +933,8 @@ module Spira
       end
     end
 
+    # these must follow method declarations of Base,
+    # because they rely on Base having those methods
+    include Spira::Validations
   end
 end
