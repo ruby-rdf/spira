@@ -3,6 +3,46 @@ module Spira
   # Instance methods relating to validations for a Spira resource.  This
   # includes the default assertions.
   module Validations
+    def self.included(base)
+      base.class_eval do
+        ##
+        # The validation errors collection associated with this instance.
+        #
+        # @return [Spira::Errors]
+        # @see Spira::Errors
+        attr_reader :errors
+
+        ##
+        # The list of validation functions for this projection
+        #
+        # @return [Array<Symbol>]
+        def self.validators
+          @validators ||= []
+        end
+      end
+    end
+
+    ##
+    # Run any model validations and populate the errors object accordingly.
+    # Returns true if the model is valid, false otherwise
+    #
+    # @return [True, False]
+    def validate
+      unless self.class.send(:validators).empty?
+        errors.clear
+        self.class.send(:validators).each do | validator | self.send(validator) end
+      end
+      errors.empty?
+    end
+
+    ##
+    # Run validations on this model and raise a Spira::ValidationError if the validations fail.
+    #
+    # @see #validate
+    # @return true
+    def validate!
+      validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
+    end
 
     ##
     # Assert a fact about this instance.  If the given expression is false,

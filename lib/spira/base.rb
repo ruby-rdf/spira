@@ -35,13 +35,6 @@ module Spira
     # @return [RDF::URI]
     attr_reader :subject
 
-    ##
-    # The validation errors collection associated with this instance.
-    #
-    # @return [Spira::Errors]
-    # @see Spira::Errors
-    attr_reader :errors
-
     # Marker for whether or not a field has been set or not;
     # distinguishes nil and unset.
     NOT_SET = ::Object.new.freeze
@@ -265,14 +258,6 @@ module Spira
       # @private
       def cache
 	@cache ||= RDF::Util::Cache.new
-      end
-
-      ##
-      # The list of validation functions for this projection
-      #
-      # @return [Array<Symbol>]
-      def validators
-	@validators ||= []
       end
 
       # Build a Ruby value from an RDF value.
@@ -741,28 +726,6 @@ module Spira
     # @raise [NoMethodError]
     def to_node
       @subject.node? ? @subject : (raise NoMethodError, "No such method: :to_uri (this instance's subject is not a URI)")
-    end
-
-    ##
-    # Run any model validations and populate the errors object accordingly.
-    # Returns true if the model is valid, false otherwise
-    #
-    # @return [True, False]
-    def validate
-      unless self.class.send(:validators).empty?
-        errors.clear
-        self.class.send(:validators).each do | validator | self.send(validator) end
-      end
-      errors.empty?
-    end
-
-    ##
-    # Run validations on this model and raise a Spira::ValidationError if the validations fail.
-    #
-    # @see #validate
-    # @return true
-    def validate!
-      validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
     end
 
     ##
