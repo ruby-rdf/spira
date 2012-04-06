@@ -23,9 +23,15 @@ module Spira
         end
 
         alias_method_chain :save, :validation
+        alias_method_chain :reload, :validation
 
         define_model_callbacks :validation
       end
+    end
+
+    def reload_with_validation(opts = {})
+      @errors = Spira::Errors.new
+      reload_without_validation opts
     end
 
     ##
