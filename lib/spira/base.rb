@@ -474,9 +474,9 @@ module Spira
     # @see Spira.for
     # @see RDF::URI#as
     # @see RDF::Node#as
-    def initialize(opts = {})
-      @subject = opts.delete(:_subject) || RDF::Node.new
-      reload opts
+    def initialize(props = {})
+      @subject = props.delete(:_subject) || RDF::Node.new
+      reload props
       yield self if block_given?
     end
 
