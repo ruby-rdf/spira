@@ -443,8 +443,22 @@ module Spira
       end
     end
 
-    def update_attributes(attributes, options = {})
-      update(attributes)
+    ##
+    # Update multiple attributes of this repository.
+    #
+    # @example Update multiple attributes
+    #     person.update_attributes(:name => 'test', :age => 10)
+    #     #=> person
+    #     person.name
+    #     #=> 'test'
+    #     person.age
+    #     #=> 10
+    #     person.dirty?
+    #     #=> true
+    # @param  [Hash{Symbol => Any}] properties
+    # @return [self]
+    def update_attributes(properties, options = {})
+      update properties
       save
     end
 
@@ -471,17 +485,17 @@ module Spira
     # defaults with the given opts.  This resource will block if the
     # underlying repository blocks the next time it accesses attributes.
     #
-    # @param   [Hash{Symbol => Any}] opts
+    # @param   [Hash{Symbol => Any}] props
     # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
-    def reload(opts = {})
-      @cache = opts.delete(:_cache) || RDF::Util::Cache.new
+    def reload(props = {})
+      @cache = props.delete(:_cache) || RDF::Util::Cache.new
       @cache[subject] = self
       @dirty = HashWithIndifferentAccess.new
       @attributes = {}
       @attributes[:current] = HashWithIndifferentAccess.new
       @attributes[:copied] = reset_properties
       @attributes[:original] = promise { reload_properties }
-      update opts
+      update props
     end
 
     ##
@@ -520,49 +534,6 @@ module Spira
       when :completely
         destroy!(:subject) && destroy!(:object)
       end
-    end
-
-    ##
-    # Update multiple attributes of this repository.
-    #
-    # @example Update multiple attributes
-    #     person.update(:name => 'test', :age => 10)
-    #     #=> person
-    #     person.name
-    #     #=> 'test'
-    #     person.age
-    #     #=> 10
-    #     person.dirty?
-    #     #=> true
-    # @param  [Hash{Symbol => Any}] properties
-    # @return [self]
-    def update(properties)
-      properties.each do |property, value|
-        # using a setter instead of write_attribute
-        # to account for user-defined setter methods
-        # (usually overriding standard ones)
-        send "#{property}=", value
-      end
-      self
-    end
-
-    ##
-    # Equivalent to #update followed by #save!
-    #
-    # @example Update multiple attributes and save the changes
-    #     person.update!(:name => 'test', :age => 10)
-    #     #=> person
-    #     person.name
-    #     #=> 'test'
-    #     person.age
-    #     #=> 10
-    #     person.dirty?
-    #     #=> false
-    # @param  [Hash{Symbol => Any}] properties
-    # @return [self]
-    def update!(properties)
-      update(properties)
-      save!
     end
 
     ##
@@ -794,6 +765,15 @@ module Spira
 
 
     private
+
+    def update(properties)
+      properties.each do |property, value|
+        # using a setter instead of write_attribute
+        # to account for user-defined setter methods
+        # (usually overriding standard ones)
+        send "#{property}=", value
+      end
+    end
 
     # "Materialize" the resource:
     # assign a persistable subject to a non-persisted resource,
