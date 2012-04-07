@@ -19,6 +19,10 @@ module Spira
   autoload :Errors,           'spira/errors'
   autoload :VERSION,          'spira/version'
 
+  # Marker for whether or not a field has been set or not;
+  # distinguishes nil and unset.
+  NOT_SET = ::Object.new.freeze
+
   ##
   # The list of all property types available for Spira resources
   # 

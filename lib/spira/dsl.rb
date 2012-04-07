@@ -107,24 +107,6 @@ module Spira
     end
 
     ##
-    # Validate this model with the given validator function name.
-    #
-    # @example
-    #     class Person < Spira::Base
-    #       property :name, :predicate => FOAF.name
-    #       validate :is_awesome
-    #       def is_awesome
-    #         assert(name =~ /Thor/, :name, "not awesome")
-    #       end
-    #     end
-    # @param  [Symbol] validator
-    # @return [Void]
-    def validate(validator)
-      validators << validator unless validators.include?(validator)
-    end
-
-
-    ##
     # Associate an RDF type with this class.  RDF resources can be multiple
     # types at once, but if they have an `RDF.type` statement for the given
     # URI, this class can #count them.

@@ -1,106 +1,75 @@
-require "active_support/core_ext/module/aliasing"
-
 module Spira
-  ##
-  # Instance methods relating to validations for a Spira resource.  This
-  # includes the default assertions.
+  # = Spira RecordInvalid
+  #
+  # Raised by <tt>save!</tt> and <tt>create!</tt> when the record is invalid. Use the
+  # +record+ method to retrieve the record which did not validate.
+  #
+  #   begin
+  #     complex_operation_that_calls_save!_internally
+  #   rescue Spira::RecordInvalid => invalid
+  #     puts invalid.record.errors
+  #   end
+  class RecordInvalid < SpiraError
+    attr_reader :record
+    def initialize(record)
+      @record = record
+      errors = @record.errors.full_messages.join(", ")
+      # TODO: use I18n later
+      # super(I18n.t("activerecord.errors.messages.record_invalid", :errors => errors))
+      super "invalid record"
+    end
+  end
+
   module Validations
-    def self.included(base)
-      base.class_eval do
-        ##
-        # The validation errors collection associated with this instance.
-        #
-        # @return [Spira::Errors]
-        # @see Spira::Errors
-        attr_reader :errors
+    extend ActiveSupport::Concern
+    include ActiveModel::Validations
 
-        ##
-        # The list of validation functions for this projection
-        #
-        # @return [Array<Symbol>]
-        def self.validators
-          @validators ||= []
+    module ClassMethods
+      # Creates an object just like Base.create but calls <tt>save!</tt> instead of +save+
+      # so an exception is raised if the record is invalid.
+      def create!(properties = {}, options = {}, &block)
+        if properties.is_a?(Array)
+          properties.collect { |attr| create!(attr, options, &block) }
+        else
+          object = new(properties, options)
+          yield(object) if block_given?
+          object.save!
+          object
         end
-
-        alias_method_chain :save, :validation
-        alias_method_chain :reload, :validation
-
-        define_model_callbacks :validation
       end
     end
 
-    def reload_with_validation(opts = {})
-      @errors = Spira::Errors.new
-      reload_without_validation opts
+    # The validation process on save can be skipped by passing <tt>:validate => false</tt>. The regular Base#save method is
+    # replaced with this when the validations module is mixed in, which it is by default.
+    def save(options={})
+      perform_validations(options) ? super : false
     end
 
-    ##
-    # Run any model validations and populate the errors object accordingly.
-    # Returns true if the model is valid, false otherwise
+    # Attempts to save the record just like Base#save but will raise a +RecordInvalid+ exception instead of returning false
+    # if the record is not valid.
+    def save!(options={})
+      perform_validations(options) ? super : raise(RecordInvalid.new(self))
+    end
+
+    # Runs all the validations within the specified context. Returns true if no errors are found,
+    # false otherwise.
     #
-    # @return [True, False]
-    def validate
-      unless self.class.send(:validators).empty?
-        errors.clear
-        self.class.send(:validators).each do | validator | self.send(validator) end
-      end
-      errors.empty?
-    end
-
-    ##
-    # Run validations on this model and raise a Spira::ValidationError if the validations fail.
+    # If the argument is false (default is +nil+), the context is set to <tt>:create</tt> if
+    # <tt>new_record?</tt> is true, and to <tt>:update</tt> if it is not.
     #
-    # @see #validate
-    # @return true
-    def validate!
-      validate || raise(ValidationError, "Failed to validate #{self.inspect}: " + errors.each.join(';'))
+    # Validations with no <tt>:on</tt> option will run no matter the context. Validations with
+    # some <tt>:on</tt> option will only run in the specified context.
+    def valid?(context = nil)
+      context ||= (new_record? ? :create : :update)
+      output = super(context)
+      errors.empty? && output
     end
 
-    def save_with_validation(*args)
-      if run_callbacks(:validation) { validate }
-        save_without_validation(*args)
-      else
-        nil
-      end
-    end
+    protected
 
-    def save!(*args)
-      save(*args) || raise(ValidationError, "Could not save #{self.inspect} due to validation errors: " + errors.each.join(';'))
-    end
-
-
-    private
-
-    ##
-    # Assert a fact about this instance.  If the given expression is false,
-    # an error will be noted.
-    #
-    # @example Assert that a title is correct
-    #     assert(title == 'xyz', :title, 'bad title')
-    # @param  [Any] boolean The expression to evaluate
-    # @param  [Symbol] property The property or has_many to mark as incorrect on failure
-    # @param  [String] message The message to record if this assertion fails
-    # @return [Void]
-    def assert(boolean, property, message)
-      errors.add(property, message) unless boolean
-    end
-
-    ##
-    # A default helper assertion.  Asserts that a given property is set.
-    #
-    # @param  [Symbol] name The property to check
-    # @return [Void]
-    def assert_set(name)
-      assert(!(self.send(name).nil?), name, "#{name.to_s} cannot be nil")
-    end
-
-    ##
-    # A default helper assertion.  Asserts that a given property is numeric.
-    #
-    # @param  [Symbol] name The property to check
-    # @return [Void]
-    def assert_numeric(name)
-      assert(self.send(name).is_a?(Numeric), name, "#{name.to_s} must be numeric (was #{self.send(name)})")
+    def perform_validations(options={})
+      perform_validation = options[:validate] != false
+      perform_validation ? valid?(options[:context]) : true
     end
   end
 end

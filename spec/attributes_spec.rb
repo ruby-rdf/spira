@@ -58,6 +58,6 @@ describe "RDF::Resource attributes" do
 
   it "should set all attributes to 'NOT_SET'" do
     @person.reload
-    @person.attributes.all? {|_, value| value == Spira::Base::NOT_SET }
+    @person.attributes.all? {|_, value| value == Spira::NOT_SET }
   end
 end
