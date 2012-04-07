@@ -4,8 +4,7 @@ describe 'A Spira resource' do
 
   before :all do
     class ::Bank < Spira::Base
-    
-      default_vocabulary URI.new('http://example.org/banks/vocab')
+      default_vocabulary RDF::URI.new('http://example.org/banks/vocab')
     
       property :title, :predicate => RDFS.label
       property :balance, :type => Integer

@@ -9,7 +9,7 @@ describe "has_many" do
   before :all do
     require 'rdf/ntriples'
     class ::Post < Spira::Base
-      type URI.new('http://rdfs.org/sioc/types#Post')
+      type RDF::URI.new('http://rdfs.org/sioc/types#Post')
 
       has_many :comments, :predicate => SIOC.has_reply, :type => :Comment
       property :title,    :predicate => DC.title
@@ -17,7 +17,7 @@ describe "has_many" do
     end
 
     class ::Comment < Spira::Base
-      type URI.new('http://rdfs.org/sioc/types#Comment')
+      type RDF::URI.new('http://rdfs.org/sioc/types#Comment')
 
       property :post,     :predicate => SIOC.reply_of, :type => :Post
       property :title,    :predicate => DC.title
