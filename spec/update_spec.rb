@@ -37,43 +37,18 @@ describe Spira do
 
     context "via #update" do
       it "should allow setting a single property" do
-        @test.update(:name => "Testing")
+        @test.update_attributes(:name => "Testing")
         @test.name.should == "Testing"
       end
 
       it "should allow setting multiple properties" do
-        @test.update(:name => "Testing", :age => 10)
+        @test.update_attributes(:name => "Testing", :age => 10)
         @test.name.should == "Testing"
         @test.age.should == 10
       end
 
       it "should return self on success" do
-        (@test.update(:name => "Testing", :age => 10)).should == @test
-      end
-    end
-
-    context "via #update!" do
-      it "should allow setting a single property and immediately save it to the repository" do
-        @test.update!(:name => "Testing")
-        @test.name.should == "Testing"
-        @update_repo.should have_statement(RDF::Statement.new(@test_uri, RDF::RDFS.label, 'Testing'))
-      end
-
-      it "should allow setting multiple properties and immediately save them to the repository" do
-        @test.update!(:name => "Testing", :age => 10)
-        @test.name.should == "Testing"
-        @test.age.should == 10
-        @update_repo.should have_statement(RDF::Statement.new(@test_uri, RDF::RDFS.label, 'Testing'))
-        @update_repo.should have_statement(RDF::Statement.new(@test_uri, RDF::FOAF.age, 10))
-      end
-
-      it "should return self on success" do
-        (@test.update!(:name => "Testing", :age => 10)).should == @test
-      end
-
-      it "should raise an exception on failure" do
-        @update_repo.should_receive(:delete).once.and_raise(RuntimeError)
-        lambda { @test.update!(:name => "Testing", :age => 10) }.should raise_error
+        (@test.update_attributes(:name => "Testing", :age => 10)).should == @test
       end
     end
   end

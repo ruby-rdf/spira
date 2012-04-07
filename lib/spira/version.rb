@@ -1,8 +1,8 @@
 module Spira
   module VERSION
-    MAJOR = 1
+    MAJOR = 2
     MINOR = 0
-    TINY  = 0
+    TINY  = 1
     EXTRA = "am"
 
     STRING = [MAJOR, MINOR, TINY].join('.')
