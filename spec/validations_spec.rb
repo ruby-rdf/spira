@@ -97,7 +97,7 @@ describe 'A Spira resource' do
   end
 
   context "using the included validation" do
-    context "validates_inclusion_of" do
+    describe "validates_inclusion_of" do
 
       before :all do
         class ::V1 < Spira::Base
@@ -119,10 +119,38 @@ describe 'A Spira resource' do
         @v1.title = 'xyz'
         lambda { @v1.save! }.should_not raise_error
       end
-
     end
 
-    context "validates_presence_of" do
+    describe "validates_uniqueness_of" do
+      before :all do
+        class ::V4 < Spira::Base
+          property :name, :predicate => DC.title
+          validates_uniqueness_of :name
+        end
+      end
+
+      before do
+        v1 = V4.for RDF::URI.new('http://example.org/v2/first')
+        v1.name = "unique name"
+        v1.save
+      end
+
+      it "should have errors on :name" do
+        v2 = V4.for RDF::URI.new('http://example.org/v2/second')
+        v2.name = "unique name"
+        v2.save
+        v2.errors[:name].should_not be_empty
+      end
+
+      it "should have no errors on :name" do
+        v3 = V4.for RDF::URI.new('http://example.org/v2/second')
+        v3.name = "another name"
+        v3.save
+        v3.errors[:name].should be_empty
+      end
+    end
+
+    describe "validates_presence_of" do
       before :all do
         class ::V2 < Spira::Base
           property :title, :predicate => DC.title
@@ -142,10 +170,9 @@ describe 'A Spira resource' do
         @v2.title = 'xyz'
         lambda { @v2.save! }.should_not raise_error Spira::RecordInvalid
       end
-
     end
 
-    context "validates_numericality_of" do
+    describe "validates_numericality_of" do
       before :all do
         class ::V3 < Spira::Base
           property :title, :predicate => DC.title, :type => Integer

@@ -73,3 +73,5 @@ module Spira
     end
   end
 end
+
+require "spira/validations/uniqueness"
