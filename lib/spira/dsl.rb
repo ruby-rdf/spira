@@ -105,31 +105,5 @@ module Spira
         send "#{name}=", Set.new(records)
       end
     end
-
-    ##
-    # Associate an RDF type with this class.  RDF resources can be multiple
-    # types at once, but if they have an `RDF.type` statement for the given
-    # URI, this class can #count them.
-    #
-    # @param  [RDF::URI] uri The URI object of the `RDF.type` triple
-    # @return [Void]
-    # @see http://rdf.rubyforge.net/RDF/URI.html
-    # @see http://rdf.rubyforge.org/RDF.html#type-class_method
-    # @see Spira::Base.count
-    # TODO: it really shouldn't be used as a setter/getter,
-    #       as it prevents the inheritance mechanism from working properly
-    #       (type is not inherited, so we have to workaround it in Base.inherited)
-    def type(uri = nil)
-      unless uri.nil?
-        @type = case uri
-                when RDF::URI
-                  uri
-                else
-                  raise TypeError, "Cannot assign type #{uri} (of type #{uri.class}) to #{self}, expected RDF::URI"
-                end
-      end
-      @type
-    end
-
   end
 end
