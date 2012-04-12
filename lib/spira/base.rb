@@ -61,8 +61,8 @@ module Spira
       #
       # @return [RDF::Repository, nil]
       def repository
-	name = @repository_name || :default
-	Spira.repository(name) || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{name} as a repository, but it has not been set.")
+        name = @repository_name || :default
+        Spira.repository(name) || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{name} as a repository, but it has not been set.")
       end
 
       ##
@@ -73,8 +73,8 @@ module Spira
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       def count
-	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
-	repository.query(:predicate => RDF.type, :object => type).subjects.count
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
+        repository.query(:predicate => RDF.type, :object => type).subjects.count
       end
 
       ##
@@ -82,7 +82,7 @@ module Spira
       #
       # @return [void]
       def reload
-	@cache = nil
+        @cache = nil
       end
 
       ##
@@ -100,16 +100,16 @@ module Spira
       # @overload each
       #   @return [Enumerator]
       def each
-	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
 
-	if block_given?
-	  repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
-	    cache[subject] ||= self.for(subject)
-	    yield cache[subject]
-	  end
-	else
-	  enum_for(:each)
-	end
+        if block_given?
+          repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
+            cache[subject] ||= self.for(subject)
+            yield cache[subject]
+          end
+        else
+          enum_for(:each)
+        end
       end
 
       def find_by_id id
@@ -143,7 +143,7 @@ module Spira
       # @return [RDF::Util::Cache]
       # @private
       def cache
-	@cache ||= RDF::Util::Cache.new
+        @cache ||= RDF::Util::Cache.new
       end
 
       # Build a Ruby value from an RDF value.
@@ -181,7 +181,7 @@ module Spira
           else
             klass.serialize(value)
           end
-	else
+        else
           raise TypeError, "Unable to serialize #{value} as #{type}"
         end
       end
@@ -193,13 +193,13 @@ module Spira
       def classize_resource(type)
         return type unless type.is_a?(Symbol) || type.is_a?(String)
 
-	klass = nil
-	begin
-	  klass = qualified_const_get(type.to_s)
-	rescue NameError
-	  raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
-	end
-	klass
+        klass = nil
+        begin
+          klass = qualified_const_get(type.to_s)
+        rescue NameError
+          raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
+        end
+        klass
       end
 
       # Resolve a constant from a string, relative to this class' namespace, if
@@ -211,23 +211,23 @@ module Spira
       # @author njh
       # @private
       def qualified_const_get(str)
-	path = str.to_s.split('::')
-	from_root = path[0].empty?
-	if from_root
-	  from_root = []
-	  path = path[1..-1]
-	else
-	  start_ns = ((Class === self)||(Module === self)) ? self : self.class
-	  from_root = start_ns.to_s.split('::')
-	end
-	until from_root.empty?
-	  begin
-	    return (from_root+path).inject(Object) { |ns,name| ns.const_get(name) }
-	  rescue NameError
-	    from_root.delete_at(-1)
-	  end
-	end
-	path.inject(Object) { |ns,name| ns.const_get(name) }
+        path = str.to_s.split('::')
+        from_root = path[0].empty?
+        if from_root
+          from_root = []
+          path = path[1..-1]
+        else
+          start_ns = ((Class === self)||(Module === self)) ? self : self.class
+          from_root = start_ns.to_s.split('::')
+        end
+        until from_root.empty?
+          begin
+            return (from_root+path).inject(Object) { |ns,name| ns.const_get(name) }
+          rescue NameError
+            from_root.delete_at(-1)
+          end
+        end
+        path.inject(Object) { |ns,name| ns.const_get(name) }
       end
 
       ##
@@ -237,16 +237,16 @@ module Spira
       # @return Spira::Type
       # @private
       def type_for(type)
-	case
-	when type.nil?
-	  Spira::Types::Any
-	when type.is_a?(Symbol) || type.is_a?(String)
-	  type
-	when !(Spira.types[type].nil?)
-	  Spira.types[type]
-	else
-	  raise TypeError, "Unrecognized type: #{type}"
-	end
+        case
+        when type.nil?
+          Spira::Types::Any
+        when type.is_a?(Symbol) || type.is_a?(String)
+          type
+        when !(Spira.types[type].nil?)
+          Spira.types[type]
+        else
+          raise TypeError, "Unrecognized type: #{type}"
+        end
       end
 
       ##
@@ -257,16 +257,16 @@ module Spira
       # @return [RDF::URI]
       # @private
       def predicate_for(predicate, name)
-	case
-	when predicate.respond_to?(:to_uri) && predicate.to_uri.absolute?
-	  predicate
-	when @default_vocabulary.nil?
-	  raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
-	else
-	  # FIXME: use rdf.rb smart separator after 0.3.0 release
-	  separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-	  RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
-	end
+        case
+        when predicate.respond_to?(:to_uri) && predicate.to_uri.absolute?
+          predicate
+        when @default_vocabulary.nil?
+          raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
+        else
+          # FIXME: use rdf.rb smart separator after 0.3.0 release
+          separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+          RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
+        end
       end
 
       def find_all conditions, options = {}

@@ -25,7 +25,7 @@ module Spira
 
   ##
   # The list of all property types available for Spira resources
-  # 
+  #
   # @see Spira::Types
   # @return [Hash{Symbol => Spira::Type}]
   def types
@@ -107,7 +107,7 @@ module Spira
   # @param [Any] original The type the new symbol should refer to
   # @return [Void]
   def type_alias(new, original)
-    types[new] = original 
+    types[new] = original
   end
   module_function :type_alias
 end
