@@ -105,5 +105,29 @@ module Spira
         send "#{name}=", Set.new(records)
       end
     end
+
+
+    private
+
+    ##
+    # Determine the predicate for a property based on the given predicate, name, and default vocabulary
+    #
+    # @param  [#to_s, #to_uri] predicate
+    # @param  [Symbol] name
+    # @return [RDF::URI]
+    # @private
+    def predicate_for(predicate, name)
+      case
+      when predicate.respond_to?(:to_uri) && predicate.to_uri.absolute?
+        predicate
+      when @default_vocabulary.nil?
+        raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
+      else
+        # FIXME: use rdf.rb smart separator after 0.3.0 release
+        separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+        RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
+      end
+    end
+
   end
 end
