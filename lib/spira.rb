@@ -12,11 +12,9 @@ require "spira/exceptions"
 # @see Spira::Resource
 module Spira
 
-  autoload :Resource,         'spira/resource'
   autoload :Base,             'spira/base'
   autoload :Type,             'spira/type'
   autoload :Types,            'spira/types'
-  autoload :Errors,           'spira/errors'
   autoload :VERSION,          'spira/version'
 
   # Marker for whether or not a field has been set or not;
