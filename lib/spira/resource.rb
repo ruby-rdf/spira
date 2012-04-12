@@ -3,6 +3,23 @@ require "spira/association_reflection"
 
 module Spira
   module Resource
+    def configure(options = {})
+      singleton_class.class_eval do
+        { :repository_name => options[:repository_name],
+          :base_uri => options[:base_uri],
+          :default_vocabulary => options[:default_vocabulary]
+        }.each do |name, value|
+          # redefine reader methods only when required,
+          # otherwise, use the ancestor methods
+          if value
+            define_method name do
+              value
+            end
+          end
+        end
+      end
+    end
+
     def type(uri = nil)
       if uri
         if @type
@@ -96,12 +113,12 @@ module Spira
       case
       when predicate.respond_to?(:to_uri) && predicate.to_uri.absolute?
         predicate
-      when @default_vocabulary.nil?
+      when default_vocabulary.nil?
         raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
       else
         # FIXME: use rdf.rb smart separator after 0.3.0 release
-        separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-        RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
+        separator = default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+        RDF::URI.intern(default_vocabulary.to_s + separator + name.to_s)
       end
     end
 

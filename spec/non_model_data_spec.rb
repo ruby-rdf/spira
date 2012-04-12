@@ -5,10 +5,9 @@ describe 'Resources with data not associated with a model' do
   before :all do
     require 'rdf/ntriples'
     class ::ExtraDataTest < Spira::Base
-      base_uri "http://example.org/example"
+      configure :base_uri => "http://example.org/example"
 
       property :property, :predicate => FOAF.age, :type => Integer
-
       has_many :list,     :predicate => RDFS.label
     end
     @filename = fixture('non_model_data.nt')
@@ -58,7 +57,7 @@ describe 'Resources with data not associated with a model' do
     it "should not delete non-model data on Resource#!destroy" do
       @example1.destroy!
       @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.name).count.should == 1
-    end 
+    end
 
   end
 

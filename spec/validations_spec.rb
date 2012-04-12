@@ -4,13 +4,13 @@ describe 'A Spira resource' do
 
   before :all do
     class ::Bank < Spira::Base
-      default_vocabulary RDF::URI.new('http://example.org/banks/vocab')
-    
+      configure :default_vocabulary => RDF::URI.new('http://example.org/banks/vocab')
+
       property :title, :predicate => RDFS.label
       property :balance, :type => Integer
 
       validate :validate_bank
-      
+
       def validate_bank
         errors.add(:title, "must not be blank") if title.blank?
         errors.add(:balance, "must be a number") unless balance.is_a?(Numeric)
@@ -66,7 +66,7 @@ describe 'A Spira resource' do
         @invalid = V2.for(@uri, :title => 'not xyz')
         @invalid.valid?
       end
-     
+
       it "returns a non-empty errors object afterwards" do
         @invalid.errors.should_not be_empty
       end
@@ -108,7 +108,7 @@ describe 'A Spira resource' do
 
       before :each do
         @v1 = V1.for RDF::URI.new('http://example.org/v1/first')
-      end 
+      end
 
       it "does not save when the assertion is false" do
         @v1.title = 'abc'
@@ -160,7 +160,7 @@ describe 'A Spira resource' do
 
       before :each do
         @v2 = V2.for RDF::URI.new('http://example.org/v2/first')
-      end 
+      end
 
       it "does not save when the field is nil" do
         lambda { @v2.save! }.should raise_error Spira::RecordInvalid
@@ -182,7 +182,7 @@ describe 'A Spira resource' do
 
       before :each do
         @v3 = V3.for RDF::URI.new('http://example.org/v3/first')
-      end 
+      end
 
       it "does not save when the field is nil" do
         lambda { @v3.save! }.should raise_error Spira::RecordInvalid

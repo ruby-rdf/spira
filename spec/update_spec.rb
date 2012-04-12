@@ -6,7 +6,7 @@ describe Spira do
 
   before :all do
     class ::UpdateTest < Spira::Base
-      base_uri "http://example.org/example/people"
+      configure :base_uri => "http://example.org/example/people"
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age,  :type => Integer
     end
@@ -200,7 +200,7 @@ describe Spira do
       it "supports #copy" do
         @test.respond_to?(:copy).should be_true
       end
-      
+
       it "copies to a given subject" do
         new = @test.copy(@new_uri)
         new.subject.should == @new_uri
@@ -309,5 +309,5 @@ describe Spira do
       end
     end
   end
-    
+
 end

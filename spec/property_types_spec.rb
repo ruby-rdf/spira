@@ -18,8 +18,8 @@ describe 'types for properties' do
         lambda {
           t = Thread.new do
             class ::PropTypeA < Spira::Base
-              default_vocabulary RDF::URI.new('http://example.org/vocab')
-              base_uri RDF::URI.new('http://example.org/props')
+              configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
+                        :base_uri => RDF::URI.new('http://example.org/props')
 
               property :test, :type => XSD.string
             end
@@ -32,8 +32,8 @@ describe 'types for properties' do
     it "should raise a type error to use a type that has not been declared" do
       lambda {
         class ::PropTypeA < Spira::Base
-          default_vocabulary RDF::URI.new('http://example.org/vocab')
-          base_uri RDF::URI.new('http://example.org/props')
+          configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
+                    :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => XSD.non_existent_type
         end
@@ -43,8 +43,8 @@ describe 'types for properties' do
     it "should not raise a type error to use a symbol type, even if the class has not been declared yet" do
       lambda {
         class ::PropTypeB < Spira::Base
-          default_vocabulary RDF::URI.new('http://example.org/vocab')
-          base_uri RDF::URI.new('http://example.org/props')
+          configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
+                    :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => :non_existent_type
         end
@@ -54,8 +54,8 @@ describe 'types for properties' do
     it "should not raise an error to use an included XSD type aliased to a Spira type" do
       lambda {
         class ::PropTypeD < Spira::Base
-          default_vocabulary RDF::URI.new('http://example.org/vocab')
-          base_uri RDF::URI.new('http://example.org/props')
+          configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
+                    :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => XSD.string
         end
@@ -65,8 +65,8 @@ describe 'types for properties' do
     it "should not raise an error to use an included Spira type" do
       lambda {
         class ::PropTypeC < Spira::Base
-          default_vocabulary RDF::URI.new('http://example.org/vocab')
-          base_uri RDF::URI.new('http://example.org/props')
+          configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
+                    :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => String
         end
@@ -86,7 +86,7 @@ describe 'types for properties' do
 
       class ::TestType
         include Spira::Type
-      
+
         def self.serialize(value)
           RDF::Literal.new(value, :datatype => XSD.test_type)
         end
@@ -99,10 +99,9 @@ describe 'types for properties' do
       end
 
       class ::PropTest < Spira::Base
-        
-        default_vocabulary RDF::URI.new('http://example.org/vocab')
-        base_uri RDF::URI.new('http://example.org/props')
-      
+        configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
+                  :base_uri => RDF::URI.new('http://example.org/props')
+
         property :test,      :type => TestType
         property :xsd_test,  :type => XSD.test_type
       end
@@ -116,7 +115,7 @@ describe 'types for properties' do
       @resource.test = "a string"
       @resource.should have_object RDF::Literal.new("a string", :datatype => RDF::XSD.test_type)
     end
-    
+
     it "uses the given unserialize function" do
       @resource.test = "a string"
       @resource.save!
@@ -130,6 +129,5 @@ describe 'types for properties' do
     end
 
   end
-
 
 end

@@ -10,12 +10,12 @@ describe 'Default URIs' do
 
     before :all do
       class ::BaseURITest < Spira::Base
-        base_uri "http://example.org/example"
+        configure :base_uri => "http://example.org/example"
         property :name, :predicate => RDFS.label
       end
 
       class ::HashBaseURITest < Spira::Base
-        base_uri "http://example.org/example#"
+        configure :base_uri => "http://example.org/example#"
         property :name, :predicate => RDFS.label
       end
     end
@@ -41,7 +41,7 @@ describe 'Default URIs' do
       BaseURITest.id_for(uri).should == RDF::URI.new(uri)
     end
 
-    it "allow any type to be used as a URI fragment, via to_s" do 
+    it "allow any type to be used as a URI fragment, via to_s" do
       uri = 'http://example.org/example/5'
       BaseURITest.id_for(5).should == RDF::URI.new(uri)
     end
@@ -51,7 +51,7 @@ describe 'Default URIs' do
     end
 
     it "do not raise an exception to project with a relative URI" do
-      lambda {x = BaseURITest.for 'bob'}.should_not raise_error 
+      lambda {x = BaseURITest.for 'bob'}.should_not raise_error
     end
 
     it "return an absolute, correct RDF::URI from #uri when created with a relative uri" do

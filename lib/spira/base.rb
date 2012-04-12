@@ -3,7 +3,6 @@ require "active_support/hash_with_indifferent_access"
 require "rdf/isomorphic"
 require "set"
 
-require "spira/dsl"
 require "spira/resource"
 require "spira/persistence"
 require "spira/validations"
@@ -32,6 +31,59 @@ module Spira
     class << self
       attr_reader :reflections, :properties
 
+      ##
+      # Repository name for this class
+      #
+      # @return [Symbol]
+      def repository_name
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :repository option
+        :default
+      end
+
+      ##
+      # The base URI for this class.  Attempts to create instances for non-URI
+      # objects will be appended to this base URI.
+      #
+      # @return [Void]
+      def base_uri
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :base_uri option
+        nil
+      end
+
+      ##
+      # The default vocabulary for this class.  Setting a default vocabulary
+      # will allow properties to be defined without a `:predicate` option.
+      # Predicates will instead be created by appending the property name to
+      # the given string.
+      #
+      # @return [Void]
+      def default_vocabulary
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :default_vocabulary option
+        nil
+      end
+
+
+      ##
+      # The current repository for this class
+      #
+      # @return [RDF::Repository, nil]
+      def repository
+        Spira.repository(repository_name)
+      end
+
+      ##
+      # Simple finder method.
+      #
+      # @param [Symbol, ID] scope
+      #   scope can be :all, :first or an ID
+      # @param [Hash] args
+      #   args can contain:
+      #     :conditions - Hash of properties and values
+      #     :limit      - Fixnum, limiting the amount of returned records
+      # @return [Spira::Base, Set]
       def find(scope, args = {})
         conditions = args[:conditions] || {}
         options = args.except(:conditions)
@@ -57,18 +109,9 @@ module Spira
       end
 
       ##
-      # The current repository for this class
-      #
-      # @return [RDF::Repository, nil]
-      def repository
-        name = @repository_name || :default
-        Spira.repository(name) || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{name} as a repository, but it has not been set.")
-      end
-
-      ##
       # The number of URIs projectable as a given class in the repository.
       # This method is only valid for classes which declare a `type` with the
-      # `type` method in the DSL.
+      # `type` method in the Resource.
       #
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
@@ -88,7 +131,7 @@ module Spira
       ##
       # Enumerate over all resources projectable as this class.  This method is
       # only valid for classes which declare a `type` with the `type` method in
-      # the DSL.
+      # the Resource.
       #
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @overload each
@@ -600,7 +643,6 @@ module Spira
       end
     end
 
-    extend DSL
     extend Resource
     extend Reflections
     include Types
