@@ -85,6 +85,14 @@ describe Spira do
         InheritanceForumPost.type.should == RDF::SIOC.post
       end
 
+      it "should not define methods on parents" do
+        @item.should_not respond_to :author
+      end
+
+      it "should not modify the properties of the base class" do
+        Spira::Base.properties.should be_empty
+      end
+
       context "when saving properties" do
         before :each do
           @post.title = "test title"
@@ -121,10 +129,6 @@ describe Spira do
   context "base classes" do
     before :all do
       class ::BaseChild < Spira::Base ; end
-    end
-
-    it "should be able to inherit from Spira::Base" do
-      BaseChild.ancestors.should include Spira::Base
     end
 
     it "should have access to Spira DSL methods" do

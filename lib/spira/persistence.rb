@@ -285,7 +285,7 @@ module Spira
         @dirty[name] = nil
         @attributes[:copied][name] = NOT_SET
       end
-      repo.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
+      repo.insert(RDF::Statement.new(subject, RDF.type, type)) if type
       self
     end
 
@@ -340,7 +340,7 @@ module Spira
     # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
     def destroy_properties(attrs, opts = {})
       repository = repository_for_attributes(attrs)
-      repository.insert([@subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
+      repository.insert([subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
       self.class.repository.delete(*repository)
     end
   end

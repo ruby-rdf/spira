@@ -4,6 +4,7 @@ require "rdf/isomorphic"
 require "set"
 
 require "spira/dsl"
+require "spira/resource"
 require "spira/persistence"
 require "spira/validations"
 require "spira/reflections"
@@ -22,9 +23,6 @@ module Spira
 
     define_model_callbacks :save, :destroy, :create, :update
 
-    class_attribute :properties, :reflections, :instance_reader => false, :instance_writer => false
-    self.reflections = HashWithIndifferentAccess.new
-
     ##
     # This instance's URI.
     #
@@ -32,6 +30,8 @@ module Spira
     attr_reader :subject
 
     class << self
+      attr_reader :reflections, :properties
+
       def find(scope, args = {})
         conditions = args[:conditions] || {}
         options = args.except(:conditions)
@@ -73,8 +73,8 @@ module Spira
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       def count
-	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
-	repository.query(:predicate => RDF.type, :object => @type).subjects.count
+	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
+	repository.query(:predicate => RDF.type, :object => type).subjects.count
       end
 
       ##
@@ -100,10 +100,10 @@ module Spira
       # @overload each
       #   @return [Enumerator]
       def each
-	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if @type.nil?
+	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
 
 	if block_given?
-	  repository.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
+	  repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
 	    cache[subject] ||= self.for(subject)
 	    yield cache[subject]
 	  end
@@ -132,10 +132,9 @@ module Spira
       private
 
       def inherited(child)
-        child.properties ||= HashWithIndifferentAccess.new
-        # TODO: get rid of this
-        # (shouldn't use "type" both as a DSL setter and class getter)
-        child.instance_variable_set(:@type, type) if type
+        child.instance_variable_set :@properties, @properties.dup
+        child.instance_variable_set :@reflections, @reflections.dup
+        super
       end
 
       ##
@@ -622,9 +621,13 @@ module Spira
     end
 
     extend DSL
+    extend Resource
     extend Reflections
     include Types
     include Persistence
     include Validations
+
+    @reflections = HashWithIndifferentAccess.new
+    @properties = HashWithIndifferentAccess.new
   end
 end
