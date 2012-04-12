@@ -23,9 +23,6 @@ module Spira
 
     define_model_callbacks :save, :destroy, :create, :update
 
-    class_attribute :properties, :reflections, :instance_reader => false, :instance_writer => false
-    self.reflections = HashWithIndifferentAccess.new
-
     ##
     # This instance's URI.
     #
@@ -33,6 +30,8 @@ module Spira
     attr_reader :subject
 
     class << self
+      attr_reader :reflections, :properties
+
       def find(scope, args = {})
         conditions = args[:conditions] || {}
         options = args.except(:conditions)
@@ -133,7 +132,9 @@ module Spira
       private
 
       def inherited(child)
-        child.properties ||= HashWithIndifferentAccess.new
+        child.instance_variable_set :@properties, @properties.dup
+        child.instance_variable_set :@reflections, @reflections.dup
+        super
       end
 
       ##
@@ -625,5 +626,8 @@ module Spira
     include Types
     include Persistence
     include Validations
+
+    @reflections = HashWithIndifferentAccess.new
+    @properties = HashWithIndifferentAccess.new
   end
 end
