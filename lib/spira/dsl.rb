@@ -20,7 +20,6 @@ module Spira
     # @return [Void]
     def default_source(name)
       @repository_name = name
-      @repository = Spira.repository(name)
     end
 
     ##
