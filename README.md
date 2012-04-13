@@ -28,6 +28,8 @@ as possible, there are a few changes that you should be aware of:
    for such resource and will only persist its properties.
    Although this is how the original Spira behaves too, I thought I'd state it
    explicitly here for when you start freaking out.
+ * Configuration options "base_uri", "default_vocabulary" and "repository_name" are
+   now configured via "configure" method (see the examples below).
 
 ---
 
