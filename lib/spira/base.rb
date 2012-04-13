@@ -285,7 +285,7 @@ module Spira
           Spira::Types::Any
         when type.is_a?(Symbol) || type.is_a?(String)
           type
-        when !(Spira.types[type].nil?)
+        when Spira.types[type]
           Spira.types[type]
         else
           raise TypeError, "Unrecognized type: #{type}"
@@ -637,7 +637,7 @@ module Spira
 
     def reset_properties
       HashWithIndifferentAccess.new.tap do |attrs|
-        self.class.properties.each do |name, _|
+        self.class.properties.each_key do |name|
           attrs[name] = NOT_SET
         end
       end
