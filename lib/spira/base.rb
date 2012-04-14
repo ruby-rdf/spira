@@ -367,15 +367,6 @@ module Spira
     end
 
     ##
-    # `type` is a special property which is associated with the class and not
-    # the instance.  Always raises a TypeError to try and assign it.
-    #
-    # @raise [TypeError] always
-    def type=(type)
-      raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
-    end
-
-    ##
     # Returns the RDF representation of this resource.
     #
     # @return [RDF::Enumerable]

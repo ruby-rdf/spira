@@ -138,7 +138,7 @@ describe 'models with a defined rdf type' do
     end
 
     it "should raise an exception when trying to change the type" do
-      lambda {@car.type = Cars.van}.should raise_error TypeError
+      lambda {@car.type = Cars.van}.should raise_error
     end
 
     it "should maintain all triples related to this object on save" do
