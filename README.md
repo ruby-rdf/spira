@@ -14,6 +14,8 @@ as possible, there are a few changes that you should be aware of:
  * Callbacks are now handled by ActiveModel. Previous ways of defining them are
    no longer valid. This also introduces the "before_", "after_" and "around_" callbacks
    as well as their "_validation", "_save", "_update" and "_create" companions for you to enjoy.
+ * Validations are also handled by ActiveModel. With all the helper methods you had in
+   ActiveRecord.
  * A spira resource (class) must be defined by *inheriting* it from Spira::Base.
    Do not use "include Spira::Resource" as a way to define your Spira resource -
    it is broken and will be gone soon.
@@ -26,7 +28,8 @@ as possible, there are a few changes that you should be aware of:
    for such resource and will only persist its properties.
    Although this is how the original Spira behaves too, I thought I'd state it
    explicitly here for when you start freaking out.
- * Older validation mechanism is still there, but it is going away at some point too.
+ * Configuration options "base_uri", "default_vocabulary" and "repository_name" are
+   now configured via "configure" method (see the examples below).
 
 ---
 
@@ -49,11 +52,9 @@ A changelog is available in the {file:CHANGES.md} file.
 
 ### Example
 
-    class Person
-    
-      include Spira::Resource
+    class Person < Spira::Base
 
-      base_uri "http://example.org/example/people"
+      configure :base_uri => "http://example.org/example/people"
     
       property :name, :predicate => FOAF.name, :type => String
       property :age,  :predicate => FOAF.age,  :type => Integer
@@ -96,16 +97,14 @@ without the `RDF::` prefix.  For example:
 
     require 'spira'
     
-    class CD
-      include Spira::Resource
-      base_uri 'http://example.org/cds'
+    class CD < Spira::Base
+      configure :base_uri => 'http://example.org/cds'
       property :name,   :predicate => DC.title,   :type => XSD.string
       property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
     end
     
-    class Artist
-      include Spira::Resource
-      base_uri 'http://example.org/artists'
+    class Artist < Spira::Base
+      configure :base_uri => 'http://example.org/artists'
       property :name, :predicate => DC.title, :type => XSD.string
       has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
     end
@@ -179,8 +178,7 @@ Example
 
 A class with a `type` set is assigned an `RDF.type` on creation and saving.
 
-    class Album
-      include Spira::Resource
+    class Album < Spira::Base
       type URI.new('http://example.org/types/album')
       property :name,   :predicate => DC.title
     end
@@ -194,6 +192,21 @@ In addition, one can count the members of a class with a `type` defined:
 
     Album.count  #=> 1 
 
+
+It is possible to assign multiple types to a Spira class:
+
+    class Man < Spira::Base
+      type RDF::URI.new('http://example.org/people/father')
+      type RDF::URI.new('http://example.org/people/cop')
+    end
+
+All assigned types are accessible via "types":
+
+    Man.types #=> #<Set: {#<RDF::URI:0xd5ebc0(http://example.org/people/father)>, #<RDF::URI:0xd5e4b8(http://example.org/people/cop)>}>
+
+Also note that "type" actually returns a first type from the list of types.
+
+
 #### property
 
 A class declares property members with the `property` function.  See `Property Options` for more information.
@@ -206,10 +219,9 @@ A class declares list members with the `has_many` function.  See `Property Optio
 
 A class with a `default_vocabulary` set will transparently create predicates for defined properties:
 
-    class Song
-      include Spira::Resource
-      default_vocabulary URI.new('http://example.org/vocab')
-      base_uri 'http://example.org/songs'
+    class Song < Spira::Base
+      configure :default_vocabulary => URI.new('http://example.org/vocab'),
+                :base_uri => 'http://example.org/songs'
       property :title
       property :author, :type => :artist
     end
@@ -221,21 +233,16 @@ A class with a `default_vocabulary` set will transparently create predicates for
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/title'))  #=> true
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=> true
 
-#### default_source
+#### repository_name
 
 Provides this class with a default repository to use instead of the `:default`
 repository if one is not set.
 
-    class Song
-      default_source :songs
+    class Song < Spira::Base
+      configure :repository_name => :songs
     end
 
 See 'Defining Repositories' for more information.
-
-#### validate
-
-Provides the name of a function which does some sort of validation.  See
-'Validations' for more information.
 
 ### Property Options
 
@@ -294,8 +301,7 @@ is usually expressed as a URI.  Here is the built-in Spira Integer class:
 
 Classes can now use this particular type like so:
 
-    class Test
-      include Spira::Resource
+    class Test < Spira::Base
       property :test1, :type => Integer
       property :test2, :type => XSD.integer
     end
@@ -329,8 +335,7 @@ turn an RDF::Value into a ruby object, and vice versa.
       end
     end
 
-    class MyClass
-      include Spira::Resource
+    class MyClass < Spira::Base
       property :property1, :type => MyModule::MyType
     end
 
@@ -343,8 +348,12 @@ You can define multiple repositories with Spira, and use more than one at a time
     Spira.add_repository! :cds,    RDF::Sesame::Repository.new 'some_server'
     Spira.add_repository! :albums, RDF::Repository.load('some_file.nt')
 
-    CD.repository = :cds
-    Album.repository = :albums
+    class CD < Spira::Base
+      configure :repository_name => :cds
+    end
+    class Album < Spira::Base
+      configure :repository_name => :albums
+    end
 
 Objects can reference each other cross-repository.
 
@@ -355,94 +364,23 @@ If no repository has been specified, the `:default` repository will be used.
     Artist.repository == repo #=> true
 
 Classes can specify a default repository to use other than `:default` with the
-`default_source` function:
+`repository_name` function:
 
-    class Song
-      default_source :songs
+    class Song < Spira::Base
+      configure :repository_name => :songs
     end
 
     Song.repository #=> nil, won't use :default
 
 ## Validations
 
-You may declare any number of validation functions with the `validate` function. 
-Before saving, each referenced validation will be run, and the instance's
-{Spira::Errors} object will be populated with any errors.  You can use the
-built in `assert` and assert helpers such as `assert_set` and
-`asssert_numeric`.
-
-
-    class CD
-      validate :is_real_music
-      def is_real_music
-        assert(artist.name != "Nickelback", :artist, "cannot be Nickelback")
-      end
-
-      validate :track_count_numeric
-      def track_count_numeric
-        assert_numeric(track_count)
-      end
-    end
-
-    dancing_queen.artist = nickelback
-    dancing_queen.save!  #=> ValidationError
-    dancing_queen.errors.each #=> ["artist cannot be Nickelback"]
-
-    dancing_queen.artist = abba
-    dancing_queen.save!  #=> true
+[removed]
+See the description of ActiveModel::Validations.
 
 ## Hooks
 
-Spira supports `before_create`, `after_create`, `after_update`, `before_save`,
-`after_save`, and `before_destroy` hooks:
-
-    class CD
-      def before_save
-        self.publisher = 'No publisher set' if self.publisher.nil?
-      end
-    end
-
-The `after_update` hook only fires on the `update` method, not simple property
-accessors (to allow you to easily set properties in these without going into a
-recursive loop):
-
-    class CD
-      def after_update
-        self.artist = 'Queen' # every artist should be Queen!
-      end
-    end
-    
-    # ...snip ...
-    dancing_queen.artist
-    #=> "ABBA"
-    dancing_queen.name = "Dancing Queen"
-    dancing_queen.artist
-    #=> "ABBA"
-    dancing_queen.update(:name => "Dancing Queen")
-    dancing_queen.artist
-    #=> "Queen"
-
-## Inheritance
-
-You can extend Spira resources without a problem:
-
-    class BoxedSet < CD
-      include Spira::Resource
-      property cd_count, :predicate => CD.count, :type => Integer
-    end
-
-You can also make Spira modules and include them into other classes:
-
-    module Media
-      include Spira::Resource
-      property :format, :predicate => Media.format
-    end
-
-    class CD
-      include Spira::Resource
-      include Media
-    end
-
+[removed]
+See the description of ActiveModel::Callbacks.
 
 ## Using Model Objects as RDF.rb Objects
 
@@ -463,6 +401,7 @@ There are a number of ways to ask for help.  In declining order of preference:
 
 #### Authors
  * Ben Lavender <blavender@gmail.com>
+ * Slava Kravchenko <slava.kravchenko@gmail.com>
 
 #### 'License'
 Spira is free and unemcumbered software released into the public

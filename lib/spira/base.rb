@@ -3,7 +3,6 @@ require "active_support/hash_with_indifferent_access"
 require "rdf/isomorphic"
 require "set"
 
-require "spira/dsl"
 require "spira/resource"
 require "spira/persistence"
 require "spira/validations"
@@ -32,6 +31,63 @@ module Spira
     class << self
       attr_reader :reflections, :properties
 
+      def types
+        Set.new
+      end
+
+      ##
+      # Repository name for this class
+      #
+      # @return [Symbol]
+      def repository_name
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :repository option
+        :default
+      end
+
+      ##
+      # The base URI for this class.  Attempts to create instances for non-URI
+      # objects will be appended to this base URI.
+      #
+      # @return [Void]
+      def base_uri
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :base_uri option
+        nil
+      end
+
+      ##
+      # The default vocabulary for this class.  Setting a default vocabulary
+      # will allow properties to be defined without a `:predicate` option.
+      # Predicates will instead be created by appending the property name to
+      # the given string.
+      #
+      # @return [Void]
+      def default_vocabulary
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :default_vocabulary option
+        nil
+      end
+
+
+      ##
+      # The current repository for this class
+      #
+      # @return [RDF::Repository, nil]
+      def repository
+        Spira.repository(repository_name)
+      end
+
+      ##
+      # Simple finder method.
+      #
+      # @param [Symbol, ID] scope
+      #   scope can be :all, :first or an ID
+      # @param [Hash] args
+      #   args can contain:
+      #     :conditions - Hash of properties and values
+      #     :limit      - Fixnum, limiting the amount of returned records
+      # @return [Spira::Base, Set]
       def find(scope, args = {})
         conditions = args[:conditions] || {}
         options = args.except(:conditions)
@@ -57,24 +113,15 @@ module Spira
       end
 
       ##
-      # The current repository for this class
-      #
-      # @return [RDF::Repository, nil]
-      def repository
-	name = @repository_name || :default
-	Spira.repository(name) || (raise Spira::NoRepositoryError, "#{self} is configured to use :#{name} as a repository, but it has not been set.")
-      end
-
-      ##
       # The number of URIs projectable as a given class in the repository.
       # This method is only valid for classes which declare a `type` with the
-      # `type` method in the DSL.
+      # `type` method in the Resource.
       #
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       def count
-	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
-	repository.query(:predicate => RDF.type, :object => type).subjects.count
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
+        repository.query(:predicate => RDF.type, :object => type).subjects.count
       end
 
       ##
@@ -82,13 +129,13 @@ module Spira
       #
       # @return [void]
       def reload
-	@cache = nil
+        @cache = nil
       end
 
       ##
       # Enumerate over all resources projectable as this class.  This method is
       # only valid for classes which declare a `type` with the `type` method in
-      # the DSL.
+      # the Resource.
       #
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @overload each
@@ -100,16 +147,16 @@ module Spira
       # @overload each
       #   @return [Enumerator]
       def each
-	raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." if type.nil?
 
-	if block_given?
-	  repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
-	    cache[subject] ||= self.for(subject)
-	    yield cache[subject]
-	  end
-	else
-	  enum_for(:each)
-	end
+        if block_given?
+          repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
+            cache[subject] ||= self.for(subject)
+            yield cache[subject]
+          end
+        else
+          enum_for(:each)
+        end
       end
 
       def find_by_id id
@@ -143,7 +190,7 @@ module Spira
       # @return [RDF::Util::Cache]
       # @private
       def cache
-	@cache ||= RDF::Util::Cache.new
+        @cache ||= RDF::Util::Cache.new
       end
 
       # Build a Ruby value from an RDF value.
@@ -181,7 +228,7 @@ module Spira
           else
             klass.serialize(value)
           end
-	else
+        else
           raise TypeError, "Unable to serialize #{value} as #{type}"
         end
       end
@@ -193,13 +240,13 @@ module Spira
       def classize_resource(type)
         return type unless type.is_a?(Symbol) || type.is_a?(String)
 
-	klass = nil
-	begin
-	  klass = qualified_const_get(type.to_s)
-	rescue NameError
-	  raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
-	end
-	klass
+        klass = nil
+        begin
+          klass = qualified_const_get(type.to_s)
+        rescue NameError
+          raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
+        end
+        klass
       end
 
       # Resolve a constant from a string, relative to this class' namespace, if
@@ -211,23 +258,23 @@ module Spira
       # @author njh
       # @private
       def qualified_const_get(str)
-	path = str.to_s.split('::')
-	from_root = path[0].empty?
-	if from_root
-	  from_root = []
-	  path = path[1..-1]
-	else
-	  start_ns = ((Class === self)||(Module === self)) ? self : self.class
-	  from_root = start_ns.to_s.split('::')
-	end
-	until from_root.empty?
-	  begin
-	    return (from_root+path).inject(Object) { |ns,name| ns.const_get(name) }
-	  rescue NameError
-	    from_root.delete_at(-1)
-	  end
-	end
-	path.inject(Object) { |ns,name| ns.const_get(name) }
+        path = str.to_s.split('::')
+        from_root = path[0].empty?
+        if from_root
+          from_root = []
+          path = path[1..-1]
+        else
+          start_ns = ((Class === self)||(Module === self)) ? self : self.class
+          from_root = start_ns.to_s.split('::')
+        end
+        until from_root.empty?
+          begin
+            return (from_root+path).inject(Object) { |ns,name| ns.const_get(name) }
+          rescue NameError
+            from_root.delete_at(-1)
+          end
+        end
+        path.inject(Object) { |ns,name| ns.const_get(name) }
       end
 
       ##
@@ -237,36 +284,16 @@ module Spira
       # @return Spira::Type
       # @private
       def type_for(type)
-	case
-	when type.nil?
-	  Spira::Types::Any
-	when type.is_a?(Symbol) || type.is_a?(String)
-	  type
-	when !(Spira.types[type].nil?)
-	  Spira.types[type]
-	else
-	  raise TypeError, "Unrecognized type: #{type}"
-	end
-      end
-
-      ##
-      # Determine the predicate for a property based on the given predicate, name, and default vocabulary
-      #
-      # @param  [#to_s, #to_uri] predicate
-      # @param  [Symbol] name
-      # @return [RDF::URI]
-      # @private
-      def predicate_for(predicate, name)
-	case
-	when predicate.respond_to?(:to_uri) && predicate.to_uri.absolute?
-	  predicate
-	when @default_vocabulary.nil?
-	  raise ResourceDeclarationError, "A :predicate option is required for types without a default vocabulary"
-	else
-	  # FIXME: use rdf.rb smart separator after 0.3.0 release
-	  separator = @default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-	  RDF::URI.intern(@default_vocabulary.to_s + separator + name.to_s)
-	end
+        case
+        when type.nil?
+          Spira::Types::Any
+        when type.is_a?(Symbol) || type.is_a?(String)
+          type
+        when Spira.types[type]
+          Spira.types[type]
+        else
+          raise TypeError, "Unrecognized type: #{type}"
+        end
       end
 
       def find_all conditions, options = {}
@@ -335,13 +362,8 @@ module Spira
       self.class.type
     end
 
-    ##
-    # `type` is a special property which is associated with the class and not
-    # the instance.  Always raises a TypeError to try and assign it.
-    #
-    # @raise [TypeError] always
-    def type=(type)
-      raise TypeError, "Cannot reassign RDF.type for #{self}; consider appending to a has_many :types"
+    def types
+      self.class.types
     end
 
     ##
@@ -614,13 +636,12 @@ module Spira
 
     def reset_properties
       HashWithIndifferentAccess.new.tap do |attrs|
-        self.class.properties.each do |name, _|
+        self.class.properties.each_key do |name|
           attrs[name] = NOT_SET
         end
       end
     end
 
-    extend DSL
     extend Resource
     extend Reflections
     include Types

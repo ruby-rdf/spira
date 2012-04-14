@@ -159,11 +159,11 @@ describe "has_many" do
     context "given all associations have a base_uri" do
       before do
         Post.class_eval {
-          base_uri "http://example.org/posts"
+          configure :base_uri => "http://example.org/posts"
         }
 
         Comment.class_eval {
-          base_uri "http://example.org/comments"
+          configure :base_uri => "http://example.org/comments"
         }
       end
 

@@ -6,7 +6,6 @@ describe 'default vocabularies' do
   before :all do
     @bubble_repo = RDF::Repository.new
     Spira.add_repository(:default, @bubble_repo)
-
   end
 
   before :each do
@@ -17,7 +16,7 @@ describe 'default vocabularies' do
     it "should allow a property without a predicate if there is a default vocabulary" do
       lambda {
         class VocabTestX < Spira::Base
-          default_vocabulary RDF::URI.new('http://example.org/vocabulary/')
+          configure :default_vocabulary => RDF::URI.new('http://example.org/vocabulary/')
           property :test
         end
       }.should_not raise_error
@@ -45,10 +44,8 @@ describe 'default vocabularies' do
 
     before :all do
       class ::Bubble < Spira::Base
-      
-        default_vocabulary RDF::URI.new 'http://example.org/vocab/'
-      
-        base_uri "http://example.org/bubbles/"
+        configure :default_vocabulary => RDF::URI.new('http://example.org/vocab/'),
+                  :base_uri => "http://example.org/bubbles/"
         property :year, :type => Integer
         property :name
         property :title, :predicate => DC.title, :type => String
@@ -84,8 +81,8 @@ describe 'default vocabularies' do
         class ::DefaultVocabVocab < ::RDF::Vocabulary('http://example.org/test#') ; end
 
         class ::HashVocabTest < Spira::Base
-          default_vocabulary DefaultVocabVocab
-          base_uri "http://example.org/testing/"
+          configure :default_vocabulary => DefaultVocabVocab,
+                    :base_uri => "http://example.org/testing/"
           property :name
         end
       end

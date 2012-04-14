@@ -75,7 +75,7 @@ module Spira
       # @return  [Spira::Base] The newly created instance
       # @see http://rdf.rubyforge.org/RDF/URI.html
       def for(identifier, attributes = {}, &block)
-	self.project(id_for(identifier), attributes, &block)
+        self.project(id_for(identifier), attributes, &block)
       end
       alias_method :[], :for
 
@@ -94,10 +94,10 @@ module Spira
       # @param [Hash{Symbol => Any}] attributes Initial attributes
       # @return [Spira::Base] the newly created instance
       def project(subject, attributes = {}, &block)
-	if !type.nil? && attributes[:type]
-	  raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
-	end
-	new(attributes.merge(:_subject => subject), &block)
+        if !type.nil? && attributes[:type]
+          raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
+        end
+        new(attributes.merge(:_subject => subject), &block)
       end
 
       ##
@@ -114,38 +114,38 @@ module Spira
       # @see Spira.base_uri
       # @see Spira.for
       def id_for(identifier)
-	case
-	  # Absolute URI's go through unchanged
-	when identifier.is_a?(RDF::URI) && identifier.absolute?
-	  identifier
-	  # We don't have a base URI to join this fragment with, so go ahead and instantiate it as-is.
-	when identifier.is_a?(RDF::URI) && self.base_uri.nil?
-	  identifier
-	  # Blank nodes go through unchanged
-	when identifier.respond_to?(:node?) && identifier.node?
-	  identifier
-	  # Anything that can be an RDF::URI, we re-run this case statement
-	  # on it for the fragment logic above.
-	when identifier.respond_to?(:to_uri) && !identifier.is_a?(RDF::URI)
-	  id_for(identifier.to_uri)
-	  # see comment with #to_uri above, this might be a fragment
-	when identifier.is_a?(Addressable::URI)
-	  id_for(RDF::URI.intern(identifier))
-	  # This is a #to_s or a URI fragment with a base uri.  We'll treat them the same.
-	  # FIXME: when #/ makes it into RDF.rb proper, this can all be wrapped
-	  # into the one case statement above.
-	else
-	  uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.intern(identifier.to_s)
-	  case
-	  when uri.absolute?
-	    uri
-	  when self.base_uri.nil?
-	    raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; an RDF::URI is required"
-	  else
-	    separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
-	    RDF::URI.intern(self.base_uri.to_s + separator + identifier.to_s)
-	  end
-	end
+        case
+          # Absolute URI's go through unchanged
+        when identifier.is_a?(RDF::URI) && identifier.absolute?
+          identifier
+          # We don't have a base URI to join this fragment with, so go ahead and instantiate it as-is.
+        when identifier.is_a?(RDF::URI) && self.base_uri.nil?
+          identifier
+          # Blank nodes go through unchanged
+        when identifier.respond_to?(:node?) && identifier.node?
+          identifier
+          # Anything that can be an RDF::URI, we re-run this case statement
+          # on it for the fragment logic above.
+        when identifier.respond_to?(:to_uri) && !identifier.is_a?(RDF::URI)
+          id_for(identifier.to_uri)
+          # see comment with #to_uri above, this might be a fragment
+        when identifier.is_a?(Addressable::URI)
+          id_for(RDF::URI.intern(identifier))
+          # This is a #to_s or a URI fragment with a base uri.  We'll treat them the same.
+          # FIXME: when #/ makes it into RDF.rb proper, this can all be wrapped
+          # into the one case statement above.
+        else
+          uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.intern(identifier.to_s)
+          case
+          when uri.absolute?
+            uri
+          when self.base_uri.nil?
+            raise ArgumentError, "Cannot create identifier for #{self} by String without base_uri; an RDF::URI is required"
+          else
+            separator = self.base_uri.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
+            RDF::URI.intern(self.base_uri.to_s + separator + identifier.to_s)
+          end
+        end
       end
     end
 
@@ -285,7 +285,9 @@ module Spira
         @dirty[name] = nil
         @attributes[:copied][name] = NOT_SET
       end
-      repo.insert(RDF::Statement.new(subject, RDF.type, type)) if type
+      types.each do |type|
+        repo.insert(RDF::Statement.new(subject, RDF.type, type))
+      end
       self
     end
 

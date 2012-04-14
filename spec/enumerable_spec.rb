@@ -11,8 +11,7 @@ describe Spira::Base do
       Spira.add_repository(:default, ::RDF::Repository)
       
       class ::EnumerableSpec < Spira::Base
-      
-        base_uri "http://example.org/example/people"
+        configure :base_uri => "http://example.org/example/people"
       
         property :name, :predicate => RDFS.label
         property :age,  :predicate => FOAF.age,  :type => Integer

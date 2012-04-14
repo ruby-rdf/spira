@@ -12,13 +12,13 @@ describe "Spira resources" do
     end
     
     class ::CD < Spira::Base
-      base_uri CDs.cds
+      configure :base_uri => CDs.cds
       property :name,   :predicate => DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
     
     class ::Artist < Spira::Base
-      base_uri CDs.artists
+      configure :base_uri => CDs.artists
       property :name, :predicate => DC.title, :type => String
       has_many :cds, :predicate => CDs.has_cd, :type => :CD
     end
@@ -161,7 +161,7 @@ describe "Spira resources" do
       
       before :all do
         class ::RelationsTestA < Spira::Base
-          base_uri CDs.cds
+          configure :base_uri => CDs.cds
           property :invalid, :predicate => CDs.artist, :type => :non_existant_type
         end
 

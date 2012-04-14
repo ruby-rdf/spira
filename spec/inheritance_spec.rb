@@ -126,6 +126,48 @@ describe Spira do
     end
   end
 
+  describe "multitype classes" do
+    before do
+      class MultiTypeThing < Spira::Base
+        type  SIOC.item
+        type  SIOC.post
+      end
+
+      class InheritedMultiTypeThing < MultiTypeThing
+      end
+
+      class InheritedWithTypesMultiTypeThing < MultiTypeThing
+        type SIOC.container
+      end
+    end
+
+    it "should have multiple types" do
+      types = Set.new [RDF::SIOC.item, RDF::SIOC.post]
+      MultiTypeThing.types.should eql types
+    end
+
+    it "should inherit multiple types" do
+      InheritedMultiTypeThing.types.should eql MultiTypeThing.types
+    end
+
+    it "should overwrite types" do
+      types = Set.new << RDF::SIOC.container
+      InheritedWithTypesMultiTypeThing.types.should eql types
+    end
+
+    context "when saved" do
+      before do
+        @thing = RDF::URI('http://example.org/thing').as(MultiTypeThing)
+        @thing.save!
+      end
+
+      it "should store multiple classes" do
+        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.item).count.should == 1
+        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.post).count.should == 1
+      end
+    end
+  end
+
   context "base classes" do
     before :all do
       class ::BaseChild < Spira::Base ; end

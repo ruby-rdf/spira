@@ -11,10 +11,10 @@ describe Spira do
       class ::Event < Spira::Base
         property :name, :predicate => DC.title
       end
-      
+
       class ::Stadium < Spira::Base
+        configure :repository_name => :stadium
         property :name, :predicate => DC.title
-        default_source :stadium
       end
     end
 
@@ -79,23 +79,23 @@ describe Spira do
       end
 
       it "should return nil for a repository which does not exist" do
-        lambda { Event.repository }.should raise_error Spira::NoRepositoryError
+        Event.repository.should be_nil
       end
-  
+
       it "should raise an error when accessing an attribute" do
-        lambda { @event.name }.should raise_error Spira::NoRepositoryError
+        lambda { @event.name }.should raise_error
       end
-  
-      it "should raise an error to call instance#save!" do
+
+      it "should raise an error to call instance#save" do
         @event.name = "test"
-        lambda { @event.save! }.should raise_error Spira::NoRepositoryError
+        lambda { @event.save }.should raise_error
       end
 
-      it "should raise an error to call instance#destroy!" do
-        lambda { @event.destroy! }.should raise_error Spira::NoRepositoryError
+      it "should raise an error to call instance#destroy" do
+        lambda { @event.destroy }.should raise_error
       end
 
-    end 
+    end
 
     context "with a set repository" do
       before :each do
@@ -126,23 +126,23 @@ describe Spira do
       before :each do
         Spira.clear_repositories!
       end
-  
+
       it "should return nil for a repository which does not exist" do
-        lambda { Stadium.repository }.should raise_error Spira::NoRepositoryError
+        Stadium.repository.should be_nil
       end
-  
+
       it "should raise an error when accessing an attribute" do
         stadium = RDF::URI('http://example.org/stadiums/that-one').as(Stadium)
-        lambda { stadium.name }.should raise_error Spira::NoRepositoryError
+        lambda { stadium.name }.should raise_error
       end
-  
-      it "should raise an error to call instance#save!" do
+
+      it "should raise an error to call instance#save" do
         stadium = Stadium.for(RDF::URI.new('http://example.org/stadiums/this-one'))
         stadium.name = 'test'
-        lambda { stadium.save! }.should raise_error Spira::NoRepositoryError
+        lambda { stadium.save }.should raise_error
       end
     end
-    
+
     context "with a set repository" do
       before :each do
         Spira.clear_repositories!
