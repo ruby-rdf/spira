@@ -3,6 +3,17 @@ require "spira/association_reflection"
 
 module Spira
   module Resource
+    ##
+    # Configuration options for the Spira::Resource:
+    #
+    # @params[Hash] options
+    #   :repository_name    :: name of the repository to use
+    #   :base_uri           :: base URI to be used for the resource
+    #   :default_vocabulary :: default vocabulary to use for the properties
+    #                          defined for this resource
+    # All these configuration options are readable via
+    # their respectively named Spira resource methods.
+    #
     def configure(options = {})
       singleton_class.class_eval do
         { :repository_name => options[:repository_name],
@@ -20,23 +31,30 @@ module Spira
       end
     end
 
+    ##
+    # Declare a type for the Spira::Resource.
+    # You can declare multiple types for a resource
+    # with multiple "type" assignments.
+    # If no types are declared for a resource,
+    # they are inherited from the parent resource.
+    #
+    # @params[RDF::URI] uri
+    #
     def type(uri = nil)
       if uri
-        if @type
-          raise ResourceDeclarationError, "Attempt to redeclare the type for the resource"
-        else
-          if uri.is_a?(RDF::URI)
-            singleton_class.class_eval do
-              define_method(:_type) { uri }
-              private :_type
+        if uri.is_a?(RDF::URI)
+          ts = @types ? types : Set.new
+          singleton_class.class_eval do
+            define_method :types do
+              ts
             end
-            @type = uri
-          else
-            raise TypeError, "Type must be a RDF::URI"
           end
+          @types = ts << uri
+        else
+          raise TypeError, "Type must be a RDF::URI"
         end
       else
-        respond_to?(:_type, true) ? _type : nil
+        types.first
       end
     end
 

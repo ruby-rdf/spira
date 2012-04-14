@@ -192,6 +192,21 @@ In addition, one can count the members of a class with a `type` defined:
 
     Album.count  #=> 1 
 
+
+It is possible to assign multiple types to a Spira class:
+
+    class Man < Spira::Base
+      type RDF::URI.new('http://example.org/people/father')
+      type RDF::URI.new('http://example.org/people/cop')
+    end
+
+All assigned types are accessible via "types":
+
+    Man.types #=> #<Set: {#<RDF::URI:0xd5ebc0(http://example.org/people/father)>, #<RDF::URI:0xd5e4b8(http://example.org/people/cop)>}>
+
+Also note that "type" actually returns a first type from the list of types.
+
+
 #### property
 
 A class declares property members with the `property` function.  See `Property Options` for more information.

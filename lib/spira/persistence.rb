@@ -285,7 +285,9 @@ module Spira
         @dirty[name] = nil
         @attributes[:copied][name] = NOT_SET
       end
-      repo.insert(RDF::Statement.new(subject, RDF.type, type)) if type
+      types.each do |type|
+        repo.insert(RDF::Statement.new(subject, RDF.type, type))
+      end
       self
     end
 

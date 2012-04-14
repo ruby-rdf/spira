@@ -31,6 +31,10 @@ module Spira
     class << self
       attr_reader :reflections, :properties
 
+      def types
+        Set.new
+      end
+
       ##
       # Repository name for this class
       #
@@ -356,6 +360,10 @@ module Spira
     # @return [nil,RDF::URI] The RDF type associated with this instance's class.
     def type
       self.class.type
+    end
+
+    def types
+      self.class.types
     end
 
     ##
