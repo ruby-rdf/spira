@@ -140,5 +140,24 @@ module Spira
       end
     end
 
+    ##
+    # Determine the type for a property based on the given type option
+    #
+    # @param [nil, Spira::Type, Constant] type
+    # @return Spira::Type
+    # @private
+    def type_for(type)
+      case
+      when type.nil?
+        Spira::Types::Any
+      when type.is_a?(Symbol) || type.is_a?(String)
+        type
+      when Spira.types[type]
+        Spira.types[type]
+      else
+        raise TypeError, "Unrecognized type: #{type}"
+      end
+    end
+
   end
 end

@@ -302,7 +302,7 @@ module Spira
 
     def store_attribute(property, value, predicate, repository)
       unless value.nil?
-        val = self.class.send(:build_rdf_value, value, self.class.properties[property][:type])
+        val = build_rdf_value(value, self.class.properties[property][:type])
         repository.insert(RDF::Statement.new(subject, predicate, val))
       end
     end
@@ -320,13 +320,13 @@ module Spira
             value = Set.new
             statements.each do |st|
               if st.predicate == property[:predicate]
-                value << self.class.send(:build_value, st.object, property[:type], @cache)
+                value << build_value(st.object, property[:type], @cache)
               end
             end
           else
             statement = statements.detect {|st| st.predicate == property[:predicate] }
             if statement
-              value = self.class.send(:build_value, statement.object, property[:type], @cache)
+              value = build_value(statement.object, property[:type], @cache)
             end
           end
           attrs[name] = value
@@ -345,5 +345,90 @@ module Spira
       repository.insert([subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
       self.class.repository.delete(*repository)
     end
+
+    # Build a Ruby value from an RDF value.
+    #
+    # @private
+    def build_value(node, type, cache)
+      if cache[node]
+        cache[node]
+      else
+        klass = classize_resource(type)
+        if klass.respond_to?(:unserialize)
+          if klass.ancestors.include?(Spira::Base)
+            cache[node] = promise { klass.unserialize(node, :_cache => cache) }
+          else
+            klass.unserialize(node)
+          end
+        else
+          raise TypeError, "Unable to unserialize #{node} as #{type}"
+        end
+      end
+    end
+
+    # Build an RDF value from a Ruby value for a property
+    # @private
+    def build_rdf_value(value, type)
+      klass = classize_resource(type)
+      if klass.respond_to?(:serialize)
+        # value is a Spira resource of "type"?
+        if value.class.ancestors.include?(Spira::Base)
+          if klass.ancestors.include?(value.class)
+            value.subject
+          else
+            raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
+          end
+        else
+          klass.serialize(value)
+        end
+      else
+        raise TypeError, "Unable to serialize #{value} as #{type}"
+      end
+    end
+
+    # Return the appropriate class object for a string or symbol
+    # representation.  Throws errors correctly if the given class cannot be
+    # located, or if it is not a Spira::Base
+    #
+    def classize_resource(type)
+      return type unless type.is_a?(Symbol) || type.is_a?(String)
+
+      klass = nil
+      begin
+        klass = qualified_const_get(type.to_s)
+      rescue NameError
+        raise NameError, "Could not find relation class #{type} (referenced as #{type} by #{self})"
+      end
+      klass
+    end
+
+    # Resolve a constant from a string, relative to this class' namespace, if
+    # available, and from root, otherwise.
+    #
+    # FIXME: this is not really 'qualified', but it's one of those
+    # impossible-to-name functions.  Open to suggestions.
+    #
+    # @author njh
+    # @private
+    def qualified_const_get(str)
+      path = str.to_s.split('::')
+      from_root = path[0].empty?
+      if from_root
+        from_root = []
+        path = path[1..-1]
+      else
+        start_ns = ((Class === self)||(Module === self)) ? self : self.class
+        from_root = start_ns.to_s.split('::')
+      end
+      until from_root.empty?
+        begin
+          return (from_root+path).inject(Object) { |ns,name| ns.const_get(name) }
+        rescue NameError
+          from_root.delete_at(-1)
+        end
+      end
+      path.inject(Object) { |ns,name| ns.const_get(name) }
+    end
+
   end
 end
