@@ -531,14 +531,6 @@ module Spira
       end
     end
 
-    def reset_properties
-      HashWithIndifferentAccess.new.tap do |attrs|
-        self.class.properties.each_key do |name|
-          attrs[name] = NOT_SET
-        end
-      end
-    end
-
     extend Resource
     extend Reflections
     include Types

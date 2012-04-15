@@ -430,5 +430,13 @@ module Spira
       path.inject(Object) { |ns,name| ns.const_get(name) }
     end
 
+    def reset_properties
+      HashWithIndifferentAccess.new.tap do |attrs|
+        self.class.properties.each_key do |name|
+          attrs[name] = NOT_SET
+        end
+      end
+    end
+
   end
 end
