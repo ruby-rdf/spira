@@ -84,6 +84,7 @@ module Spira
       type = type_for(opts[:type])
       properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
 
+      define_attribute_method name
       define_method "#{name}=" do |arg|
         write_attribute name, arg
       end
@@ -109,7 +110,8 @@ module Spira
       reflections[name] = AssociationReflection.new(:has_many, name, opts)
 
       define_method "#{name.to_s.singularize}_ids" do
-        send(name).map(&:id).compact
+        records = send(name) || Set.new
+        records.map(&:id).compact
       end
       define_method "#{name.to_s.singularize}_ids=" do |ids|
         records = ids.map {|id| self.class.reflect_on_association(name).klass.unserialize(id) }.compact

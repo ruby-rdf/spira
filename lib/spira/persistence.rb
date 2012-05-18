@@ -80,7 +80,7 @@ module Spira
       alias_method :[], :for
 
       ##
-      # Create a new instance with the given subjet without any modification to
+      # Create a new instance with the given subject without any modification to
       # the given subject at all.  This method exists to provide an entry point
       # for implementing classes that want to create a more intelligent .for
       # and/or .id_for for their given use cases, such as simple string
@@ -94,9 +94,6 @@ module Spira
       # @param [Hash{Symbol => Any}] attributes Initial attributes
       # @return [Spira::Base] the newly created instance
       def project(subject, attributes = {}, &block)
-        if !type.nil? && attributes[:type]
-          raise TypeError, "#{self} has an RDF type, #{self.type}, and cannot accept one as an argument."
-        end
         new(attributes.merge(:_subject => subject), &block)
       end
 
@@ -153,7 +150,7 @@ module Spira
     # when its definition ("resource - RDF.type - X") is not persisted,
     # although its other properties may already be in the storage.
     def new_record?
-      !self.class.all.detect{|rs| rs.subject == subject }
+      !self.class.repository.query(:subject => subject, :predicate => RDF.type, :object => type).first
     end
 
     def destroyed?
@@ -217,28 +214,33 @@ module Spira
     #     person.dirty?
     #     #=> true
     # @param  [Hash{Symbol => Any}] properties
+    # @param  [Hash{Symbol => Any}] options
     # @return [self]
     def update_attributes(properties, options = {})
-      update properties
-      save
+      assign_attributes properties
+      save options
     end
 
     ##
-    # Reload all attributes for this instance, overwriting or setting
-    # defaults with the given opts.  This resource will block if the
-    # underlying repository blocks the next time it accesses attributes.
+    # Reload all attributes for this instance.
+    # This resource will block if the underlying repository
+    # blocks the next time it accesses attributes.
     #
-    # @param   [Hash{Symbol => Any}] props
-    # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
     def reload(props = {})
-      @cache = props.delete(:_cache) || RDF::Util::Cache.new
-      @cache[subject] = self
-      @dirty = HashWithIndifferentAccess.new
-      @attributes = {}
-      @attributes[:current] = HashWithIndifferentAccess.new
-      @attributes[:copied] = reset_properties
-      @attributes[:original] = promise { reload_properties }
-      update props
+      # TODO: mark the model as "clean"
+      props = props.stringify_keys
+      self.class.properties.each_key do |name|
+        name = name.to_s
+        attributes[name] =
+          if props[name]
+            # mark overridden properties as changed
+            attribute_will_change!(name)
+            props[name]
+          else
+            promise { retrieve_attribute(name) }
+          end
+      end
+      self
     end
 
 
@@ -255,15 +257,6 @@ module Spira
       end
     end
 
-    def update(properties)
-      properties.each do |property, value|
-        # using a setter instead of write_attribute
-        # to account for user-defined setter methods
-        # (usually overriding standard ones)
-        send "#{property}=", value
-      end
-    end
-
     ##
     # Save changes to the repository
     #
@@ -271,22 +264,29 @@ module Spira
       repo = self.class.repository
       self.class.properties.each do |name, property|
         value = read_attribute name
-        if dirty?(name)
-          repo.delete([subject, property[:predicate], nil])
-          if self.class.reflect_on_association(name)
-            value.each do |val|
-              store_attribute(name, val, property[:predicate], repo)
-            end
-          else
+        if self.class.reflect_on_association(name)
+          # TODO: for now, always persist associations,
+          #       as it's impossible to reliably determine
+          #       whether the "association property" was changed
+          #       (e.g. for "in-place" changes like "association << 1")
+          #       This should be solved by splitting properties
+          #       into "true attributes" and associations
+          #       and not mixing the both in @properties.
+          repo.delete [subject, property[:predicate], nil]
+          value.each do |val|
+            store_attribute(name, val, property[:predicate], repo)
+          end
+        else
+          if attribute_changed?(name.to_s)
+            repo.delete [subject, property[:predicate], nil]
             store_attribute(name, value, property[:predicate], repo)
           end
         end
-        @attributes[:original][name] = value
-        @dirty[name] = nil
-        @attributes[:copied][name] = NOT_SET
       end
       types.each do |type|
-        repo.insert(RDF::Statement.new(subject, RDF.type, type))
+        # NB: repository won't accept duplicates,
+        #     but this should be avoided anyway, for performance
+        repo.insert RDF::Statement.new(subject, RDF.type, type)
       end
       self
     end
@@ -296,6 +296,7 @@ module Spira
     # so that it can be properly stored.
     def materizalize
       if new_record? && subject.anonymous? && type
+        # TODO: doesn't subject.anonymous? imply subject.id == nil ???
         @subject = self.class.id_for(subject.id)
       end
     end
@@ -303,34 +304,23 @@ module Spira
     def store_attribute(property, value, predicate, repository)
       unless value.nil?
         val = build_rdf_value(value, self.class.properties[property][:type])
-        repository.insert(RDF::Statement.new(subject, predicate, val))
+        repository.insert RDF::Statement.new(subject, predicate, val)
       end
     end
 
-    ##
-    # Reload this instance's attributes.
-    #
-    # @return [Hash{Symbol => Any}] attributes
-    def reload_properties
-      statements = data
-
-      HashWithIndifferentAccess.new.tap do |attrs|
-        self.class.properties.each do |name, property|
-          if self.class.reflect_on_association(name)
-            value = Set.new
-            statements.each do |st|
-              if st.predicate == property[:predicate]
-                value << build_value(st.object, property[:type], @cache)
-              end
-            end
-          else
-            statement = statements.detect {|st| st.predicate == property[:predicate] }
-            if statement
-              value = build_value(statement.object, property[:type], @cache)
-            end
+    # Directly retrieve an attribute value from the storage
+    def retrieve_attribute(name)
+      property = self.class.properties[name]
+      statements = self.class.repository.query(:subject => subject, :predicate => property[:predicate])
+      if self.class.reflections[name]
+        # TODO: the default reflection value should be provided by the reflection class
+        Set.new.tap do |value|
+          statements.each do |st|
+            value << build_value(st.object, property[:type])
           end
-          attrs[name] = value
         end
+      else
+        build_value(statements.first.object, property[:type]) unless statements.empty?
       end
     end
 
@@ -342,32 +332,25 @@ module Spira
     # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
     def destroy_properties(attrs, opts = {})
       repository = repository_for_attributes(attrs)
-      repository.insert([subject, RDF.type, self.class.type]) if (self.class.type && opts[:destroy_type])
+      if opts[:destroy_type]
+        self.class.types.each do |type|
+          repository.insert [subject, RDF.type, type]
+        end
+      end
       self.class.repository.delete(*repository)
     end
 
     # Build a Ruby value from an RDF value.
-    #
-    # @private
-    def build_value(node, type, cache)
-      if cache[node]
-        cache[node]
+    def build_value(node, type)
+      klass = classize_resource(type)
+      if klass.respond_to?(:unserialize)
+        klass.unserialize(node)
       else
-        klass = classize_resource(type)
-        if klass.respond_to?(:unserialize)
-          if klass.ancestors.include?(Spira::Base)
-            cache[node] = promise { klass.unserialize(node, :_cache => cache) }
-          else
-            klass.unserialize(node)
-          end
-        else
-          raise TypeError, "Unable to unserialize #{node} as #{type}"
-        end
+        raise TypeError, "Unable to unserialize #{node} as #{type}"
       end
     end
 
     # Build an RDF value from a Ruby value for a property
-    # @private
     def build_rdf_value(value, type)
       klass = classize_resource(type)
       if klass.respond_to?(:serialize)
@@ -428,14 +411,6 @@ module Spira
         end
       end
       path.inject(Object) { |ns,name| ns.const_get(name) }
-    end
-
-    def reset_properties
-      HashWithIndifferentAccess.new.tap do |attrs|
-        self.class.properties.each_key do |name|
-          attrs[name] = NOT_SET
-        end
-      end
     end
 
   end

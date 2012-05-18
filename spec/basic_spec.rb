@@ -18,9 +18,6 @@ describe Spira do
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age, :type => Integer
     end
-
-    @person_repository = RDF::Repository.load(fixture('bob.nt'))
-    Spira.add_repository(:default, @person_repository)
   end
 
   before :each do

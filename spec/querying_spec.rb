@@ -155,25 +155,6 @@ describe Spira do
         end
       end
 
-      it "should not touch the repository to reload" do
-        @repo.should_not_receive(:query)
-
-        LoadTest.reload
-      end
-
-      it "should query the repository again after a reload" do
-        # once for list of subjects, twice for items, once for list of subjects, twice for items
-        # @repo.should_receive(:query).with(:subject => @uri).exactly(6).times.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @uri).twice.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).twice.and_return(@child_statements)
-        @types = RDF::Repository.new
-        @types.insert *@repo.statements.select{|s| s.predicate == RDF.type && s.object == RDF::FOAF.load_type}
-        @repo.should_receive(:query).with(:predicate => RDF.type, :object => RDF::FOAF.load_type).twice.and_return(@types.statements)
-
-        LoadTest.each.map { |lt| lt.name }.size.should == 2
-        LoadTest.reload
-        LoadTest.each.map { |lt| lt.name }.size.should == 2
-      end
     end
   end
 end
