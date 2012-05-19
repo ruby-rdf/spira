@@ -37,6 +37,7 @@ describe Spira do
     end
 
     it "should only query once for all properties" do
+      pending "no longer applies, but the current implementation should be reconsidered"
       @repo.should_receive(:query).once.and_return([])
       test = @uri.as(LoadTest)
       name = test.name
@@ -95,31 +96,32 @@ describe Spira do
       end
 
       it "should not query the repository when loading a parent and not accessing a child" do
-        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.name).once.and_return(@parent_statements)
 
         test = @uri.as(LoadTest)
         test.name
       end
 
       it "should query the repository when loading a parent and accessing a field on a child" do
-        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
+        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).once.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.name).once.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
         test.child.name
       end
 
       it "should not re-query to access a child twice" do
-        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
+        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).once.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.name).once.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
         2.times { test.child.name }
       end
 
       it "should not re-query to access a child's parent from the child" do
-        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
+        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).once.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.load_test).once.and_return(@child_statements)
+        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.name).once.and_return(@parent_statements)
 
         test = @uri.as(LoadTest)
         3.times do
