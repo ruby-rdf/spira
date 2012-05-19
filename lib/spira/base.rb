@@ -404,10 +404,16 @@ module Spira
     private
 
     def write_attribute(name, value)
+      name = name.to_s
       if self.class.properties[name]
-        if value != read_attribute(name)
-          attribute_will_change!(name.to_s)
-          attributes[name.to_s] = value
+        if attributes[name].is_a?(Promise)
+          changed_attributes[name] = attributes[name] unless changed_attributes.include?(name)
+          attributes[name] = value
+        else
+          if value != read_attribute(name)
+            attribute_will_change!(name)
+            attributes[name] = value
+          end
         end
       else
         raise Spira::PropertyMissingError, "attempt to assign a value to a non-existing property '#{name}'"
