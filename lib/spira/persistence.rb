@@ -227,8 +227,8 @@ module Spira
     # blocks the next time it accesses attributes.
     #
     def reload(props = {})
-      # TODO: mark the model as "clean"
       props = props.stringify_keys
+      reset_changes
       self.class.properties.each_key do |name|
         name = name.to_s
         attributes[name] =
@@ -246,6 +246,11 @@ module Spira
 
     private
 
+    def reset_changes
+      @previously_changed = changes
+      @changed_attributes.clear
+    end
+
     def create_or_update
       run_callbacks :save do
         # "create" callback is triggered only when persisting a resource definition
@@ -253,8 +258,10 @@ module Spira
         run_callbacks persistance_callback do
           materizalize
           persist!
+          reset_changes
         end
       end
+      self
     end
 
     ##
@@ -288,7 +295,6 @@ module Spira
         #     but this should be avoided anyway, for performance
         repo.insert RDF::Statement.new(subject, RDF.type, type)
       end
-      self
     end
 
     # "Materialize" the resource:
