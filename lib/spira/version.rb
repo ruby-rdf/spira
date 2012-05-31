@@ -1,12 +1,9 @@
 module Spira
   module VERSION
-    MAJOR = 0
-    MINOR = 0
-    TINY  = 13
-    EXTRA = nil
+    VERSION_FILE = File.join(File.expand_path(File.dirname(__FILE__)), "..", "..", "VERSION")
+    MAJOR, MINOR, TINY, EXTRA = File.read(VERSION_FILE).chop.split(".")
 
-    STRING = [MAJOR, MINOR, TINY].join('.')
-    STRING << ".#{EXTRA}" if EXTRA
+    STRING = [MAJOR, MINOR, TINY, EXTRA].compact.join('.')
 
     ##
     # @return [String]
