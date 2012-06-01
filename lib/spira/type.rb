@@ -55,8 +55,8 @@ module Spira
       #
       # @param [Any] identifier The new alias in property declarations for this class
       # @return [Void]
-      def register_alias(any)
-        Spira.type_alias(any, self)
+      def register_alias(identifier)
+        Spira.type_alias(identifier, self)
       end
 
       ##

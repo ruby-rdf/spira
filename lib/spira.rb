@@ -46,13 +46,15 @@ module Spira
   ##
   # Add a repository to Spira's list of repositories.
   #
+  # @param [Symbol] name The name of this repository
   # @overload add_repository(name, repo)
-  #     @param [Symbol] name The name of this repository
-  #     @param [RDF::Repository] repo An RDF::Repository
+  #   @param [RDF::Repository] repo An RDF::Repository
+  #
   # @overload add_repository(name, klass, *args)
-  #     @param [Symbol] name The name of this repository
-  #     @param [RDF::Repository, Class] repo A Class that inherits from RDF::Repository
-  #     @param [*Object] The list of arguments to instantiate the class
+  #   @param [RDF::Repository, Class] klass
+  #     A Class that inherits from RDF::Repository
+  #   @param [*Object] The list of arguments to instantiate the class
+  #
   # @example Adding an ntriples file as a repository
   #     Spira.add_repository(:default, RDF::Repository.load('http://datagraph.org/jhacker/foaf.nt'))
   # @example Adding an empty repository to be instantiated on use

@@ -28,7 +28,7 @@ module Spira
       # The base URI for this class.  Attempts to create instances for non-URI
       # objects will be appended to this base URI.
       #
-      # @param  [String, RDF::URI] base uri
+      # @param  [String, RDF::URI] uri
       # @return [Void]
       def base_uri(uri = nil)
         @base_uri = uri unless uri.nil?
@@ -41,7 +41,7 @@ module Spira
       # Predicates will instead be created by appending the property name to
       # the given string.
       #
-      # @param  [String, RDF::URI] base uri
+      # @param  [String, RDF::URI] uri
       # @return [Void]
       def default_vocabulary(uri)
         @default_vocabulary = uri

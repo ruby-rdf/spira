@@ -35,7 +35,7 @@ module Spira
     ##
     # Returns true if the given property or list has any errors
     #
-    # @param [Symbol] name The name of the property or list
+    # @param [Symbol] property The name of the property or list
     # @return [true, false]
     def any_for?(property)
       !(@errors[property].nil?) && !(@errors[property].empty?)
