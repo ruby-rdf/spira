@@ -264,10 +264,15 @@ module Spira
     #
     # @see http://rdf.rubyforge.org/RDF/Enumerable.html
     def each(*args, &block)
-      return enum_for(:each) unless block_given?
-      repository = repository_for_attributes(attributes)
-      repository.insert(RDF::Statement.new(@subject, RDF.type, type)) if type
-      repository.each(*args, &block)
+      if block_given?
+        self.class.properties.each do |name, property|
+          # yield RDF::Statement.new(subject, property[:predicate], read_attribute(name))
+          value = read_attribute(name)
+          yield RDF::Statement.new(subject, property[:predicate], build_rdf_value(value, property[:type]))
+        end
+      else
+        enum_for(:each)
+      end
     end
 
     ##
@@ -351,28 +356,6 @@ module Spira
     end
 
     ##
-    # Returns true if any data exists for this subject in the backing RDF store
-    # TODO: This method *maybe* should be obsoleted by #persisted? from ActiveModel;
-    #       the name is also misleading because "exists?" is not the same as "!new_record?",
-    #       which, unlike "exists?" cares only for the resource definition.
-    #
-    # @return [Boolean]
-    def exists?
-      !data.empty?
-    end
-    alias_method :exist?, :exists?
-
-    ##
-    # Returns an Enumerator of all RDF data for this subject, not just model data.
-    #
-    # @see #each
-    # @see http://rdf.rubyforge.org/RDF/Enumerable.html
-    # @return [Enumerator]
-    def data
-      self.class.repository.query(:subject => subject)
-    end
-
-    ##
     # Returns a new instance of this class with the new subject instead of self.subject
     #
     # @param [RDF::Resource] new_subject
@@ -442,24 +425,32 @@ module Spira
       end
     end
 
-    ##
-    # Create an RDF::Repository for the given attributes hash.  This could
-    # just as well be a class method but is only used here in #save! and
-    # #destroy!, so it is defined here for simplicity.
-    #
-    # @param [Hash] attributes The attributes to create a repository for
-    def repository_for_attributes(attrs)
-      RDF::Repository.new.tap do |repo|
-        attrs.each do |name, value|
-          predicate = self.class.properties[name][:predicate]
-          if self.class.reflect_on_association(name)
-            value.each do |val|
-              store_attribute(name, val, predicate, repo)
-            end
+    # Build a Ruby value from an RDF value.
+    def build_value(node, type)
+      klass = classize_resource(type)
+      if klass.respond_to?(:unserialize)
+        klass.unserialize(node)
+      else
+        raise TypeError, "Unable to unserialize #{node} as #{type}"
+      end
+    end
+
+    # Build an RDF value from a Ruby value for a property
+    def build_rdf_value(value, type)
+      klass = classize_resource(type)
+      if klass.respond_to?(:serialize)
+        # value is a Spira resource of "type"?
+        if value.class.ancestors.include?(Spira::Base)
+          if klass.ancestors.include?(value.class)
+            value.subject
           else
-            store_attribute(name, value, predicate, repo)
+            raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
           end
+        else
+          klass.serialize(value)
         end
+      else
+        raise TypeError, "Unable to serialize #{value} as #{type}"
       end
     end
 

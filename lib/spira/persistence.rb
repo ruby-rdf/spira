@@ -146,11 +146,10 @@ module Spira
       end
     end
 
-    # A resource is considered to be new
-    # when its definition ("resource - RDF.type - X") is not persisted,
-    # although its other properties may already be in the storage.
+    # A resource is considered to be new if the repository
+    # does not have statements where subject == resource type
     def new_record?
-      !self.class.repository.query(:subject => subject, :predicate => RDF.type, :object => type).first
+      !self.class.repository.has_subject?(subject)
     end
 
     def destroyed?
@@ -158,6 +157,9 @@ module Spira
     end
 
     def persisted?
+      # FIXME: an object should be considered persisted
+      # when its attributes (and their exact values) are all available in the storage.
+      # This should check for !(changed? || new_record? || destroyed?) actually.
       !(new_record? || destroyed?)
     end
 
@@ -317,16 +319,16 @@ module Spira
     # Directly retrieve an attribute value from the storage
     def retrieve_attribute(name)
       property = self.class.properties[name]
-      statements = self.class.repository.query(:subject => subject, :predicate => property[:predicate])
+      sts = self.class.repository.query(:subject => subject, :predicate => property[:predicate])
       if self.class.reflections[name]
         # TODO: the default reflection value should be provided by the reflection class
         Set.new.tap do |value|
-          statements.each do |st|
+          sts.each do |st|
             value << build_value(st.object, property[:type])
           end
         end
       else
-        build_value(statements.first.object, property[:type]) unless statements.empty?
+        build_value(sts.first.object, property[:type]) unless sts.empty?
       end
     end
 
@@ -346,32 +348,26 @@ module Spira
       self.class.repository.delete(*repository)
     end
 
-    # Build a Ruby value from an RDF value.
-    def build_value(node, type)
-      klass = classize_resource(type)
-      if klass.respond_to?(:unserialize)
-        klass.unserialize(node)
-      else
-        raise TypeError, "Unable to unserialize #{node} as #{type}"
-      end
-    end
-
-    # Build an RDF value from a Ruby value for a property
-    def build_rdf_value(value, type)
-      klass = classize_resource(type)
-      if klass.respond_to?(:serialize)
-        # value is a Spira resource of "type"?
-        if value.class.ancestors.include?(Spira::Base)
-          if klass.ancestors.include?(value.class)
-            value.subject
+    ##
+    # Create an RDF::Repository for the given attributes hash.  This could
+    # just as well be a class method but is only used here in #save! and
+    # #destroy!, so it is defined here for simplicity.
+    #
+    # @param [Hash] attributes The attributes to create a repository for
+    def repository_for_attributes(attrs)
+      RDF::Repository.new.tap do |repo|
+        attrs.each do |name, value|
+          predicate = self.class.properties[name][:predicate]
+          if self.class.reflect_on_association(name)
+            # TODO: ultimately, reflections should handle their values themselves
+            # (or return "monadic" values that are handled with the methods of their own)
+            value.each do |val|
+              store_attribute(name, val, predicate, repo)
+            end
           else
-            raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
+            store_attribute(name, value, predicate, repo)
           end
-        else
-          klass.serialize(value)
         end
-      else
-        raise TypeError, "Unable to serialize #{value} as #{type}"
       end
     end
 

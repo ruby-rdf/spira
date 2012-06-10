@@ -80,10 +80,10 @@ describe 'models with a defined rdf type' do
       @car.type.should == Car.type
     end
 
-    it "should include a type statement on dump" do
-      @car.query(:predicate => RDF.type).count.should == 1
-      @car.query(:predicate => RDF.type).first.object.should == Car.type
-      @car.query(:predicate => RDF.type).first.subject.should == @car.uri
+    it "should not include a type statement on dump" do
+      # NB: declaring an object with a type does not get the type statement in the DB
+      # until the object is persisted!
+      @car.should_not have_statement(:predicate => RDF.type, :object => Car.type)
     end
 
     it "should ignore type assignment" do
