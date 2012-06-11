@@ -266,9 +266,11 @@ module Spira
     def each(*args, &block)
       if block_given?
         self.class.properties.each do |name, property|
-          # yield RDF::Statement.new(subject, property[:predicate], read_attribute(name))
           value = read_attribute(name)
           yield RDF::Statement.new(subject, property[:predicate], build_rdf_value(value, property[:type]))
+        end
+        self.class.types.each do |t|
+          yield RDF::Statement.new(subject, RDF.type, t)
         end
       else
         enum_for(:each)
