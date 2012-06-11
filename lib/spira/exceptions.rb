@@ -18,4 +18,8 @@ module Spira
   ##
   # Raised when user tries to assign a non-existing property
   class PropertyMissingError < SpiraError ; end
+
+  ##
+  # Raised when record cannot be persisted
+  class RecordNotSaved < SpiraError ; end
 end

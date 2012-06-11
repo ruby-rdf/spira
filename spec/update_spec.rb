@@ -64,14 +64,13 @@ describe Spira do
 
       it "should return self on success" do
         @test.name = "Save"
-        (@test.save!).should == @test
+        @test.save.should == @test
       end
 
       it "should raise an exception on failure" do
-        # FIXME: not awesome that the test has to know that spira uses :update
-        @update_repo.should_receive(:insert).once.and_raise(RuntimeError)
+        @test.should_receive(:create_or_update).once.and_return(false)
         @test.name = "Save"
-        lambda { @test.save! }.should raise_error #FIXME: what kind of error?
+        lambda { @test.save! }.should raise_error Spira::RecordNotSaved
       end
 
       it "should delete all existing statements for updated properties to the repository" do
@@ -141,7 +140,7 @@ describe Spira do
 
       it "should raise an exception on failure" do
         @update_repo.should_receive(:delete).once.and_return(nil)
-        lambda { @test.destroy! }.should raise_error
+        lambda { @test.destroy! }.should raise_error Spira::RecordNotSaved
       end
 
       it "should delete all statements in the model" do
