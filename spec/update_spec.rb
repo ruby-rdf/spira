@@ -131,59 +131,33 @@ describe Spira do
       end
 
       it "should return true on success" do
-        @test.destroy!.should == true
+        @test.destroy.should be_true
+      end
+
+      it "should return false on failure" do
+        @update_repo.should_receive(:delete).once.and_return(nil)
+        @test.destroy.should be_false
       end
 
       it "should raise an exception on failure" do
-        @update_repo.should_receive(:delete).once.and_raise(RuntimeError)
-        lambda {@test.destroy!}.should raise_error
+        @update_repo.should_receive(:delete).once.and_return(nil)
+        lambda { @test.destroy! }.should raise_error
       end
 
-      context "without options" do
-        it "should delete all statements in the model" do
-          @test.destroy!
-          @update_repo.count.should == 2
-          @update_repo.should_not have_predicate(RDF::RDFS.label)
-          @update_repo.should_not have_predicate(RDF::FOAF.age)
-        end
-
-        it "should not delete statements with predicates not defined in the model" do
-          @test.destroy!
-          @update_repo.count.should == 2
-          @update_repo.should have_predicate(RDF::FOAF.name)
-        end
+      it "should delete all statements in the model" do
+        @test.destroy!
+        @update_repo.should_not have_predicate(RDF::RDFS.label)
+        @update_repo.should_not have_predicate(RDF::FOAF.age)
       end
 
-      context "with :subject" do
-        it "should delete all statements with self as the subject" do
-          @test.destroy!(:subject)
-          @update_repo.should_not have_subject @test_uri
-        end
-
-        it "should not delete statements with self as the object" do
-          @test.destroy!(:subject)
-          @update_repo.should have_object @test_uri
-        end
+      it "should delete all statements not in the model where it is referred to as object" do
+        @test.destroy!
+        @update_repo.should_not have_predicate(RDF::RDFS.seeAlso)
       end
 
-      context "with :object" do
-        it "should delete all statements with self as the object" do
-          @test.destroy!(:object)
-          @update_repo.should_not have_object @test_uri
-        end
-
-        it "should not delete statements with self as the subject" do
-          @test.destroy!(:object)
-          @update_repo.should have_subject @test_uri
-          @update_repo.query(:subject => @test_uri).count.should == 3
-        end
-      end
-
-      context "with :completely" do
-        it "should delete all statements referencing the object" do
-          @test.destroy!(:completely)
-          @update_repo.count.should == 0
-        end
+      it "should not delete statements with predicates not defined in the model" do
+        @test.destroy!
+        @update_repo.should have_predicate(RDF::FOAF.name)
       end
 
     end

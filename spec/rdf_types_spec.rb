@@ -161,8 +161,8 @@ describe 'models with a defined rdf type' do
     end
 
     it "should decrease the count when items are destroyed" do
-      Car.for(Cars.car1).destroy!
-      Car.count.should == 0
+      car = Car.for(Cars.car1)
+      lambda { car.destroy }.should change(Car, :count).from(1).to(0)
     end
 
     it "should raise a Spira::NoTypeError to call #count for models without types" do

@@ -173,34 +173,12 @@ module Spira
 
     def destroy(*args)
       run_callbacks :destroy do
-        (@destroyed ||= destroy!(*args)) && !!freeze
+        destroy_model_data(*args)
       end
     end
 
-    ##
-    # Delete this instance from the repository.
-    #
-    # @param [Symbol] what
-    # @example Delete all fields defined in the model
-    #     @object.destroy!
-    # @example Delete all instances of this object as the subject of a triple, including non-model data @object.destroy!
-    #     @object.destroy!(:subject)
-    # @example Delete all instances of this object as the object of a triple
-    #     @object.destroy!(:object)
-    # @example Delete all triples with this object as the subject or object
-    #     @object.destroy!(:completely)
-    # @return [true, false] Whether or not the destroy was successful
-    def destroy!(what = nil)
-      case what
-      when nil
-        destroy_properties(attributes, :destroy_type => true) != nil
-      when :subject
-        self.class.repository.delete([subject, nil, nil]) != nil
-      when :object
-        self.class.repository.delete([nil, nil, subject]) != nil
-      when :completely
-        destroy!(:subject) && destroy!(:object)
-      end
+    def destroy!(*args)
+      destroy(*args) || raise(RecordNotSaved)
     end
 
     ##
@@ -332,42 +310,12 @@ module Spira
       end
     end
 
-    ##
-    # Remove the given attributes from the repository
-    #
-    # @param [Hash] attributes The hash of attributes to delete
-    # @param [Hash{Symbol => Any}] opts Options for deletion
-    # @option opts [true] :destroy_type Destroys the `RDF.type` statement associated with this class as well
-    def destroy_properties(attrs, opts = {})
-      repository = repository_for_attributes(attrs)
-      if opts[:destroy_type]
-        self.class.types.each do |type|
-          repository.insert [subject, RDF.type, type]
-        end
-      end
-      self.class.repository.delete(*repository)
-    end
-
-    ##
-    # Create an RDF::Repository for the given attributes hash.  This could
-    # just as well be a class method but is only used here in #save! and
-    # #destroy!, so it is defined here for simplicity.
-    #
-    # @param [Hash] attributes The attributes to create a repository for
-    def repository_for_attributes(attrs)
-      RDF::Repository.new.tap do |repo|
-        attrs.each do |name, value|
-          predicate = self.class.properties[name][:predicate]
-          if self.class.reflect_on_association(name)
-            # TODO: ultimately, reflections should handle their values themselves
-            # (or return "monadic" values that are handled with the methods of their own)
-            value.each do |val|
-              store_attribute(name, val, predicate, repo)
-            end
-          else
-            store_attribute(name, value, predicate, repo)
-          end
-        end
+    # Destroy all model data
+    # AND non-model data, where this resource is referred to as object.
+    def destroy_model_data(*args)
+      if self.class.repository.delete(*statements) && self.class.repository.delete([nil, nil, subject])
+        @destroyed = true
+        freeze
       end
     end
 
