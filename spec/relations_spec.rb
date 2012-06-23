@@ -130,6 +130,8 @@ describe "Spira resources" do
     end
 
     it "should not reload an object for a simple reverse relationship" do
+      pending "no longer applies, but the current implementation should be reconsidered"
+
       @artist.cds.first.artist.should equal @artist
       artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
       @cd.should equal artist_cd

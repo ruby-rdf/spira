@@ -84,6 +84,7 @@ module Spira
       type = type_for(opts[:type])
       properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
 
+      define_attribute_method name
       define_method "#{name}=" do |arg|
         write_attribute name, arg
       end
@@ -109,7 +110,8 @@ module Spira
       reflections[name] = AssociationReflection.new(:has_many, name, opts)
 
       define_method "#{name.to_s.singularize}_ids" do
-        send(name).map(&:id).compact
+        records = send(name) || Set.new
+        records.map(&:id).compact
       end
       define_method "#{name.to_s.singularize}_ids=" do |ids|
         records = ids.map {|id| self.class.reflect_on_association(name).klass.unserialize(id) }.compact
@@ -137,6 +139,25 @@ module Spira
         # FIXME: use rdf.rb smart separator after 0.3.0 release
         separator = default_vocabulary.to_s[-1,1] =~ /(\/|#)/ ? '' : '/'
         RDF::URI.intern(default_vocabulary.to_s + separator + name.to_s)
+      end
+    end
+
+    ##
+    # Determine the type for a property based on the given type option
+    #
+    # @param [nil, Spira::Type, Constant] type
+    # @return Spira::Type
+    # @private
+    def type_for(type)
+      case
+      when type.nil?
+        Spira::Types::Any
+      when type.is_a?(Symbol) || type.is_a?(String)
+        type
+      when Spira.types[type]
+        Spira.types[type]
+      else
+        raise TypeError, "Unrecognized type: #{type}"
       end
     end
 

@@ -80,14 +80,15 @@ describe 'models with a defined rdf type' do
       @car.type.should == Car.type
     end
 
-    it "should include a type statement on dump" do
-      @car.query(:predicate => RDF.type).count.should == 1
-      @car.query(:predicate => RDF.type).first.object.should == Car.type
-      @car.query(:predicate => RDF.type).first.subject.should == @car.uri
+    it "should not include a type statement on dump" do
+      # NB: declaring an object with a type does not get the type statement in the DB
+      # until the object is persisted!
+      @car.should_not have_statement(:predicate => RDF.type, :object => Car.type)
     end
 
-    it "should raise a type error when receiving a type attribute option on instantiation" do
-      lambda { Car.for RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van }.should raise_error TypeError
+    it "should ignore type assignment" do
+      car = Car.for(RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van)
+      car.type.should eql Cars.car
     end
 
   end
@@ -160,8 +161,8 @@ describe 'models with a defined rdf type' do
     end
 
     it "should decrease the count when items are destroyed" do
-      Car.for(Cars.car1).destroy!
-      Car.count.should == 0
+      car = Car.for(Cars.car1)
+      lambda { car.destroy }.should change(Car, :count).from(1).to(0)
     end
 
     it "should raise a Spira::NoTypeError to call #count for models without types" do

@@ -64,14 +64,13 @@ describe Spira do
 
       it "should return self on success" do
         @test.name = "Save"
-        (@test.save!).should == @test
+        @test.save.should == @test
       end
 
       it "should raise an exception on failure" do
-        # FIXME: not awesome that the test has to know that spira uses :update
-        @update_repo.should_receive(:insert).once.and_raise(RuntimeError)
+        @test.should_receive(:create_or_update).once.and_return(false)
         @test.name = "Save"
-        lambda { @test.save! }.should raise_error #FIXME: what kind of error?
+        lambda { @test.save! }.should raise_error Spira::RecordNotSaved
       end
 
       it "should delete all existing statements for updated properties to the repository" do
@@ -108,10 +107,10 @@ describe Spira do
         @update_repo.query(:subject => @test_uri, :predicate => RDF.type).size.should == 1
       end
 
-      it "should not be dirty afterwards" do
-        @test.name = "test"
+      it "should not be changed afterwards" do
+        @test.name = "Test"
         @test.save!
-        @test.dirty?.should be_false
+        @test.should_not be_changed
       end
 
       it "removes items set to nil from the repository" do
@@ -131,59 +130,33 @@ describe Spira do
       end
 
       it "should return true on success" do
-        @test.destroy!.should == true
+        @test.destroy.should be_true
+      end
+
+      it "should return false on failure" do
+        @update_repo.should_receive(:delete).once.and_return(nil)
+        @test.destroy.should be_false
       end
 
       it "should raise an exception on failure" do
-        @update_repo.should_receive(:delete).once.and_raise(RuntimeError)
-        lambda {@test.destroy!}.should raise_error
+        @update_repo.should_receive(:delete).once.and_return(nil)
+        lambda { @test.destroy! }.should raise_error Spira::RecordNotSaved
       end
 
-      context "without options" do
-        it "should delete all statements in the model" do
-          @test.destroy!
-          @update_repo.count.should == 2
-          @update_repo.should_not have_predicate(RDF::RDFS.label)
-          @update_repo.should_not have_predicate(RDF::FOAF.age)
-        end
-
-        it "should not delete statements with predicates not defined in the model" do
-          @test.destroy!
-          @update_repo.count.should == 2
-          @update_repo.should have_predicate(RDF::FOAF.name)
-        end
+      it "should delete all statements in the model" do
+        @test.destroy!
+        @update_repo.should_not have_predicate(RDF::RDFS.label)
+        @update_repo.should_not have_predicate(RDF::FOAF.age)
       end
 
-      context "with :subject" do
-        it "should delete all statements with self as the subject" do
-          @test.destroy!(:subject)
-          @update_repo.should_not have_subject @test_uri
-        end
-
-        it "should not delete statements with self as the object" do
-          @test.destroy!(:subject)
-          @update_repo.should have_object @test_uri
-        end
+      it "should delete all statements not in the model where it is referred to as object" do
+        @test.destroy!
+        @update_repo.should_not have_predicate(RDF::RDFS.seeAlso)
       end
 
-      context "with :object" do
-        it "should delete all statements with self as the object" do
-          @test.destroy!(:object)
-          @update_repo.should_not have_object @test_uri
-        end
-
-        it "should not delete statements with self as the subject" do
-          @test.destroy!(:object)
-          @update_repo.should have_subject @test_uri
-          @update_repo.query(:subject => @test_uri).count.should == 3
-        end
-      end
-
-      context "with :completely" do
-        it "should delete all statements referencing the object" do
-          @test.destroy!(:completely)
-          @update_repo.count.should == 0
-        end
+      it "should not delete statements with predicates not defined in the model" do
+        @test.destroy!
+        @update_repo.should have_predicate(RDF::FOAF.name)
       end
 
     end
@@ -234,78 +207,6 @@ describe Spira do
         new = @test.copy!(@new_uri)
         @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::RDFS.label, @test.name)
         @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @test.age)
-      end
-    end
-
-    context "with #copy_resource!" do
-      it "supports #copy_resource!" do
-        @test.respond_to?(:copy_resource!).should be_true
-      end
-
-      it "copies all resource data to the new subject in the repository" do
-        @test.copy_resource!(@new_uri)
-        @update_repo.query(:subject => @test_uri).each do |statement|
-          @update_repo.should have_statement RDF::Statement(@new_uri, statement.predicate, statement.object)
-        end
-      end
-
-      it "returns an instance projecting the new copied resource" do
-        new = @test.copy_resource!(@new_uri)
-        new.should be_a ::UpdateTest
-        new.name.should == @test.name
-        new.age.should == @test.age
-      end
-    end
-  end
-
-  context "when renaming" do
-    before :each do
-      @new_uri = RDF::URI('http://example.org/people/test2')
-      @other_uri = RDF::URI('http://example.org/people/test3')
-      @update_repo << RDF::Statement.new(@test_uri, RDF::FOAF.name, 'Not in model')
-      @update_repo << RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @test_uri)
-      @name = @test.name
-      @age = @test.age
-    end
-
-    context "with #rename!" do
-      it "supports #rename!" do
-        @test.respond_to?(:rename!).should be_true
-      end
-
-      it "copies model data to a given subject" do
-        new = @test.rename!(@new_uri)
-        new.name.should == @name
-        new.age.should == @age
-      end
-
-      it "updates references to the old subject as objects" do
-        new = @test.rename!(@new_uri)
-        @update_repo.should have_statement RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @new_uri)
-        @update_repo.should_not have_statement RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @test_uri)
-      end
-
-      it "saves the copy immediately" do
-        @test.rename!(@new_uri)
-        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::RDFS.label, @name)
-        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @age)
-      end
-
-      it "deletes the old model data" do
-        @test.rename!(@new_uri)
-        @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @name)
-        @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @age)
-      end
-
-      it "copies non-model data to the given subject" do
-        new = @test.rename!(@new_uri)
-        @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.name, 'Not in model')
-      end
-
-      it "deletes all data about the old subject" do
-        new = @test.rename!(@new_uri)
-        @update_repo.query(:subject => @test_uri).size.should == 0
-        @update_repo.query(:object => @test_uri).size.should == 0
       end
     end
   end

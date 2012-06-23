@@ -2,6 +2,7 @@ require "rdf"
 require "rdf/ext/uri"
 require "promise"
 require "spira/exceptions"
+require "spira/utils"
 
 ##
 # Spira is a framework for building projections of RDF data into Ruby classes.
@@ -16,10 +17,6 @@ module Spira
   autoload :Type,             'spira/type'
   autoload :Types,            'spira/types'
   autoload :VERSION,          'spira/version'
-
-  # Marker for whether or not a field has been set or not;
-  # distinguishes nil and unset.
-  NOT_SET = ::Object.new.freeze
 
   ##
   # The list of all property types available for Spira resources
