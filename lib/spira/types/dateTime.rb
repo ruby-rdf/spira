@@ -1,5 +1,3 @@
-require 'bigdecimal'
-
 module Spira::Types
 
   ##
