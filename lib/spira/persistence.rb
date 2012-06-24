@@ -290,7 +290,9 @@ module Spira
     def store_attribute(property, value, predicate, repository)
       unless value.nil?
         val = build_rdf_value(value, self.class.properties[property][:type])
-        repository.insert RDF::Statement.new(subject, predicate, val)
+        if !val.literal? || (val.literal? && val.valid?)
+          repository.insert RDF::Statement.new(subject, predicate, val)
+        end
       end
     end
 
