@@ -16,6 +16,11 @@ describe Spira::Base do
         property :name, :predicate => RDFS.label
         property :age,  :predicate => FOAF.age,  :type => Integer
       end
+
+      class ::EnumerableWithAssociationsSpec < Spira::Base
+        configure :base_uri => "http://example.org/example/people"
+        has_many :friends, :predicate => FOAF.person, :type => :EnumerableWithAssociationsSpec
+      end
     end
 
     before :each do
@@ -28,6 +33,18 @@ describe Spira::Base do
       @person.name = "Bob Smith"
       @person.age = 15
       @enumerable = @person
+    end
+
+    context "when has has_many association" do
+      before do
+        @another_uri = RDF::URI('http://example.org/example/people/charlie')
+        @charlie = EnumerableWithAssociationsSpec.for @another_uri
+        3.times { @charlie.friends << EnumerableWithAssociationsSpec.new }
+      end
+
+      it "should list associated statements individually" do
+        @charlie.statements.size.should eql @charlie.friends.size
+      end
     end
 
     context "when running the rdf-spec RDF::Enumerable shared groups" do
