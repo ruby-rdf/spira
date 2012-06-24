@@ -266,15 +266,16 @@ module Spira
     def each(*args, &block)
       if block_given?
         self.class.properties.each do |name, property|
-          value = read_attribute(name)
-          if self.class.reflect_on_association(name)
-            value.each do |val|
-              node = build_rdf_value(val, property[:type])
+          if value = read_attribute(name)
+            if self.class.reflect_on_association(name)
+              value.each do |val|
+                node = build_rdf_value(val, property[:type])
+                yield RDF::Statement.new(subject, property[:predicate], node) if can_store_node?(node)
+              end
+            else
+              node = build_rdf_value(value, property[:type])
               yield RDF::Statement.new(subject, property[:predicate], node) if can_store_node?(node)
             end
-          else
-            node = build_rdf_value(value, property[:type])
-            yield RDF::Statement.new(subject, property[:predicate], node) if can_store_node?(node)
           end
         end
         self.class.types.each do |t|

@@ -19,6 +19,8 @@ describe Spira::Base do
 
       class ::EnumerableWithAssociationsSpec < Spira::Base
         configure :base_uri => "http://example.org/example/people"
+
+        property :name, :predicate => RDFS.label
         has_many :friends, :predicate => FOAF.person, :type => :EnumerableWithAssociationsSpec
       end
     end
@@ -33,6 +35,16 @@ describe Spira::Base do
       @person.name = "Bob Smith"
       @person.age = 15
       @enumerable = @person
+    end
+
+    context "when just created" do
+      before do
+        @liza = EnumerableWithAssociationsSpec.new
+      end
+
+      it "should have no statements" do
+        @liza.statements.size.should be_zero
+      end
     end
 
     context "when has has_many association" do
