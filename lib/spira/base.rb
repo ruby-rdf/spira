@@ -267,9 +267,7 @@ module Spira
       if block_given?
         self.class.properties.each do |name, property|
           value = build_rdf_value(read_attribute(name), property[:type])
-          if !value.literal? || value.valid?
-            yield RDF::Statement.new(subject, property[:predicate], value)
-          end
+          yield RDF::Statement.new(subject, property[:predicate], value) if can_store_node?(value)
         end
         self.class.types.each do |t|
           yield RDF::Statement.new(subject, RDF.type, t)
@@ -456,6 +454,10 @@ module Spira
       else
         raise TypeError, "Unable to serialize #{value} as #{type}"
       end
+    end
+
+    def can_store_node?(node)
+      !node.literal? || node.valid?
     end
 
     extend Resource
