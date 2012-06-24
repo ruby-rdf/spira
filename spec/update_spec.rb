@@ -123,6 +123,18 @@ describe Spira do
   end
 
   context "when destroying" do
+    context "after destroyed" do
+      before { @test.destroy! }
+
+      it "should be able to validate" do
+        @test.should be_valid
+      end
+
+      it "should be frozen" do
+        @test.should be_frozen
+      end
+    end
+
     context "via #destroy" do
       before :each do
         @update_repo << RDF::Statement.new(@test_uri, RDF::FOAF.name, 'Not in model')

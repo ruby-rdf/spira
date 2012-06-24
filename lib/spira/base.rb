@@ -229,6 +229,16 @@ module Spira
       yield self if block_given?
     end
 
+    # Freeze the attributes hash such that associations are still accessible, even on destroyed records.
+    def freeze
+      @attributes.freeze; self
+    end
+
+    # Returns +true+ if the attributes hash has been frozen.
+    def frozen?
+      @attributes.frozen?
+    end
+
     ##
     # The `RDF.type` associated with this class.
     #
