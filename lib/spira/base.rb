@@ -266,8 +266,10 @@ module Spira
     def each(*args, &block)
       if block_given?
         self.class.properties.each do |name, property|
-          value = read_attribute(name)
-          yield RDF::Statement.new(subject, property[:predicate], build_rdf_value(value, property[:type]))
+          value = build_rdf_value(read_attribute(name), property[:type])
+          if !value.literal? || value.valid?
+            yield RDF::Statement.new(subject, property[:predicate], value)
+          end
         end
         self.class.types.each do |t|
           yield RDF::Statement.new(subject, RDF.type, t)
