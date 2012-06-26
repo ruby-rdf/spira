@@ -20,7 +20,6 @@ module Spira
     include ActiveModel::Conversion
     include ActiveModel::Dirty
 
-    # TODO: I don't think RDF::Enumerable should be included here
     include ::RDF, ::RDF::Enumerable, ::RDF::Queryable
 
     define_model_callbacks :save, :destroy, :create, :update
@@ -73,7 +72,6 @@ module Spira
         # see also Spira::Resource.configure :default_vocabulary option
         nil
       end
-
 
       ##
       # The current repository for this class
@@ -280,11 +278,11 @@ module Spira
             if self.class.reflect_on_association(name)
               value.each do |val|
                 node = build_rdf_value(val, property[:type])
-                yield RDF::Statement.new(subject, property[:predicate], node) if can_store_node?(node)
+                yield RDF::Statement.new(subject, property[:predicate], node) if valid_object?(node)
               end
             else
               node = build_rdf_value(value, property[:type])
-              yield RDF::Statement.new(subject, property[:predicate], node) if can_store_node?(node)
+              yield RDF::Statement.new(subject, property[:predicate], node) if valid_object?(node)
             end
           end
         end
@@ -475,7 +473,7 @@ module Spira
       end
     end
 
-    def can_store_node?(node)
+    def valid_object?(node)
       !node.literal? || node.valid?
     end
 
