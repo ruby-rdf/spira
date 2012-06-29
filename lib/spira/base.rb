@@ -64,7 +64,13 @@ module Spira
       end
 
       def serialize(node, options = {})
-        node
+        if node.respond_to?(:subject)
+          node.subject
+        elsif node.respond_to?(:blank?) && node.blank?
+          nil
+        else
+          raise TypeError, "cannot serialize #{node.inspect} as a Spira resource"
+        end
       end
 
       def unserialize(value, options = {})
@@ -311,23 +317,14 @@ module Spira
     def build_rdf_value(value, type)
       klass = classize_resource(type)
       if klass.respond_to?(:serialize)
-        # value is a Spira resource of "type"?
-        if value.class.ancestors.include?(Spira::Base)
-          if klass.ancestors.include?(value.class)
-            value.subject
-          else
-            raise TypeError, "#{value} is an instance of #{value.class}, expected #{klass}"
-          end
-        else
-          klass.serialize(value)
-        end
+        klass.serialize(value)
       else
         raise TypeError, "Unable to serialize #{value} as #{type}"
       end
     end
 
     def valid_object?(node)
-      !node.literal? || node.valid?
+      node && (!node.literal? || node.valid?)
     end
 
     extend Resource
