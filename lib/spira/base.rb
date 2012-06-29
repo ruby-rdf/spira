@@ -118,9 +118,6 @@ module Spira
     def initialize(props = {}, options = {})
       @subject = props.delete(:_subject) || RDF::Node.new
 
-      # TODO: make "simple" and persistence-specific #reload methods
-      #       and combine them such as to use only simple reloading
-      #       for resources that do not need persistence.
       @attributes = {}
       reload props
 
@@ -140,13 +137,30 @@ module Spira
     ##
     # The `RDF.type` associated with this class.
     #
+    # This just takes a first type from "types" list,
+    # so make sure you know what you're doing if you use it.
+    #
     # @return [nil,RDF::URI] The RDF type associated with this instance's class.
     def type
       self.class.type
     end
 
+    ##
+    # All `RDF.type` nodes associated with this class.
+    #
+    # @return [nil,RDF::URI] The RDF type associated with this instance's class.
     def types
       self.class.types
+    end
+
+    ##
+    # Assign all attributes from the given hash.
+    #
+    def reload(props = {})
+      reset_changes
+      super
+      assign_attributes(props)
+      self
     end
 
     ##
@@ -260,12 +274,18 @@ module Spira
     # without persisting it.
     def assign_attributes(attrs)
       attrs.each do |name, value|
+        attribute_will_change!(name.to_s)
         send "#{name}=", value
       end
     end
 
 
     private
+
+    def reset_changes
+      @previously_changed = changes
+      @changed_attributes.clear
+    end
 
     def write_attribute(name, value)
       name = name.to_s

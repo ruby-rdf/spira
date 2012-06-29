@@ -364,32 +364,21 @@ module Spira
     # If repository is not defined, the attributes are just not set,
     # instead of raising a Spira::NoRepositoryError.
     #
+    # NB: "props" argument is ignored, it is handled in Base
+    #
     def reload(props = {})
-      reset_changes
-      props = props.stringify_keys
-
       sts = self.class.repository && promise { self.class.repository.query(:subject => subject) }
       self.class.properties.each do |name, options|
         name = name.to_s
-        if props[name]
-          # mark overridden properties as changed
-          attribute_will_change!(name)
-          attributes[name] = props[name]
-        elsif sts
+        if sts
           objects = sts.select { |s| s.predicate == options[:predicate] }
           attributes[name] = retrieve_attribute(name, options, objects)
         end
       end
-      self
     end
 
 
     private
-
-    def reset_changes
-      @previously_changed = changes
-      @changed_attributes.clear
-    end
 
     def create_or_update
       run_callbacks :save do

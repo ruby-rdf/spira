@@ -90,9 +90,10 @@ describe 'models with a defined rdf type' do
       @car.should_not have_statement(:predicate => RDF.type, :object => Car.type)
     end
 
-    it "should ignore type assignment" do
-      car = Car.for(RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van)
-      car.type.should eql Cars.car
+    it "should not be able to assign type" do
+      lambda {
+        Car.for(RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van)
+      }.should raise_error NoMethodError
     end
 
   end
