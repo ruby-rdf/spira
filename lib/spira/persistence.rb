@@ -73,8 +73,10 @@ module Spira
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
 
         if block_given?
-          repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
-            yield instantiate_record(subject)
+          types.each do |tp|
+            repository.query(:predicate => RDF.type, :object => tp).each_subject do |subject|
+              yield instantiate_record(subject)
+            end
           end
         else
           enum_for(:each)
@@ -89,10 +91,7 @@ module Spira
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       def count
-        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
-        types.inject(0) do |c, tp|
-          c += repository.query(:predicate => RDF.type, :object => tp).subjects.count
-        end
+        each.count
       end
 
       # Creates an object (or multiple objects) and saves it to the database, if validations pass.
