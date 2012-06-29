@@ -9,6 +9,13 @@ with Ruby on Rails.
 Although I've been trying to make the impact of this transition to be as little
 as possible, there are a few changes that you should be aware of:
 
+ * Read the comments on "new_record?" and "reload" methods. They are key methods in
+   understanding how Spira is working with the repository. Basically, a Spira record
+   is new, if the repository has no statements with this record as subject. This means,
+   that *the repository is queried every time you invoke "new_record?"*.
+   Also note that if Spira.repository is not set, your Spira resource with always be "new".
+   Also note that instantiating a new Spira resource sends a query to the repository,
+   if it is set, but should work just fine even if it's not (until you try to "save" it).
  * Customary Rails' record manipulation methods are preferred now.
    This means, you should use more habitual "save", "destroy", "update_attributes", etc.
    instead of the "save!", "destroy!", "update", "update!" and others, as introduced
@@ -21,24 +28,18 @@ as possible, there are a few changes that you should be aware of:
  * A spira resource (class) must be defined by *inheriting* it from Spira::Base.
    Using "include Spira::Resource" is *temporarily* broken, but will be back at some point,
    with improvements and stuff.
- * Take note about the difference of "new_record?" and "exists?" methods.
-   Read the comments on those. And "#exists?" (instance method) is going away soon, too.
  * "after/before_create" callbacks are *not* called when only the properties of your
-   Spira resource are getting persisted. You may create a "type"-less Spira resource,
+   Spira resource are getting persisted. That is, you may create a "type"-less Spira resource,
    assign properties to it, then #save it -- "_create" callbacks will not be triggered,
    because Spira cannot infer a resource definition ("resource - RDF.type - type")
    for such resource and will only persist its properties.
    Although this is how the original Spira behaves too, I thought I'd state it
-   explicitly here for when you start freaking out.
+   explicitly here before you start freaking out.
  * Configuration options "base_uri", "default_vocabulary" and "repository_name" are
    now configured via "configure" method (see the examples below).
  * A couple of (not so) subtle changes:
    1) Global caching is gone. This means that "artist.works.first.artist" (reverse lookup)
    does not return the original artist, but its copy retrieved from the database.
-   2) Each attribute is retrieved individually, e.g. "artist.name, artist.birthday,
-   artist.name" (3 references to 2 attributes) will cause 2 queries to the storage,
-   instead of just one. That is, a query per attribute name (same attributes are cached,
-   however). This is a temporal glitch, will be back to the previous behaviour soon.
 
 ---
 

@@ -19,29 +19,29 @@ describe Spira do
       @uri = RDF::URI('http://example.org/example')
     end
 
-    it "should not attempt to query on instantiation" do
-      @repo.should_not_receive(:query)
-      test = @uri.as(LoadTest)
+    it "should attempt to query on instantiation" do
+      @repo.should_receive(:query).once.and_return([])
+      @uri.as(LoadTest)
     end
 
-    it "should not attempt query on property setting" do
-      @repo.should_not_receive(:query)
-      test = @uri.as(LoadTest)
-      test.name = "test"
-    end
-
-    it "should attempt to query on property getting" do
+    it "should attempt query once on property setting" do
       @repo.should_receive(:query).once.and_return([])
       test = @uri.as(LoadTest)
-      name = test.name
+      test.name = "test"
+      test.name = "another test"
+    end
+
+    it "should not attempt to query on property getting" do
+      @repo.should_receive(:query).once.and_return([])
+      test = @uri.as(LoadTest)
+      test.name
     end
 
     it "should only query once for all properties" do
-      pending "no longer applies, but the current implementation should be reconsidered"
       @repo.should_receive(:query).once.and_return([])
       test = @uri.as(LoadTest)
-      name = test.name
-      label = test.label
+      test.name
+      test.label
     end
 
     it "should support :reload" do
@@ -49,8 +49,8 @@ describe Spira do
       test.should respond_to :reload
     end
 
-    it "should not touch the repository to reload" do
-      @repo.should_not_receive(:query)
+    it "should touch the repository to reload" do
+      @repo.should_receive(:query).twice.and_return([])
       test = @uri.as(LoadTest)
       test.reload
     end
@@ -58,9 +58,9 @@ describe Spira do
     it "should query the repository again after a reload" do
       @repo.should_receive(:query).twice.and_return([])
       test = @uri.as(LoadTest)
-      name = test.name
+      test.name
       test.reload
-      name = test.name
+      test.name
     end
 
     context "for relations" do
@@ -97,7 +97,7 @@ describe Spira do
 
       it "should not query the repository when loading a parent and not accessing a child" do
         name_statements = @parent_statements.select {|st| st.predicate == RDF::FOAF.name }
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.name).once.and_return(name_statements)
+        @repo.should_receive(:query).with(:subject => @uri).once.and_return(name_statements)
 
         test = @uri.as(LoadTest)
         test.name
@@ -105,8 +105,8 @@ describe Spira do
 
       it "should query the repository when loading a parent and accessing a field on a child" do
         name_statements = @parent_statements.select {|st| st.predicate == RDF::FOAF.name }
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.name).once.and_return(name_statements)
+        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(name_statements)
 
         test = @uri.as(LoadTest)
         test.child.name
@@ -114,18 +114,17 @@ describe Spira do
 
       it "should not re-query to access a child twice" do
         name_statements = @parent_statements.select {|st| st.predicate == RDF::FOAF.name }
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.name).once.and_return(name_statements)
+        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(name_statements)
 
         test = @uri.as(LoadTest)
         2.times { test.child.name }
       end
 
-      it "should not re-query to access a child's parent from the child" do
+      it "should re-query to access a child's parent from the child" do
         name_statements = @parent_statements.select {|st| st.predicate == RDF::FOAF.name }
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.load_test).once.and_return(@child_statements)
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.name).once.and_return(name_statements)
+        @repo.should_receive(:query).with(:subject => @uri).twice.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
         3.times do
@@ -136,10 +135,8 @@ describe Spira do
       it "should re-query for children after a #reload" do
         parent_name_statements = @parent_statements.select {|st| st.predicate == RDF::FOAF.name }
         child_name_statements = @child_statements.select {|st| st.predicate == RDF::FOAF.name }
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.load_test).twice.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.load_test).twice.and_return(@child_statements)
-        @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.name).twice.and_return(parent_name_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.name).twice.and_return(child_name_statements)
+        @repo.should_receive(:query).with(:subject => @uri).exactly(4).times.and_return(@parent_statements)
+        @repo.should_receive(:query).with(:subject => @child_uri).twice.and_return(@child_statements)
 
         test = @uri.as(LoadTest)
         test.child.child.name.should == "a name"
@@ -150,7 +147,7 @@ describe Spira do
       end
 
       it "should not re-query to iterate by type twice" do
-        pending "no longer applies as the global cache is gone?"
+        pending "no longer applies as the global cache is gone"
 
         # once to get the list of subjects, once for @uri, once for @child_uri, 
         # and once for the list of subjects again

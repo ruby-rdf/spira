@@ -207,18 +207,20 @@ module Spira
     # blocks the next time it accesses attributes.
     #
     def reload(props = {})
-      props = props.stringify_keys
       reset_changes
-      self.class.properties.each_key do |name|
+      props = props.stringify_keys
+
+      sts = self.class.repository && promise { self.class.repository.query(:subject => subject) }
+      self.class.properties.each do |name, options|
         name = name.to_s
-        attributes[name] =
-          if props[name]
-            # mark overridden properties as changed
-            attribute_will_change!(name)
-            props[name]
-          else
-            promise { retrieve_attribute(name) }
-          end
+        if props[name]
+          # mark overridden properties as changed
+          attribute_will_change!(name)
+          attributes[name] = props[name]
+        elsif sts
+          objects = sts.select { |s| s.predicate == options[:predicate] }
+          attributes[name] = retrieve_attribute(name, options, objects)
+        end
       end
       self
     end
@@ -295,18 +297,17 @@ module Spira
     end
 
     # Directly retrieve an attribute value from the storage
-    def retrieve_attribute(name)
-      property = self.class.properties[name]
-      sts = self.class.repository.query(:subject => subject, :predicate => property[:predicate])
+    def retrieve_attribute(name, options, sts)
       if self.class.reflections[name]
-        # TODO: the default reflection value should be provided by the reflection class
-        Set.new.tap do |value|
-          sts.each do |st|
-            value << build_value(st.object, property[:type])
+        sts.inject(Set.new) do |values, statement|
+          if statement.predicate == options[:predicate]
+            values << build_value(statement.object, options[:type])
+          else
+            values
           end
         end
       else
-        build_value(sts.first.object, property[:type]) unless sts.empty?
+        sts.first ? build_value(sts.first.object, options[:type]) : nil
       end
     end
 

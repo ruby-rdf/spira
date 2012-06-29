@@ -161,7 +161,9 @@ module Spira
         if value.respond_to?(:blank?) && value.blank?
           nil
         else
-          instantiate_record(value)
+          # Spira resources are instantiated as "promised"
+          # to avoid instantiation loops in case of resource-to-resource relations.
+          promise { instantiate_record(value) }
         end
       end
 
@@ -427,9 +429,6 @@ module Spira
     #
     def read_attribute(name)
       value = attributes[name.to_s]
-      # NB: RDF.rb (and probably others) does not work well with "promises",
-      #     have to output a real value
-      value = value.is_a?(Promise) ? value.force : value
 
       refl = self.class.reflections[name]
       if refl && !value

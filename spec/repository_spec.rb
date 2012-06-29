@@ -82,8 +82,8 @@ describe Spira do
         Event.repository.should be_nil
       end
 
-      it "should raise an error when accessing an attribute" do
-        lambda { @event.name }.should raise_error
+      it "should not raise an error when accessing an attribute" do
+        lambda { @event.name }.should_not raise_error
       end
 
       it "should raise an error to call instance#save" do
@@ -131,9 +131,9 @@ describe Spira do
         Stadium.repository.should be_nil
       end
 
-      it "should raise an error when accessing an attribute" do
+      it "should not raise an error when accessing an attribute" do
         stadium = RDF::URI('http://example.org/stadiums/that-one').as(Stadium)
-        lambda { stadium.name }.should raise_error
+        lambda { stadium.name }.should_not raise_error
       end
 
       it "should raise an error to call instance#save" do
