@@ -40,16 +40,6 @@ module Spira
       end
 
       ##
-      # Repository name for this class
-      #
-      # @return [Symbol]
-      def repository_name
-        # should be redefined in children, if required
-        # see also Spira::Resource.configure :repository option
-        :default
-      end
-
-      ##
       # The base URI for this class.  Attempts to create instances for non-URI
       # objects will be appended to this base URI.
       #
@@ -71,14 +61,6 @@ module Spira
         # should be redefined in children, if required
         # see also Spira::Resource.configure :default_vocabulary option
         nil
-      end
-
-      ##
-      # The current repository for this class
-      #
-      # @return [RDF::Repository, nil]
-      def repository
-        Spira.repository(repository_name)
       end
 
       def serialize(node, options = {})

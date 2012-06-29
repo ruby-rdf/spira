@@ -4,6 +4,24 @@ module Spira
 
     module ClassMethods
       ##
+      # Repository name for this class
+      #
+      # @return [Symbol]
+      def repository_name
+        # should be redefined in children, if required
+        # see also Spira::Resource.configure :repository option
+        :default
+      end
+
+      ##
+      # The current repository for this class
+      #
+      # @return [RDF::Repository, nil]
+      def repository
+        Spira.repository(repository_name)
+      end
+
+      ##
       # Simple finder method.
       #
       # @param [Symbol, ID] scope
@@ -218,6 +236,7 @@ module Spira
           end
         end
       end
+
 
       private
 
