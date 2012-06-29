@@ -37,9 +37,9 @@ module Spira
 
         case scope
         when :first
-          find_all(conditions, options.merge(:limit => 1)).first
+          find_each(conditions, options.merge(:limit => 1)).first
         when :all
-          find_all(conditions, options)
+          find_each(conditions, options).to_a
         else
           instantiate_record(scope)
         end
@@ -89,7 +89,6 @@ module Spira
           enum_for(:each)
         end
       end
-      alias_method :find_all, :each
       alias_method :find_each, :each
 
       ##

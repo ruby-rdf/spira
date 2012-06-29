@@ -19,6 +19,20 @@ describe Spira do
       @uri = RDF::URI('http://example.org/example')
     end
 
+    describe "find_each" do
+      subject { LoadTest.find_each }
+
+      it { should be_a Enumerator }
+
+      it { should_not respond_to :to_ary }
+    end
+
+    describe "all" do
+      subject { LoadTest.all }
+
+      it { should respond_to :to_ary }
+    end
+
     it "should attempt to query on instantiation" do
       @repo.should_receive(:query).once.and_return([])
       @uri.as(LoadTest)
