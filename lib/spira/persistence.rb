@@ -3,6 +3,80 @@ module Spira
     extend ActiveSupport::Concern
 
     module ClassMethods
+      ##
+      # Simple finder method.
+      #
+      # @param [Symbol, ID] scope
+      #   scope can be :all, :first or an ID
+      # @param [Hash] args
+      #   args can contain:
+      #     :conditions - Hash of properties and values
+      #     :limit      - Fixnum, limiting the amount of returned records
+      # @return [Spira::Base, Set]
+      def find(scope, args = {})
+        conditions = args[:conditions] || {}
+        options = args.except(:conditions)
+
+        limit = options[:limit] || -1
+
+        case scope
+        when :first
+          find_all(conditions, :limit => 1).first
+        when :all
+          find_all(conditions, :limit => limit)
+        else
+          instantiate_record(scope)
+        end
+      end
+
+      def all(args = {})
+        find(:all, args)
+      end
+
+      def first(args = {})
+        find(:first, args)
+      end
+
+      ##
+      # Enumerate over all resources projectable as this class.  This method is
+      # only valid for classes which declare a `type` with the `type` method in
+      # the Resource.
+      #
+      # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
+      # @overload each
+      #   @yield [instance] A block to perform for each available projection of this class
+      #   @yieldparam [self] instance
+      #   @yieldreturn [Void]
+      #   @return [Void]
+      #
+      # @overload each
+      #   @return [Enumerator]
+      def each
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
+
+        if block_given?
+          repository.query(:predicate => RDF.type, :object => type).each_subject do |subject|
+            yield instantiate_record(subject)
+          end
+        else
+          enum_for(:each)
+        end
+      end
+
+      ##
+      # The number of URIs projectable as a given class in the repository.
+      # This method is only valid for classes which declare a `type` with the
+      # `type` method in the Resource.
+      #
+      # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
+      # @return [Integer] the count
+      def count
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
+        types.inject(0) do |c, tp|
+          c += repository.query(:predicate => RDF.type, :object => tp).subjects.count
+        end
+      end
+
       # Creates an object (or multiple objects) and saves it to the database, if validations pass.
       # The resulting object is returned whether the object was saved successfully to the database or not.
       #
@@ -144,6 +218,31 @@ module Spira
           end
         end
       end
+
+      private
+
+      def find_all conditions, options = {}
+        q = conditions_to_query(conditions)
+
+        [].tap do |results|
+          repository.query(q) do |solution|
+            break if options[:limit].zero?
+            results << instantiate_record(solution[:subject])
+            options[:limit] -= 1
+          end
+        end
+      end
+
+      def conditions_to_query(conditions)
+        patterns = [[:subject, RDF.type, type]]
+        conditions.each do |name, value|
+          patterns << [:subject, properties[name][:predicate], value]
+        end
+
+        RDF::Query.new do
+          patterns.each { |pat| pattern(pat) }
+        end
+      end
     end
 
     # A resource is considered to be new if the repository
@@ -179,6 +278,44 @@ module Spira
 
     def destroy!(*args)
       destroy(*args) || raise(RecordNotSaved)
+    end
+
+    ##
+    # Enumerate each RDF statement that makes up this projection.  This makes
+    # each instance an `RDF::Enumerable`, with all of the nifty benefits
+    # thereof.  See <http://rdf.rubyforge.org/RDF/Enumerable.html> for
+    # information on arguments.
+    #
+    # @see http://rdf.rubyforge.org/RDF/Enumerable.html
+    def each(*args, &block)
+      if block_given?
+        self.class.properties.each do |name, property|
+          if value = read_attribute(name)
+            if self.class.reflect_on_association(name)
+              value.each do |val|
+                node = build_rdf_value(val, property[:type])
+                yield RDF::Statement.new(subject, property[:predicate], node) if valid_object?(node)
+              end
+            else
+              node = build_rdf_value(value, property[:type])
+              yield RDF::Statement.new(subject, property[:predicate], node) if valid_object?(node)
+            end
+          end
+        end
+        self.class.types.each do |t|
+          yield RDF::Statement.new(subject, RDF.type, t)
+        end
+      else
+        enum_for(:each)
+      end
+    end
+
+    ##
+    # The number of RDF::Statements this projection has.
+    #
+    # @see http://rdf.rubyforge.org/RDF/Enumerable.html#count
+    def count
+      each.size
     end
 
     ##
