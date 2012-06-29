@@ -365,6 +365,9 @@ module Spira
     # This resource will block if the underlying repository
     # blocks the next time it accesses attributes.
     #
+    # If repository is not defined, the attributes are just not set,
+    # instead of raising a Spira::NoRepositoryError.
+    #
     def reload(props = {})
       reset_changes
       props = props.stringify_keys

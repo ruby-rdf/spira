@@ -112,6 +112,9 @@ module Spira
     def initialize(props = {}, options = {})
       @subject = props.delete(:_subject) || RDF::Node.new
 
+      # TODO: make "simple" and persistence-specific #reload methods
+      #       and combine them such as to use only simple reloading
+      #       for resources that do not need persistence.
       @attributes = {}
       reload props
 
