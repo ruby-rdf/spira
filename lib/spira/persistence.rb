@@ -253,7 +253,10 @@ module Spira
       end
 
       def conditions_to_query(conditions)
-        patterns = [[:subject, RDF.type, type]]
+        patterns = []
+        types.each do |tp|
+          patterns << [:subject, RDF.type, tp]
+        end
         conditions.each do |name, value|
           patterns << [:subject, properties[name][:predicate], value]
         end
