@@ -124,6 +124,7 @@ describe 'A Spira resource' do
     describe "validates_uniqueness_of" do
       before :all do
         class ::V4 < Spira::Base
+          type FOAF.Person
           property :name, :predicate => DC.title
           validates_uniqueness_of :name
         end
@@ -133,6 +134,13 @@ describe 'A Spira resource' do
         v1 = V4.for RDF::URI.new('http://example.org/v2/first')
         v1.name = "unique name"
         v1.save
+      end
+
+      it "should not have errors on name for the same record" do
+        v1 = V4.for RDF::URI.new('http://example.org/v2/first')
+        v1.name = v1.name
+        v1.save
+        v1.errors[:name].should be_empty
       end
 
       it "should have errors on :name" do

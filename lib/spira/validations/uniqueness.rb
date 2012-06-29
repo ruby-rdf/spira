@@ -7,10 +7,11 @@ module Spira
       end
 
       def validate_each(record, attribute, value)
-        predicate = @klass.properties[attribute][:predicate]
-        q = RDF::Query.new(:subject => {predicate => value})
-        unless @klass.repository.query(q).empty?
-          record.errors.add(attribute, "is already taken")
+        @klass.find_each(attribute => value) do |other_record|
+          if other_record.subject != record.subject
+            record.errors.add(attribute, "is already taken")
+            break
+          end
         end
       end
     end
