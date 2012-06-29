@@ -13,7 +13,7 @@ as possible, there are a few changes that you should be aware of:
    understanding how Spira is working with the repository. Basically, a Spira record
    is new, if the repository has no statements with this record as subject. This means,
    that *the repository is queried every time you invoke "new_record?"*.
-   Also note that if Spira.repository is not set, your Spira resource with always be "new".
+   Also note that if Spira.repository is not set, your Spira resource will always be "new".
    Also note that instantiating a new Spira resource sends a query to the repository,
    if it is set, but should work just fine even if it's not (until you try to "save" it).
  * Customary Rails' record manipulation methods are preferred now.
