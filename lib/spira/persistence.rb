@@ -35,13 +35,11 @@ module Spira
         conditions = args[:conditions] || {}
         options = args.except(:conditions)
 
-        limit = options[:limit] || -1
-
         case scope
         when :first
-          find_all(conditions, :limit => 1).first
+          find_all(conditions, options.merge(:limit => 1)).first
         when :all
-          find_all(conditions, :limit => limit)
+          find_all(conditions, options)
         else
           instantiate_record(scope)
         end
@@ -69,19 +67,30 @@ module Spira
       #
       # @overload each
       #   @return [Enumerator]
-      def each
-        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
+      def each(conditions = {}, options = {})
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI" unless type
+        raise Spira::SpiraError, "Cannot accept :type in query conditions" if conditions.delete(:type) || conditions.delete("type")
 
         if block_given?
+          # TODO: ideally, all types should be joined in a conjunction
+          #       within "conditions_to_query", but since RDF::Query
+          #       cannot handle such patterns, we iterate across types "manually"
           types.each do |tp|
-            repository.query(:predicate => RDF.type, :object => tp).each_subject do |subject|
-              yield instantiate_record(subject)
+            q = conditions_to_query(conditions.merge(:type => tp))
+            options[:limit] ||= -1
+
+            repository.query(q) do |solution|
+              break if options[:limit].zero?
+              yield instantiate_record(solution[:subject])
+              options[:limit] -= 1
             end
           end
         else
           enum_for(:each)
         end
       end
+      alias_method :find_all, :each
+      alias_method :find_each, :each
 
       ##
       # The number of URIs projectable as a given class in the repository.
@@ -239,25 +248,14 @@ module Spira
 
       private
 
-      def find_all conditions, options = {}
-        q = conditions_to_query(conditions)
-
-        [].tap do |results|
-          repository.query(q) do |solution|
-            break if options[:limit].zero?
-            results << instantiate_record(solution[:subject])
-            options[:limit] -= 1
-          end
-        end
-      end
-
       def conditions_to_query(conditions)
         patterns = []
-        types.each do |tp|
-          patterns << [:subject, RDF.type, tp]
-        end
         conditions.each do |name, value|
-          patterns << [:subject, properties[name][:predicate], value]
+          if name.to_s == "type"
+            patterns << [:subject, RDF.type, value]
+          else
+            patterns << [:subject, properties[name][:predicate], value]
+          end
         end
 
         RDF::Query.new do
@@ -336,7 +334,7 @@ module Spira
     #
     # @see http://rdf.rubyforge.org/RDF/Enumerable.html#count
     def count
-      each.size
+      each.count
     end
 
     ##
