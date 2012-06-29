@@ -30,6 +30,11 @@ describe 'models with a defined rdf type' do
     class ::Wagon < Spira::Base
       property :name, :predicate => RDFS.label
     end
+
+    class ::MultiCar < Spira::Base
+      type Cars.car
+      type Cars.van
+    end
   end
 
   before :each do
@@ -67,7 +72,6 @@ describe 'models with a defined rdf type' do
     it "should find 3 vans" do
       Van.count.should == 3
     end
-
   end
 
   context "when creating" do
@@ -151,6 +155,13 @@ describe 'models with a defined rdf type' do
   end
 
   context "when counting" do
+    it "should count all projected types" do
+      lambda {
+        Car.for(Cars.one).save!
+        Van.for(Cars.two).save!
+      }.should change(MultiCar, :count).by(2)
+    end
+
     it "should provide a count method for resources with types" do
       Car.count.should == 1
     end

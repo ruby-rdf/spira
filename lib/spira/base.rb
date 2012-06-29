@@ -124,7 +124,9 @@ module Spira
       # @return [Integer] the count
       def count
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
-        repository.query(:predicate => RDF.type, :object => type).subjects.count
+        types.inject(0) do |c, tp|
+          c += repository.query(:predicate => RDF.type, :object => tp).subjects.count
+        end
       end
 
       ##
