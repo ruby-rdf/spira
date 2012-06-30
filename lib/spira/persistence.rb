@@ -37,7 +37,7 @@ module Spira
 
         case scope
         when :first
-          find_all(conditions, options.merge(:limit => 1)).first
+          find_each(conditions, options.merge(:limit => 1)).first
         when :all
           find_all(conditions, options)
         else
@@ -67,21 +67,7 @@ module Spira
       #
       # @overload each
       #   @return [Enumerator]
-      def each
-        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI" unless type
-
-        if block_given?
-          types.each do |tp|
-            repository.query(:predicate => RDF.type, :object => tp).each_subject do |s|
-              yield instantiate_record(s)
-            end
-          end
-        else
-          enum_for(:each)
-        end
-      end
-
-      def find_each(conditions = {}, options = {})
+      def each(conditions = {}, options = {})
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI" unless type
         raise Spira::SpiraError, "Cannot accept :type in query conditions" if conditions.delete(:type) || conditions.delete("type")
 
@@ -99,15 +85,10 @@ module Spira
             end
           end
         else
-          raise ::LocalJumpError, "no block given"
+          enum_for(:each, conditions, options)
         end
       end
-
-      def find_all(conditions = {}, options = {})
-        [].tap do |records|
-          find_each(conditions, options) {|r| records << r }
-        end
-      end
+      alias_method :find_each, :each
 
       ##
       # The number of URIs projectable as a given class in the repository.
@@ -264,6 +245,14 @@ module Spira
 
 
       private
+
+      def find_all(conditions = {}, options = {})
+        [].tap do |records|
+          find_each(conditions, options) do |record|
+            records << record
+          end
+        end
+      end
 
       def conditions_to_query(conditions)
         patterns = []

@@ -20,19 +20,11 @@ describe Spira do
     end
 
     describe "find_each" do
-      before do
-        @res = LoadTest.for(@uri).save!
-      end
+      subject { LoadTest.find_each }
 
-      it "should yield Spira resources" do
-        LoadTest.find_each do |res|
-          res.should be_a LoadTest
-        end
-      end
+      it { should be_a Enumerator }
 
-      it "should raise LocalJumpError when no block given" do
-        lambda { LoadTest.find_each }.should raise_error LocalJumpError
-      end
+      it { should_not respond_to :to_ary }
     end
 
     describe "all" do
