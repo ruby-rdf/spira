@@ -72,16 +72,16 @@ module Spira
         raise Spira::SpiraError, "Cannot accept :type in query conditions" if conditions.delete(:type) || conditions.delete("type")
 
         if block_given?
-          options[:limit] ||= -1
+          limit = options[:limit] || -1
           # TODO: ideally, all types should be joined in a conjunction
           #       within "conditions_to_query", but since RDF::Query
           #       cannot handle such patterns, we iterate across types "manually"
           types.each do |tp|
             q = conditions_to_query(conditions.merge(:type => tp))
             repository.query(q) do |solution|
-              break if options[:limit].zero?
+              break if limit.zero?
               yield instantiate_record(solution[:subject])
-              options[:limit] -= 1
+              limit -= 1
             end
           end
         else
