@@ -37,9 +37,9 @@ module Spira
 
         case scope
         when :first
-          find_each(conditions, options.merge(:limit => 1)).first
+          find_all(conditions, options.merge(:limit => 1)).first
         when :all
-          find_each(conditions, options).to_a
+          find_all(conditions, options)
         else
           instantiate_record(scope)
         end
@@ -67,7 +67,21 @@ module Spira
       #
       # @overload each
       #   @return [Enumerator]
-      def each(conditions = {}, options = {})
+      def each
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI" unless type
+
+        if block_given?
+          types.each do |tp|
+            repository.query(:predicate => RDF.type, :object => tp).each_subject do |s|
+              yield instantiate_record(s)
+            end
+          end
+        else
+          enum_for(:each)
+        end
+      end
+
+      def find_each(conditions = {}, options = {})
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI" unless type
         raise Spira::SpiraError, "Cannot accept :type in query conditions" if conditions.delete(:type) || conditions.delete("type")
 
@@ -85,10 +99,15 @@ module Spira
             end
           end
         else
-          enum_for(:each)
+          raise ::LocalJumpError, "no block given"
         end
       end
-      alias_method :find_each, :each
+
+      def find_all(conditions = {}, options = {})
+        [].tap do |records|
+          find_each(conditions, options) {|r| records << r }
+        end
+      end
 
       ##
       # The number of URIs projectable as a given class in the repository.
@@ -304,7 +323,7 @@ module Spira
     # information on arguments.
     #
     # @see http://rdf.rubyforge.org/RDF/Enumerable.html
-    def each(*args, &block)
+    def each
       if block_given?
         self.class.properties.each do |name, property|
           if value = read_attribute(name)
