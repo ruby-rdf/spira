@@ -98,7 +98,11 @@ module Spira
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       def count
-        each.count
+        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
+
+        types.inject(0) do |c, tp|
+          c += repository.query(:predicate => RDF.type, :object => tp).subjects.count
+        end
       end
 
       # Creates an object (or multiple objects) and saves it to the database, if validations pass.
