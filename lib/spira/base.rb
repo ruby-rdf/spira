@@ -185,12 +185,11 @@ module Spira
     #
     # @see http://rdf.rubyforge.org/isomorphic/
     def ==(other)
-      case other
-        # TODO: define behavior for equality on subclasses.
-        # TODO: should we compare attributes here?
-      when self.class
+      # TODO: define behavior for equality on subclasses.
+      # TODO: should we compare attributes here?
+      if self.class == other.class
         subject == other.uri
-      when RDF::Enumerable
+      elsif other.is_a?(RDF::Enumerable)
         self.isomorphic_with?(other)
       else
         false
