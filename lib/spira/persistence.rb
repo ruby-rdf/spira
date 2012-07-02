@@ -79,6 +79,7 @@ module Spira
           #       within "conditions_to_query", but since RDF::Query
           #       cannot handle such patterns, we iterate across types "manually"
           types.each do |tp|
+            break if limit.zero?
             q = conditions_to_query(conditions.merge(:type => tp))
             repository.query(q) do |solution|
               break if limit.zero?
