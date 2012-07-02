@@ -82,7 +82,7 @@ module Spira
             q = conditions_to_query(conditions.merge(:type => tp))
             repository.query(q) do |solution|
               break if limit.zero?
-              yield self.unserialize(solution[:subject])
+              yield unserialize(solution[:subject])
               limit -= 1
             end
           end
