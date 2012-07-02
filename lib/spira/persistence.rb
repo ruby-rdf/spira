@@ -58,6 +58,8 @@ module Spira
       # only valid for classes which declare a `type` with the `type` method in
       # the Resource.
       #
+      # Note that the instantiated records are "promises" not real instances.
+      #
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @overload each
       #   @yield [instance] A block to perform for each available projection of this class
@@ -80,7 +82,7 @@ module Spira
             q = conditions_to_query(conditions.merge(:type => tp))
             repository.query(q) do |solution|
               break if limit.zero?
-              yield instantiate_record(solution[:subject])
+              yield self.unserialize(solution[:subject])
               limit -= 1
             end
           end
@@ -98,11 +100,7 @@ module Spira
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @return [Integer] the count
       def count
-        raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI." unless type
-
-        types.inject(0) do |c, tp|
-          c += repository.query(:predicate => RDF.type, :object => tp).subjects.count
-        end
+        each.count
       end
 
       # Creates an object (or multiple objects) and saves it to the database, if validations pass.
@@ -378,7 +376,7 @@ module Spira
     # NB: "props" argument is ignored, it is handled in Base
     #
     def reload(props = {})
-      sts = self.class.repository && promise { self.class.repository.query(:subject => subject) }
+      sts = self.class.repository && self.class.repository.query(:subject => subject)
       self.class.properties.each do |name, options|
         name = name.to_s
         if sts
