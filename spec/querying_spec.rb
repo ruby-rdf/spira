@@ -5,8 +5,10 @@ describe Spira do
   before :all do
     class ::LoadTest < Spira::Base
       type FOAF.load_type
-      property :name,       :predicate => FOAF.name
-      property :label,      :predicate => RDFS.label
+      configure :base_uri => "http://example.com/loads"
+
+      property :name,  :predicate => FOAF.name
+      property :label, :predicate => RDFS.label
       property :child, :predicate => FOAF.load_test, :type => 'LoadTest'
     end
   end
@@ -19,18 +21,74 @@ describe Spira do
       @uri = RDF::URI('http://example.org/example')
     end
 
+    shared_examples_for "array that can be paginated" do
+      before do
+        @people = []
+        3.times do |i|
+          @people << LoadTest.create(:name => "person_#{i+1}")
+        end
+      end
+
+      it "should yield all records" do
+        n = 0
+        subject.each {|person| @people.should include(person); n += 1 }
+        n.should eql @people.size
+      end
+
+      context "given :offset option" do
+        before { @options.merge!(:offset => 1) }
+
+        it "should yield records within the given offset" do
+          subject.each {|person| person.should_not eql @people[0] }
+        end
+      end
+
+      context "given :limit option" do
+        before { @options.merge!(:limit => 2) }
+
+        it "should yield records within the given limit" do
+          subject.each {|person| person.should_not eql @people[2] }
+        end
+      end
+
+      context "given :offset and :limit options" do
+        before { @options.merge!(:limit => 1, :offset => 1) }
+
+        it "should yield records withing the resulting range" do
+          subject.each do |person|
+            person.should_not eql @people[0]
+            person.should_not eql @people[2]
+          end
+        end
+      end
+    end
+
     describe "find_each" do
-      subject { LoadTest.find_each }
+      subject { LoadTest.find_each(@conditions, @options) }
+
+      before do
+        @options = {}
+        @conditions = {}
+      end
 
       it { should be_a Enumerator }
 
       it { should_not respond_to :to_ary }
+
+      it_should_behave_like "array that can be paginated"
     end
 
     describe "all" do
-      subject { LoadTest.all }
+      subject { LoadTest.all(@options.merge(:conditions => @conditions)) }
+
+      before do
+        @options = {}
+        @conditions = {}
+      end
 
       it { should respond_to :to_ary }
+
+      it_should_behave_like "array that can be paginated"
     end
 
     it "should attempt to query on instantiation" do

@@ -4,26 +4,26 @@ require "spec_helper"
 
 describe Spira::Base do
 
-  context "as an RDF::Enumerable" do
+  before :all do
+    require 'rdf/ntriples'
+    Spira.add_repository(:default, ::RDF::Repository)
 
-    before :all do
-      require 'rdf/ntriples'
-      Spira.add_repository(:default, ::RDF::Repository)
-      
-      class ::EnumerableSpec < Spira::Base
-        configure :base_uri => "http://example.org/example/people"
-      
-        property :name, :predicate => RDFS.label
-        property :age,  :predicate => FOAF.age,  :type => Integer
-      end
+    class ::EnumerableSpec < Spira::Base
+      configure :base_uri => "http://example.org/example/people"
 
-      class ::EnumerableWithAssociationsSpec < Spira::Base
-        configure :base_uri => "http://example.org/example/people"
-
-        property :name, :predicate => RDFS.label
-        has_many :friends, :predicate => FOAF.person, :type => :EnumerableWithAssociationsSpec
-      end
+      property :name, :predicate => RDFS.label
+      property :age,  :predicate => FOAF.age,  :type => Integer
     end
+
+    class ::EnumerableWithAssociationsSpec < Spira::Base
+      configure :base_uri => "http://example.org/example/people"
+
+      property :name, :predicate => RDFS.label
+      has_many :friends, :predicate => FOAF.person, :type => :EnumerableWithAssociationsSpec
+    end
+  end
+
+  context "as an RDF::Enumerable" do
 
     before :each do
       @uri = RDF::URI('http://example.org/example/people/bob')

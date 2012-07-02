@@ -75,6 +75,7 @@ module Spira
 
         if block_given?
           limit = options[:limit] || -1
+          offset = options[:offset] || 0
           # TODO: ideally, all types should be joined in a conjunction
           #       within "conditions_to_query", but since RDF::Query
           #       cannot handle such patterns, we iterate across types "manually"
@@ -83,8 +84,12 @@ module Spira
             q = conditions_to_query(conditions.merge(:type => tp))
             repository.query(q) do |solution|
               break if limit.zero?
-              yield unserialize(solution[:subject])
-              limit -= 1
+              if offset.zero?
+                yield unserialize(solution[:subject])
+                limit -= 1
+              else
+                offset -= 1
+              end
             end
           end
         else
