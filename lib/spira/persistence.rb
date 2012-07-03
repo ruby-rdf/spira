@@ -31,26 +31,23 @@ module Spira
       #     :conditions - Hash of properties and values
       #     :limit      - Fixnum, limiting the amount of returned records
       # @return [Spira::Base, Set]
-      def find(scope, args = {})
-        conditions = args[:conditions] || {}
-        options = args.except(:conditions)
-
+      def find(scope, *args)
         case scope
         when :first
-          find_each(conditions, options.merge(:limit => 1)).first
+          find_each(*args).first
         when :all
-          find_all(conditions, options)
+          find_all(*args)
         else
           instantiate_record(scope)
         end
       end
 
-      def all(args = {})
-        find(:all, args)
+      def all(*args)
+        find(:all, *args)
       end
 
-      def first(args = {})
-        find(:first, args)
+      def first(*args)
+        find(:first, *args)
       end
 
       ##
@@ -69,8 +66,12 @@ module Spira
       #
       # @overload each
       #   @return [Enumerator]
-      def each(conditions = {}, options = {})
+      def each(*args)
         raise Spira::NoTypeError, "Cannot count a #{self} without a reference type URI" unless type
+
+        options = args.extract_options!
+        conditions = options.delete(:conditions) || {}
+
         raise Spira::SpiraError, "Cannot accept :type in query conditions" if conditions.delete(:type) || conditions.delete("type")
 
         if block_given?
@@ -93,7 +94,7 @@ module Spira
             end
           end
         else
-          enum_for(:each, conditions, options)
+          enum_for(:each, *args)
         end
       end
       alias_method :find_each, :each
@@ -254,9 +255,9 @@ module Spira
 
       private
 
-      def find_all(conditions = {}, options = {})
+      def find_all(*args)
         [].tap do |records|
-          find_each(conditions, options) do |record|
+          find_each(*args) do |record|
             records << record
           end
         end

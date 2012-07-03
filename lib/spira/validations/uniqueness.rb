@@ -7,7 +7,7 @@ module Spira
       end
 
       def validate_each(record, attribute, value)
-        @klass.find_each(attribute => value) do |other_record|
+        @klass.find_each(:conditions => {attribute => value}) do |other_record|
           if other_record.subject != record.subject
             record.errors.add(attribute, "is already taken")
             break
