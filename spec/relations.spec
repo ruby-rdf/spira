@@ -3,21 +3,21 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 describe "Spira resources" do
 
   before :all do
-    
+
     class ::CDs < RDF::Vocabulary('http://example.org/')
       property :artist
       property :cds
       property :artists
       property :has_cd
     end
-    
+
     class ::CD
       include Spira::Resource
       base_uri CDs.cds
       property :name,   :predicate => DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
-    
+
     class ::Artist
       include Spira::Resource
       base_uri CDs.artists
@@ -42,7 +42,7 @@ describe "Spira resources" do
         test.name = RootNSTest.new
         test.name.save!
         test.save!
-        
+
         test = subject.as(RootNSTest)
         test.name.should be_a RootNSTest
       end
@@ -87,7 +87,7 @@ describe "Spira resources" do
             include Spira::Resource
           end
         end
-      end 
+      end
 
       it "should find a class based on the string version of the name" do
         test = NSTest::Z.new
@@ -104,7 +104,7 @@ describe "Spira resources" do
 
 
   context "with a one-to-many relationship" do
-  
+
     before :each do
       require 'rdf/ntriples'
       @cds_repository = RDF::Repository.load(fixture('relations.nt'))
@@ -136,12 +136,6 @@ describe "Spira resources" do
       cds.find { |cd| cd.name == 'In Utero' }.should be_true
     end
 
-    it "should not reload an object for a simple reverse relationship" do
-      @artist.cds.first.artist.should equal @artist
-      artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
-      @cd.should equal artist_cd
-    end
-
     it "should find a model object for a uri" do
       @cd.artist.should == @artist
     end
@@ -165,7 +159,7 @@ describe "Spira resources" do
     end
 
     context "when accessing a field named for a non-existant class" do
-      
+
       before :all do
         class ::RelationsTestA
           include Spira::Resource
@@ -195,7 +189,7 @@ describe "Spira resources" do
           property :invalid, :predicate => DC.title, :type => 'Object'
         end
       end
-    
+
       it "should should raise a TypeError when saving an object with the invalid property" do
         lambda { RelationsTestB.new(:invalid => Object.new).save! }.should raise_error TypeError
       end

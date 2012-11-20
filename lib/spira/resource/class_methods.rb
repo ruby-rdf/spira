@@ -16,7 +16,7 @@ module Spira
 
       ##
       # The current repository for this class
-      # 
+      #
       # @return [RDF::Repository, nil]
       # @private
       def repository
@@ -47,14 +47,14 @@ module Spira
       # first time access is attempted on a field, the repository will be
       # queried for existing attributes, which will be used for the given URI.
       # Underlying repositories are not accessed at the time of calling `for`.
-      # 
+      #
       # A class with a base URI may still be projected for any URI, whether or
       # not it uses the given resource class' base URI.
       #
       # @raise [TypeError] if an RDF type is given in the attributes and one is
-      # given in the attributes.  
+      # given in the attributes.
       # @raise [ArgumentError] if a non-URI is given and the class does not
-      # have a base URI.  
+      # have a base URI.
       # @overload for(uri, attributes = {})
       #   @param [RDF::URI] uri The URI to create an instance for
       #   @param [Hash{Symbol => Any}] attributes Initial attributes
@@ -171,7 +171,7 @@ module Spira
 
       ##
       # Clear the iteration cache
-      # 
+      #
       # @return [void]
       def reload
         @cache = nil
@@ -199,8 +199,9 @@ module Spira
             enum_for(:each)
           else
             repository_or_fail.query(:predicate => RDF.type, :object => @type).each_subject do |subject|
-              self.cache["#{subject}_#{@type}"] ||= self.for(subject)
-              block.call(cache["#{subject}_#{@type}"])
+              #self.cache["#{subject}_#{@type}"] ||=
+              #block.call(cache["#{subject}_#{@type}"])
+              block.call(self.for(subject))
             end
         end
       end
@@ -239,7 +240,7 @@ module Spira
         end
       end
 
-      ## 
+      ##
       # Handling module inclusions
       #
       # @private
@@ -247,7 +248,7 @@ module Spira
         inherited(child)
       end
 
-      ## 
+      ##
       # The list of validation functions for this projection
       #
       # @return [Array<Symbol>]

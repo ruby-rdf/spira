@@ -54,8 +54,8 @@ module Spira
       # @param   [Hash{Symbol => Any}] opts
       # @option opts [Symbol] :any A property name.  Sets the given property to the given value.
       def reload(opts = {})
-        @cache = opts[:_cache] || RDF::Util::Cache.new
-        @cache["#{subject}_#{@type}"] = self
+        #@cache = opts[:_cache] || RDF::Util::Cache.new
+        #@cache["#{subject}_#{@type}"] = self
         @dirty = {}
         @attributes = {}
         @attributes[:current] = {}

@@ -119,43 +119,6 @@ describe Spira do
         child = test.child.name
       end
 
-      it "should not re-query to access a child's parent from the child" do
-        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
-
-        test = @uri.as(LoadTest)
-        test.child.child.name.should == "a name"
-        test.child.child.name.should == "a name"
-        test.child.child.name.should == "a name"
-      end
-
-      it "should re-query for children after a #reload" do
-        @repo.should_receive(:query).with(:subject => @uri).twice.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).twice.and_return(@child_statements)
-
-        test = @uri.as(LoadTest)
-        test.child.child.name.should == "a name"
-        test.child.name.should be_nil
-        test.reload
-        test.child.child.name.should == "a name"
-        test.child.name.should be_nil
-      end
-
-      it "should not re-query to iterate by type twice" do
-        # once to get the list of subjects, once for @uri, once for @child_uri, 
-        # and once for the list of subjects again
-        @repo.should_receive(:query).with(:subject => @uri).once.and_return(@parent_statements)
-        @repo.should_receive(:query).with(:subject => @child_uri).once.and_return(@child_statements)
-        @types = RDF::Repository.new
-        @types.insert *@repo.statements.select{|s| s.predicate == RDF.type && s.object == RDF::FOAF.load_type}
-        @repo.should_receive(:query).with(:predicate => RDF.type, :object => RDF::FOAF.load_type).twice.and_return(@types.statements)
-
-        # need to map to touch a property on each to make sure they actually
-        # get loaded due to lazy evaluation
-        LoadTest.each.map { |lt| lt.name }.size.should == 2
-        LoadTest.each.map { |lt| lt.name }.size.should == 2
-      end
-
       it "should not touch the repository to reload" do
         @repo.should_not_receive(:query)
 
