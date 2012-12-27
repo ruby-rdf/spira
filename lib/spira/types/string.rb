@@ -21,7 +21,7 @@ module Spira::Types
       RDF::Literal.new(value.to_s)
     end
 
-    register_alias XSD.string
+    register_alias RDF::XSD.string
 
   end
 end

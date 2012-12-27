@@ -67,15 +67,15 @@ without the `RDF::` prefix.  For example:
     class CD
       include Spira::Resource
       base_uri 'http://example.org/cds'
-      property :name,   :predicate => DC.title,   :type => XSD.string
+      property :name,   :predicate => DC.title,   :type => RDF::XSD.string
       property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
     end
     
     class Artist
       include Spira::Resource
       base_uri 'http://example.org/artists'
-      property :name, :predicate => DC.title, :type => XSD.string
-      has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
+      property :name, :predicate => DC.title, :type => RDF::XSD.string
+      has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => RDF::XSD.string
     end
 
 Then use your model classes, in a way more or less similar to any number of ORMs:
@@ -256,7 +256,7 @@ is usually expressed as a URI.  Here is the built-in Spira Integer class:
           RDF::Literal.new(value)
         end
     
-        register_alias XSD.integer
+        register_alias RDF::XSD.integer
       end
     end
 
@@ -265,7 +265,7 @@ Classes can now use this particular type like so:
     class Test
       include Spira::Resource
       property :test1, :type => Integer
-      property :test2, :type => XSD.integer
+      property :test2, :type => RDF::XSD.integer
     end
 
 Spira classes include the Spira::Types namespace, where several default types
