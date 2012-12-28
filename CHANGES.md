@@ -1,4 +1,7 @@
-# Changelog for Spira <http://github.com/datagraph/spira>
+# Changelog for Spira <http://github.com/rdf-ruby/spira>
+
+## 0.3.0
+ * General updates to bring up to date.
 
 ## 0.0.12
  * Implemented #validate, #validate! (refactored from #save!)
@@ -33,7 +36,7 @@
 ## 0.0.8
  * Remove type checking for repository addition.  More power in return for 
    slightly more difficult error messages.
- * Repositories added via klass, *arg are now only instantiated on first use
+ * Repositories added via klass, \*arg are now only instantiated on first use
    instead of immediately.
  * RDF::URI#as, RDF::Node#as, Resource.for, and Resource#new can now all accept
    a block, which yields the new instance and saves it after the block.
@@ -46,7 +49,7 @@
    permitted.
 
 ## 0.0.7
- * Added Resource.[], an alias for Resource.for
+ * Added Resource.\[\], an alias for Resource.for
  * Resource.each now correctly raises an exception when a repository isn't found
 
 ## 0.0.6
