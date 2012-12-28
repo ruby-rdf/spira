@@ -33,9 +33,7 @@ describe Spira::Resource do
     end
 
     context "when running the rdf-spec RDF::Enumerable shared groups" do
-
-      it_should_behave_like RDF_Enumerable
-
+      include RDF_Enumerable
     end
 
     context "when comparing with other RDF::Enumerables" do
