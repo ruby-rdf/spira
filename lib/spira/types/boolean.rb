@@ -19,13 +19,13 @@ module Spira::Types
 
     def self.serialize(value)
       if value
-        RDF::Literal.new(true, :datatype => XSD.boolean)
+        RDF::Literal.new(true, :datatype => RDF::XSD.boolean)
       else 
-        RDF::Literal.new(false, :datatype => XSD.boolean)
+        RDF::Literal.new(false, :datatype => RDF::XSD.boolean)
       end
     end
 
-    register_alias XSD.boolean
+    register_alias RDF::XSD.boolean
 
   end
 end

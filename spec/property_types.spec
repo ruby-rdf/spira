@@ -14,7 +14,7 @@ describe 'types for properties' do
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
 
-          property :test, :type => XSD.non_existent_type
+          property :test, :type => RDF::XSD.non_existent_type
         end
       }.should raise_error TypeError
     end
@@ -38,7 +38,7 @@ describe 'types for properties' do
           default_vocabulary RDF::URI.new('http://example.org/vocab')
           base_uri RDF::URI.new('http://example.org/props')
 
-          property :test, :type => XSD.string
+          property :test, :type => RDF::XSD.string
         end
       }.should_not raise_error TypeError
     end
@@ -70,14 +70,14 @@ describe 'types for properties' do
         include Spira::Type
       
         def self.serialize(value)
-          RDF::Literal.new(value, :datatype => XSD.test_type)
+          RDF::Literal.new(value, :datatype => RDF::XSD.test_type)
         end
 
         def self.unserialize(value)
           value.value
         end
 
-        register_alias XSD.test_type
+        register_alias RDF::XSD.test_type
       end
 
       class ::PropTest
@@ -88,7 +88,7 @@ describe 'types for properties' do
         base_uri RDF::URI.new('http://example.org/props')
       
         property :test,      :type => TestType
-        property :xsd_test,  :type => XSD.test_type
+        property :xsd_test,  :type => RDF::XSD.test_type
       end
     end
 

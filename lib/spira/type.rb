@@ -19,7 +19,7 @@ module Spira
   #         RDF::Literal.new(value)
   #       end
   #       
-  #       register_alias XSD.integer
+  #       register_alias RDF::XSD.integer
   #     end
   #
   # This example will serialize and deserialize integers.  It's included with
@@ -27,7 +27,7 @@ module Spira
   # integer property on a Spira resource:
   #
   #     property :age, :predicate => FOAF.age, :type => Integer
-  #     property :age, :predicate => FOAF.age, :type => XSD.integer
+  #     property :age, :predicate => FOAF.age, :type => RDF::XSD.integer
   #
   # `Spira::Type`s include the RDF namespace and thus have all of the base RDF
   # vocabularies available to them without the `RDF::` prefix.
