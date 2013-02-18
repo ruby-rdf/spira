@@ -30,7 +30,7 @@ module Spira
       #   args can contain:
       #     :conditions - Hash of properties and values
       #     :limit      - Fixnum, limiting the amount of returned records
-      # @return [Spira::Base, Set]
+      # @return [Spira::Base, Array]
       def find(scope, *args)
         case scope
         when :first
@@ -462,7 +462,7 @@ module Spira
     # Directly retrieve an attribute value from the storage
     def retrieve_attribute(name, options, sts)
       if self.class.reflections[name]
-        sts.inject(Set.new) do |values, statement|
+        sts.inject([]) do |values, statement|
           if statement.predicate == options[:predicate]
             values << build_value(statement.object, options[:type])
           else

@@ -1,6 +1,5 @@
 require "active_model"
 require "rdf/isomorphic"
-require "set"
 require "active_support/core_ext/hash/indifferent_access"
 
 require "spira/resource"
@@ -315,7 +314,7 @@ module Spira
         case refl.macro
         when :has_many
           # TODO: this should be actually handled by the reflection class
-          Set.new
+          []
         end
       else
         value

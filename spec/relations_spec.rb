@@ -102,6 +102,10 @@ describe "Spira resources" do
   end
 
   context "with many-to-many relationship" do
+    before :all do
+      Spira.add_repository!(:default, RDF::Repository.new)
+    end
+
     before do
       @artist = Artist.for "Beard"
       @team = Team.for "ZZ Top"
@@ -152,7 +156,7 @@ describe "Spira resources" do
 
     it "should find CDs for an artist" do
       cds = @artist.cds
-      cds.should be_a Set
+      cds.should be_a Array
       cds.find { |cd| cd.name == 'Nevermind' }.should be_true
       cds.find { |cd| cd.name == 'In Utero' }.should be_true
     end

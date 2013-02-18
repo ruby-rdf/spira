@@ -94,13 +94,13 @@ module Spira
     end
 
     ##
-    # The plural form of `property`.  `Has_many` has the same options as
+    # The plural form of `property`. `Has_many` has the same options as
     # `property`, but instead of a single value, a Ruby Array of objects will
     # be created instead.
     #
     # has_many corresponds to an RDF subject with several triples of the same
-    # predicate.  This corresponds to a Ruby Set, which will be returned when
-    # the property is accessed.  Arrays will be accepted for new values, but
+    # predicate. This corresponds to a Ruby Array, which will be returned when
+    # the property is accessed. Arrays will be accepted for new values, but
     # ordering and duplicate values will be lost on save.
     #
     # @see Spira::Base::DSL#property
@@ -110,12 +110,12 @@ module Spira
       reflections[name] = AssociationReflection.new(:has_many, name, opts)
 
       define_method "#{name.to_s.singularize}_ids" do
-        records = send(name) || Set.new
+        records = send(name) || []
         records.map(&:id).compact
       end
       define_method "#{name.to_s.singularize}_ids=" do |ids|
         records = ids.map {|id| self.class.reflect_on_association(name).klass.unserialize(id) }.compact
-        send "#{name}=", Set.new(records)
+        send "#{name}=", records
       end
     end
 
