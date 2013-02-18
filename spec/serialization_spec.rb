@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
 require "spec_helper"
 
 describe "serialization" do
   before :all do
-    class SpiraResource < Spira::Base; end
+    class SpiraResource < Spira::Base
+      property :name, :predicate => FOAF.givenName, :type => XSD.string
+    end
   end
 
   it "should serialize a spira resource into its subject" do
@@ -19,5 +22,12 @@ describe "serialization" do
 
   it "should raise TypeError exception when trying to serialize an object it cannot serialize" do
     lambda { SpiraResource.serialize(1) }.should raise_error TypeError
+  end
+
+  context "of UTF-8 literals" do
+    it "should produce proper UTF-8 output" do
+      res = SpiraResource.create(:name => "日本語")
+      res.reload.name.should eql "日本語"
+    end
   end
 end
