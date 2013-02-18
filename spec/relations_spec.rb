@@ -21,6 +21,12 @@ describe "Spira resources" do
       configure :base_uri => CDs.artists
       property :name, :predicate => DC.title, :type => String
       has_many :cds, :predicate => CDs.has_cd, :type => :CD
+      has_many :teams, :predicate => CDs.teams, :type => :Team
+    end
+
+    class ::Team < Spira::Base
+      configure :base_uri => CDs.teams
+      has_many :artists, :predicate => CDs.artist, :type => 'Artist'
     end
   end
 
@@ -95,6 +101,28 @@ describe "Spira resources" do
     end
   end
 
+  context "with many-to-many relationship" do
+    before do
+      @artist = Artist.for "Beard"
+      @team = Team.for "ZZ Top"
+    end
+
+    context "with resources referencing each other" do
+      before do
+        @artist.teams = [@team]
+        @team.artists = [@artist]
+
+        @artist.save!
+        @team.save!
+      end
+
+      context "when reloading" do
+        it "should not cause an infinite loop" do
+          @artist.reload.should eql @artist
+        end
+      end
+    end
+  end
 
   context "with a one-to-many relationship" do
   
