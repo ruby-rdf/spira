@@ -411,7 +411,8 @@ There are a number of ways to ask for help.  In declining order of preference:
 
 #### Authors
  * Ben Lavender <blavender@gmail.com>
- * Slava Kravchenko <slava.kravchenko@gmail.com>
+ * Slava Kravchenko <https://github.com/cordawyn>
+ * Aymeric Brisse <https://github.com/abrisse>
 
 #### 'License'
 Spira is free and unemcumbered software released into the public
