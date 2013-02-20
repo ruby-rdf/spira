@@ -61,7 +61,7 @@ describe Spira::Base do
 
     context "when running the rdf-spec RDF::Enumerable shared groups" do
 
-      it_should_behave_like RDF_Enumerable
+      include RDF_Enumerable
 
     end
 
