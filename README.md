@@ -1,53 +1,6 @@
-# FOREWORD
-
-This is a branch of Spira that makes use of ActiveModel. The goal of this branch is
-to replace all the internals of Spira with ActiveModel hooks, and thus get rid of
-superfluous code and increase compatibility with Rails stack. I want it to be
-a drop-in replacement for ActiveRecord or any other mature ORM solution they use
-with Ruby on Rails.
-
-Although I've been trying to make the impact of this transition to be as little
-as possible, there are a few changes that you should be aware of:
-
- * Read the comments on "new_record?" and "reload" methods. They are key methods in
-   understanding how Spira is working with the repository. Basically, a Spira record
-   is new, if the repository has no statements with this record as subject. This means,
-   that *the repository is queried every time you invoke "new_record?"*.
-   Also note that if Spira.repository is not set, your Spira resource will always be "new".
-   Also note that instantiating a new Spira resource sends a query to the repository,
-   if it is set, but should work just fine even if it's not (until you try to "save" it).
- * Customary Rails' record manipulation methods are preferred now.
-   This means, you should use more habitual "save", "destroy", "update_attributes", etc.
-   instead of the "save!", "destroy!", "update", "update!" and others, as introduced
-   by the original Spira gem.
- * Callbacks are now handled by ActiveModel. Previous ways of defining them are
-   no longer valid. This also introduces the "before_", "after_" and "around_" callbacks
-   as well as their "_validation", "_save", "_update" and "_create" companions for you to enjoy.
- * Validations are also handled by ActiveModel. With all the helper methods you have in
-   ActiveRecord.
- * A spira resource (class) must be defined by *inheriting* it from Spira::Base.
-   Using "include Spira::Resource" is *temporarily* broken, but will be back at some point,
-   with improvements and stuff.
- * "after/before_create" callbacks are *not* called when only the properties of your
-   Spira resource are getting persisted. That is, you may create a "type"-less Spira resource,
-   assign properties to it, then #save it -- "_create" callbacks will not be triggered,
-   because Spira cannot infer a resource definition ("resource - RDF.type - type")
-   for such resource and will only persist its properties.
-   Although this is how the original Spira behaves too, I thought I'd state it
-   explicitly here before you start freaking out.
- * Configuration options "base_uri", "default_vocabulary" and "repository_name" are
-   now configured via "configure" method (see the examples below).
- * A couple of (not so) subtle changes:
-   1) Global caching is gone. This means that "artist.works.first.artist" (reverse lookup)
-   does not return the original artist, but its copy retrieved from the database.
-
----
-
-# Spira
+# Spira [![Build Status](https://travis-ci.org/ruby-rdf/spira.png?branch=master)](http://travis-ci.org/ruby-rdf/spira)
 
 It's time to breathe life into your linked data.
-
----
 
 ## Synopsis
 Spira is a framework for using the information in [RDF.rb][] repositories as model
@@ -90,6 +43,49 @@ A changelog is available in the {file:CHANGES.md} file.
  * Objects are still RDF.rb-compatible enumerable objects
  * No need to put everything about an object into Spira
  * Easy to use a resource as multiple models
+
+## ActiveModel integration
+
+This is a version of Spira that makes use of ActiveModel. The goal of this version is
+to replace all the internals of Spira with ActiveModel hooks, and thus get rid of
+superfluous code and increase compatibility with Rails stack. I want it to be
+a drop-in replacement for ActiveRecord or any other mature ORM solution they use
+with Ruby on Rails.
+
+Although I've been trying to make the impact of this transition to be as little
+as possible, there are a few changes that you should be aware of:
+
+ * Read the comments on "new_record?" and "reload" methods. They are key methods in
+   understanding how Spira is working with the repository. Basically, a Spira record
+   is new, if the repository has no statements with this record as subject. This means,
+   that *the repository is queried every time you invoke "new_record?"*.
+   Also note that if Spira.repository is not set, your Spira resource will always be "new".
+   Also note that instantiating a new Spira resource sends a query to the repository,
+   if it is set, but should work just fine even if it's not (until you try to "save" it).
+ * Customary Rails' record manipulation methods are preferred now.
+   This means, you should use more habitual "save", "destroy", "update_attributes", etc.
+   instead of the "save!", "destroy!", "update", "update!" and others, as introduced
+   by the original Spira gem.
+ * Callbacks are now handled by ActiveModel. Previous ways of defining them are
+   no longer valid. This also introduces the "before_", "after_" and "around_" callbacks
+   as well as their "_validation", "_save", "_update" and "_create" companions for you to enjoy.
+ * Validations are also handled by ActiveModel. With all the helper methods you have in
+   ActiveRecord.
+ * A spira resource (class) must be defined by *inheriting* it from Spira::Base.
+   Using "include Spira::Resource" is *temporarily* broken, but will be back at some point,
+   with improvements and stuff.
+ * "after/before_create" callbacks are *not* called when only the properties of your
+   Spira resource are getting persisted. That is, you may create a "type"-less Spira resource,
+   assign properties to it, then #save it -- "_create" callbacks will not be triggered,
+   because Spira cannot infer a resource definition ("resource - RDF.type - type")
+   for such resource and will only persist its properties.
+   Although this is how the original Spira behaves too, I thought I'd state it
+   explicitly here before you start freaking out.
+ * Configuration options "base_uri", "default_vocabulary" and "repository_name" are
+   now configured via "configure" method (see the examples below).
+ * A couple of (not so) subtle changes:
+   1) Global caching is gone. This means that "artist.works.first.artist" (reverse lookup)
+   does not return the original artist, but its copy retrieved from the database.
 
 ## Getting Started
 
