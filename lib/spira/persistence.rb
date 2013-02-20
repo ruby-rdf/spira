@@ -211,7 +211,7 @@ module Spira
       # something responding to to_s which can be appended to a base URI, which
       # this class must have.
       #
-      # @param  [Any] Identifier
+      # @param  [Any] identifier
       # @return [RDF::URI, RDF::Node]
       # @raise  [ArgumentError] If this class cannot create an identifier from the given argument
       # @see http://rdf.rubyforge.org/RDF/URI.html
