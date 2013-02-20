@@ -80,6 +80,7 @@ module Spira
     # @see Spira::Type
     # @return [Void]
     def property(name, opts = {})
+      unset_has_many(name)
       predicate = predicate_for(opts[:predicate], name)
       type = type_for(opts[:type])
       properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
@@ -121,6 +122,17 @@ module Spira
 
 
     private
+
+    # Unset a has_many relation if it exists. Allow to redefine the cardinality of a relation in a subClass
+    #
+    # @private
+    def unset_has_many(name)
+      if reflections[name]
+        reflections.delete(name)
+        undef_method "#{name.to_s.singularize}_ids"
+        undef_method "#{name.to_s.singularize}_ids="
+      end
+    end
 
     ##
     # Determine the predicate for a property based on the given predicate, name, and default vocabulary
