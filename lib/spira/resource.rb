@@ -106,6 +106,14 @@ module Spira
     #
     # @see Spira::Base::DSL#property
     def has_many(name, opts = {})
+
+      if opts.delete(:localized)
+        raise 'Only Spira::Types::Any properties can accept the :localized option' unless type_for(opts[:type]) == Spira::Types::Any
+        define_localized_property_methods(name, opts)
+        name = "#{name}_native"
+        opts[:type] = Spira::Types::Native
+      end
+
       property(name, opts)
 
       reflections[name] = AssociationReflection.new(:has_many, name, opts)
@@ -120,7 +128,6 @@ module Spira
       end
     end
 
-
     private
 
     # Unset a has_many relation if it exists. Allow to redefine the cardinality of a relation in a subClass
@@ -131,6 +138,32 @@ module Spira
         reflections.delete(name)
         undef_method "#{name.to_s.singularize}_ids"
         undef_method "#{name.to_s.singularize}_ids="
+      end
+    end
+
+    ##
+    # Create the localized specific getter/setter for a given property
+    #
+    # @private
+    def define_localized_property_methods(name, opts)
+      define_method "#{name}=" do |arg|
+        new_value = merge_localized_property(name, arg)
+        write_attribute "#{name}_native", new_value
+      end
+
+      define_method name do
+        value = read_attribute("#{name}_native")
+        unserialize_localized_properties(value, I18n.locale)
+      end
+
+      define_method "#{name}_with_locales" do
+        value = read_attribute("#{name}_native")
+        hash_localized_properties(value)
+      end
+
+      define_method "#{name}_with_locales=" do |arg|
+        value = serialize_hash_localized_properties(arg)
+        write_attribute "#{name}_native", value
       end
     end
 

@@ -323,6 +323,35 @@ module Spira
       end
     end
 
+    ## Localized properties functions
+
+    def merge_localized_property(name, arg)
+      values = read_attribute("#{name}_native")
+      values.delete_if { |s| s.language == I18n.locale }
+      values << serialize_localized_property(arg, I18n.locale)
+      values
+    end
+
+    def serialize_localized_property(value, locale)
+      RDF::Literal.new(value, :language => locale)
+    end
+
+    def unserialize_localized_properties(values, locale)
+      values.select { |s| s.language == locale || s.plain? }.map { |v| v.object }.first
+    end
+
+    def hash_localized_properties(values)
+      hash = {}
+      values.each do |v|
+        hash[v.language] = v.object
+      end
+      hash
+    end
+
+    def serialize_hash_localized_properties(values)
+      values.map { |lang, property| RDF::Literal.new(property, :language => lang) }
+    end
+
     # Build a Ruby value from an RDF value.
     def build_value(node, type)
       klass = classize_resource(type)
