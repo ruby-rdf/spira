@@ -305,7 +305,7 @@ is usually expressed as a URI.  Here is the built-in Spira Integer class:
           RDF::Literal.new(value)
         end
     
-        register_alias XSD.integer
+        register_alias RDF::XSD.integer
       end
     end
 
@@ -313,7 +313,7 @@ Classes can now use this particular type like so:
 
     class Test < Spira::Base
       property :test1, :type => Integer
-      property :test2, :type => XSD.integer
+      property :test2, :type => RDF::XSD.integer
     end
 
 Spira classes include the Spira::Types namespace, where several default types
