@@ -1,37 +1,34 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 describe 'A Spira resource' do
 
   before :all do
-    class ::Bank
-    
-      include Spira::Resource
-    
-      default_vocabulary URI.new('http://example.org/banks/vocab')
-    
+    class ::Bank < Spira::Base
+      configure :default_vocabulary => RDF::URI.new('http://example.org/banks/vocab')
+
       property :title, :predicate => RDFS.label
       property :balance, :type => Integer
 
       validate :validate_bank
-      
+
       def validate_bank
-        assert_set :title
-        assert_numeric :balance
+        errors.add(:title, "must not be blank") if title.blank?
+        errors.add(:balance, "must be a number") unless balance.is_a?(Numeric)
       end
-    
     end
+
     Spira.add_repository(:default, RDF::Repository.new)
   end
 
   context "when validating" do
 
     before :all do
-      class ::V2
-        include Spira::Resource
+      class ::V2 < Spira::Base
         property :title, :predicate => DC.title
         validate :title_is_bad
+
         def title_is_bad
-          assert(title == 'xyz', :title, 'not xyz')
+          errors.add(:title, "is not xyz") unless title == "xyz"
         end
       end
     end
@@ -43,50 +40,22 @@ describe 'A Spira resource' do
       @invalid = V2.for(@uri, :title => 'not xyz')
     end
 
-    it "responds to #validate" do
-      Bank.for(@uri).should respond_to :validate
-    end
-
-    it "responds to #validate!" do
-      Bank.for(@uri).should respond_to :validate!
-    end
-
     context "with #validate" do
       it "returns true when the model is valid" do
-        @valid.validate.should == true
+        @valid.should be_valid
       end
 
       it "returns an empty errors object after validating when the model is valid" do
-        @valid.validate
+        @valid.valid?
         @valid.errors.should be_empty
       end
 
       it "returns false when the model is invalid" do
-        @invalid.validate.should == false
+        @invalid.should_not be_valid
       end
 
       it "returns an errors object with errors after validating when the model is invalid" do
-        @invalid.validate
-        @invalid.errors.should_not be_empty
-      end
-    end
-
-    context "with #validate!" do
-      it "returns true when the model is valid" do
-        @valid.validate!.should == true
-      end
-
-      it "returns an empty errors object after validating" do
-        @valid.validate!
-        @valid.errors.should be_empty
-      end
-
-      it "raises a Spira::ValidationError when the model is invalid" do
-        lambda { @invalid.validate! }.should raise_error Spira::ValidationError
-      end
-
-      it "returns an errors object with errors after validating" do
-        begin @invalid.validate! rescue nil end
+        @invalid.valid?
         @invalid.errors.should_not be_empty
       end
     end
@@ -95,19 +64,19 @@ describe 'A Spira resource' do
       before :each do
         @uri2 = RDF::URI.intern('http://example.org/bank2')
         @invalid = V2.for(@uri, :title => 'not xyz')
-        @invalid.validate
+        @invalid.valid?
       end
-     
+
       it "returns a non-empty errors object afterwards" do
         @invalid.errors.should_not be_empty
       end
 
       it "has an error for an invalid field" do
-        @invalid.errors.any_for?(:title).should be_true
+        @invalid.errors[:title].should_not be_empty
       end
 
       it "has the correct error string for the invalid field" do
-        @invalid.errors.for(:title).first.should == 'not xyz'
+        @invalid.errors[:title].first.should == 'is not xyz'
       end
 
     end
@@ -116,7 +85,7 @@ describe 'A Spira resource' do
   context "when saving with validations, " do
     it "does not save an invalid model" do
       bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
-      lambda { bank.save! }.should raise_error Spira::ValidationError
+      lambda { bank.save! }.should raise_error Spira::RecordInvalid
     end
 
     it "saves a valid model" do
@@ -128,85 +97,108 @@ describe 'A Spira resource' do
   end
 
   context "using the included validation" do
-    context "assert, " do
+    describe "validates_inclusion_of" do
 
       before :all do
-        class ::V1
-          include Spira::Resource
+        class ::V1 < Spira::Base
           property :title, :predicate => DC.title
-          validate :title_is_bad
-          def title_is_bad
-            assert(title == 'xyz', :title, 'bad title')
-          end
+          validates_inclusion_of :title, :in => ["xyz"]
         end
       end
 
       before :each do
         @v1 = V1.for RDF::URI.new('http://example.org/v1/first')
-      end 
+      end
 
       it "does not save when the assertion is false" do
         @v1.title = 'abc'
-        lambda { @v1.save! }.should raise_error Spira::ValidationError
+        lambda { @v1.save! }.should raise_error Spira::RecordInvalid
       end
 
       it "saves when the assertion is true" do
         @v1.title = 'xyz'
         lambda { @v1.save! }.should_not raise_error
       end
-
     end
 
-    context "assert_set, " do
+    describe "validates_uniqueness_of" do
       before :all do
-        class ::V2
-          include Spira::Resource
+        class ::V4 < Spira::Base
+          type FOAF.Person
+          property :name, :predicate => DC.title
+          validates_uniqueness_of :name
+        end
+      end
+
+      before do
+        v1 = V4.for RDF::URI.new('http://example.org/v2/first')
+        v1.name = "unique name"
+        v1.save
+      end
+
+      it "should not have errors on name for the same record" do
+        v1 = V4.for RDF::URI.new('http://example.org/v2/first')
+        v1.name = v1.name
+        v1.save
+        v1.errors[:name].should be_empty
+      end
+
+      it "should have errors on :name" do
+        v2 = V4.for RDF::URI.new('http://example.org/v2/second')
+        v2.name = "unique name"
+        v2.save
+        v2.errors[:name].should_not be_empty
+      end
+
+      it "should have no errors on :name" do
+        v3 = V4.for RDF::URI.new('http://example.org/v2/second')
+        v3.name = "another name"
+        v3.save
+        v3.errors[:name].should be_empty
+      end
+    end
+
+    describe "validates_presence_of" do
+      before :all do
+        class ::V2 < Spira::Base
           property :title, :predicate => DC.title
-          validate :title_is_set
-          def title_is_set
-            assert_set(:title)
-          end
+          validates_presence_of :title
         end
       end
 
       before :each do
         @v2 = V2.for RDF::URI.new('http://example.org/v2/first')
-      end 
+      end
 
       it "does not save when the field is nil" do
-        lambda { @v2.save! }.should raise_error Spira::ValidationError
+        lambda { @v2.save! }.should raise_error Spira::RecordInvalid
       end
 
       it "saves when the field is not nil" do
         @v2.title = 'xyz'
-        lambda { @v2.save! }.should_not raise_error Spira::ValidationError
+        lambda { @v2.save! }.should_not raise_error Spira::RecordInvalid
       end
-
     end
 
-    context "assert_numeric, " do
+    describe "validates_numericality_of" do
       before :all do
-        class ::V3
-          include Spira::Resource
+        class ::V3 < Spira::Base
           property :title, :predicate => DC.title, :type => Integer
-          validate :title_is_numeric
-          def title_is_numeric
-            assert_numeric(:title)
-          end
+          validates_numericality_of :title
         end
       end
 
       before :each do
         @v3 = V3.for RDF::URI.new('http://example.org/v3/first')
-      end 
+      end
 
       it "does not save when the field is nil" do
-        lambda { @v3.save! }.should raise_error Spira::ValidationError
+        lambda { @v3.save! }.should raise_error Spira::RecordInvalid
       end
 
       it "does not save when the field is not numeric" do
         @v3.title = 'xyz'
-        lambda { @v3.save! }.should raise_error Spira::ValidationError
+        lambda { @v3.save! }.should raise_error Spira::RecordInvalid
       end
 
       it "saves when the field is numeric" do

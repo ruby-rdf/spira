@@ -1,15 +1,12 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 describe Spira do
 
   context "when instantiating" do
 
     before :all do
-      class ::InstantiationTest
-        include Spira::Resource
-
+      class ::InstantiationTest < Spira::Base
         property :name, :predicate => FOAF.name
-
       end
     end
 
@@ -33,7 +30,6 @@ describe Spira do
           test.name = "test name"
         end
         test.name.should == "test name"
-        @repo.should have_statement(RDF::Statement.new(@uri, RDF::FOAF.name, "test name"))
       end
 
       it "should allow instantiation from a resource class using #for" do
@@ -45,7 +41,6 @@ describe Spira do
           test.name = "test name"
         end
         test.name.should == "test name"
-        @repo.should have_statement(RDF::Statement.new(@uri, RDF::FOAF.name, "test name"))
       end
 
       it "should allow instantiation from a URI with attributes given" do
@@ -54,19 +49,17 @@ describe Spira do
       end
 
       it "should know if a URI does not exist" do
-        InstantiationTest.for(@uri).exists?.should be_false
-        InstantiationTest.for(@uri).exist?.should be_false
+        InstantiationTest.for(@uri).should_not be_persisted
       end
 
       it "should know if a URI exists" do
         InstantiationTest.repository << RDF::Statement.new(@uri, RDF::FOAF.name, 'test')
-        InstantiationTest.for(@uri).exists?.should be_true
-        InstantiationTest.for(@uri).exist?.should be_true
+        InstantiationTest.for(@uri).should be_persisted
       end
 
       it "should allow the use of #[] as an alias to #for" do
         InstantiationTest.repository << RDF::Statement.new(@uri, RDF::FOAF.name, 'test')
-        InstantiationTest[@uri].exists?.should be_true
+        InstantiationTest[@uri].should be_persisted
       end
     end
 
@@ -116,7 +109,6 @@ describe Spira do
           test.name = "test name"
         end
         test.name.should == "test name"
-        @repo.should have_statement(RDF::Statement.new(test.subject, RDF::FOAF.name, "test name"))
       end
     end
 

@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 describe "Spira resources" do
 
@@ -11,26 +11,29 @@ describe "Spira resources" do
       property :has_cd
     end
     
-    class ::CD
-      include Spira::Resource
-      base_uri CDs.cds
+    class ::CD < Spira::Base
+      configure :base_uri => CDs.cds
       property :name,   :predicate => DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
     
-    class ::Artist
-      include Spira::Resource
-      base_uri CDs.artists
+    class ::Artist < Spira::Base
+      configure :base_uri => CDs.artists
       property :name, :predicate => DC.title, :type => String
       has_many :cds, :predicate => CDs.has_cd, :type => :CD
+      has_many :teams, :predicate => CDs.teams, :type => :Team
+    end
+
+    class ::Team < Spira::Base
+      configure :base_uri => CDs.teams
+      has_many :artists, :predicate => CDs.artist, :type => 'Artist'
     end
   end
 
   context "when referencing relationships" do
     context "in the root namespace" do
       before :all do
-        class ::RootNSTest
-          include Spira::Resource
+        class ::RootNSTest < Spira::Base
           property :name, :predicate => DC.title, :type => 'RootNSTest'
         end
         Spira.add_repository!(:default, RDF::Repository.new)
@@ -51,12 +54,10 @@ describe "Spira resources" do
     context "in the same namespace" do
       before :all do
         module ::NSTest
-          class X
-            include Spira::Resource
+          class X < Spira::Base
             property :name, :predicate => DC.title, :type => 'Y'
           end
-          class Y
-            include Spira::Resource
+          class Y < Spira::Base
           end
         end
         Spira.add_repository!(:default, RDF::Repository.new)
@@ -77,14 +78,12 @@ describe "Spira resources" do
     context "in another namespace" do
       before :all do
         module ::NSTest
-          class Z
-            include Spira::Resource
+          class Z < Spira::Base
             property :name, :predicate => DC.title, :type => 'NSTestA::A'
           end
         end
         module ::NSTestA
-          class A
-            include Spira::Resource
+          class A < Spira::Base
           end
         end
       end 
@@ -102,6 +101,32 @@ describe "Spira resources" do
     end
   end
 
+  context "with many-to-many relationship" do
+    before :all do
+      Spira.add_repository!(:default, RDF::Repository.new)
+    end
+
+    before do
+      @artist = Artist.for "Beard"
+      @team = Team.for "ZZ Top"
+    end
+
+    context "with resources referencing each other" do
+      before do
+        @artist.teams = [@team]
+        @team.artists = [@artist]
+
+        @artist.save!
+        @team.save!
+      end
+
+      context "when reloading" do
+        it "should not cause an infinite loop" do
+          @artist.reload.should eql @artist
+        end
+      end
+    end
+  end
 
   context "with a one-to-many relationship" do
   
@@ -131,12 +156,14 @@ describe "Spira resources" do
 
     it "should find CDs for an artist" do
       cds = @artist.cds
-      cds.should be_a Set
+      cds.should be_a Array
       cds.find { |cd| cd.name == 'Nevermind' }.should be_true
       cds.find { |cd| cd.name == 'In Utero' }.should be_true
     end
 
     it "should not reload an object for a simple reverse relationship" do
+      pending "no longer applies as the global cache is gone"
+
       @artist.cds.first.artist.should equal @artist
       artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
       @cd.should equal artist_cd
@@ -167,9 +194,8 @@ describe "Spira resources" do
     context "when accessing a field named for a non-existant class" do
       
       before :all do
-        class ::RelationsTestA
-          include Spira::Resource
-          base_uri CDs.cds
+        class ::RelationsTestA < Spira::Base
+          configure :base_uri => CDs.cds
           property :invalid, :predicate => CDs.artist, :type => :non_existant_type
         end
 
@@ -178,20 +204,22 @@ describe "Spira resources" do
       end
 
       it "should raise a NameError when saving an object with the invalid property" do
-#        RelationsTestA.for('invalid_a', :invalid => Object.new).save!
-        lambda { RelationsTestA.for('invalid_a', :invalid => Object.new).save! }.should raise_error NameError
+        lambda {
+          RelationsTestA.for('invalid_a', :invalid => Object.new).save!
+        }.should raise_error NameError
       end
 
       it "should raise a NameError when accessing the invalid property on an existing object" do
-        lambda { RelationsTestA.for('invalid_b').invalid }.should raise_error NameError
+        lambda {
+          RelationsTestA.for('invalid_b').invalid
+        }.should raise_error NameError
       end
 
     end
 
     context "when accessing a field for a class that is not a Spira::Resource" do
       before :all do
-        class ::RelationsTestB
-          include Spira::Resource
+        class ::RelationsTestB < Spira::Base
           property :invalid, :predicate => DC.title, :type => 'Object'
         end
       end

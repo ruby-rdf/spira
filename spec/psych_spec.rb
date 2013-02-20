@@ -6,15 +6,13 @@ describe Spira, :ruby => "1.9" do
   require 'psych'
 
   before :all do
-    class ::Person
-      include Spira::Resource
-      base_uri "http://example.org/example/people"
+    class PsychPerson < Spira::Base
+      configure :base_uri => "http://example.org/example/people"
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age,  :type => Integer
     end
     
-    class Employee
-      include Spira::Resource
+    class PsychEmployee < Spira::Base
       property :name, :predicate => RDFS.label
       property :age,  :predicate => FOAF.age, :type => Integer
     end
@@ -28,7 +26,7 @@ describe Spira, :ruby => "1.9" do
     @person_repository = RDF::Repository.load(fixture('bob.nt'))
     Spira.add_repository(:default, @person_repository)
 
-    @person = Person.for(RDF::URI.new('http://example.org/newperson'))
+    @person = PsychPerson.for(RDF::URI.new('http://example.org/newperson'))
   end
 
   it "serializes to YAML" do

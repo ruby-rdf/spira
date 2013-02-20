@@ -1,15 +1,13 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 describe 'Resources with data not associated with a model' do
 
   before :all do
     require 'rdf/ntriples'
-    class ::ExtraDataTest
-      include Spira::Resource
-      base_uri "http://example.org/example"
+    class ::ExtraDataTest < Spira::Base
+      configure :base_uri => "http://example.org/example"
 
       property :property, :predicate => FOAF.age, :type => Integer
-
       has_many :list,     :predicate => RDFS.label
     end
     @filename = fixture('non_model_data.nt')
@@ -40,16 +38,6 @@ describe 'Resources with data not associated with a model' do
 
   end
 
-  context "when enumerating statements" do
-    before :each do
-      @example1 = ExtraDataTest.for('example1')
-    end
-
-    it "unspecified model information should appear in the enumeration when using #data" do
-      @example1.data.should have_predicate RDF::FOAF.name
-    end
-  end
-
   context "when deleting" do
     before :each do
       @example1 = ExtraDataTest.for('example1')
@@ -59,7 +47,7 @@ describe 'Resources with data not associated with a model' do
     it "should not delete non-model data on Resource#!destroy" do
       @example1.destroy!
       @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.name).count.should == 1
-    end 
+    end
 
   end
 

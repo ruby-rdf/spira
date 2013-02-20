@@ -3,3 +3,10 @@ pkg
 coverage
 .yardoc
 doc
+TAGS
+tags
+gems.tags
+*~
+.*~
+.bundle
+bin/
