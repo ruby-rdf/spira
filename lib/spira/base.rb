@@ -337,15 +337,15 @@ module Spira
     end
 
     def unserialize_localized_properties(values, locale)
-      values.select { |s| s.language == locale || s.plain? }.map { |v| v.object }.first
+      v = values.detect { |s| s.language == locale || s.plain? }
+      v && v.object
     end
 
     def hash_localized_properties(values)
-      hash = {}
-      values.each do |v|
-        hash[v.language] = v.object
+      values.inject({}) do |out, v|
+        out[v.language] = v.object
+        out
       end
-      hash
     end
 
     def serialize_hash_localized_properties(values)

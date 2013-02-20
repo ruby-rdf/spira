@@ -80,17 +80,23 @@ module Spira
     # @see Spira::Type
     # @return [Void]
     def property(name, opts = {})
-      unset_has_many(name)
-      predicate = predicate_for(opts[:predicate], name)
-      type = type_for(opts[:type])
-      properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
+      if opts.delete(:localized)
+        raise 'Only Spira::Types::Any properties can accept the :localized option' unless type_for(opts[:type]) == Spira::Types::Any
+        define_localized_property_methods(name, opts)
+        has_many "#{name}_native", opts.merge(:type => Spira::Types::Native)
+      else
+        unset_has_many(name)
+        predicate = predicate_for(opts[:predicate], name)
+        type = type_for(opts[:type])
+        properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
 
-      define_attribute_method name
-      define_method "#{name}=" do |arg|
-        write_attribute name, arg
-      end
-      define_method name do
-        read_attribute name
+        define_attribute_method name
+        define_method "#{name}=" do |arg|
+          write_attribute name, arg
+        end
+        define_method name do
+          read_attribute name
+        end
       end
     end
 
@@ -106,14 +112,6 @@ module Spira
     #
     # @see Spira::Base::DSL#property
     def has_many(name, opts = {})
-
-      if opts.delete(:localized)
-        raise 'Only Spira::Types::Any properties can accept the :localized option' unless type_for(opts[:type]) == Spira::Types::Any
-        define_localized_property_methods(name, opts)
-        name = "#{name}_native"
-        opts[:type] = Spira::Types::Native
-      end
-
       property(name, opts)
 
       reflections[name] = AssociationReflection.new(:has_many, name, opts)

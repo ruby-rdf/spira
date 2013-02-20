@@ -11,7 +11,7 @@ describe Spira do
 
     class ::Concept < Spira::Base
       configure :base_uri => "http://example.org/example/"
-      has_many :label, :predicate => RDFS.label, :localized => true
+      property :label, :predicate => RDFS.label, :localized => true
       property :num_employees, :predicate => RDF::URI.new('http://example.org/example/identifier')
     end
   end
