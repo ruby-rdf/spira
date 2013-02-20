@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 # testing out default vocabularies
 
 describe 'default vocabularies' do
@@ -6,7 +6,6 @@ describe 'default vocabularies' do
   before :all do
     @bubble_repo = RDF::Repository.new
     Spira.add_repository(:default, @bubble_repo)
-
   end
 
   before :each do
@@ -16,9 +15,8 @@ describe 'default vocabularies' do
   context "defining classes" do
     it "should allow a property without a predicate if there is a default vocabulary" do
       lambda {
-        class VocabTestX
-          include Spira::Resource
-          default_vocabulary RDF::URI.new('http://example.org/vocabulary/')
+        class VocabTestX < Spira::Base
+          configure :default_vocabulary => RDF::URI.new('http://example.org/vocabulary/')
           property :test
         end
       }.should_not raise_error
@@ -26,8 +24,7 @@ describe 'default vocabularies' do
 
     it "should raise a ResourceDeclarationError to set a property without a default vocabulary" do
       lambda {
-        class VocabTestY
-          include Spira::Resource
+        class VocabTestY < Spira::Base
           property :test
         end
       }.should raise_error Spira::ResourceDeclarationError
@@ -36,8 +33,7 @@ describe 'default vocabularies' do
     # FIXME: reexamine this behavior.  Static typing in the DSL?  Why?  Why not create a URI out of anything we can #to_s?
     it "should raise a ResourceDelcarationError to set a predicate without a default vocabulary that is not an RDF::URI" do
       lambda {
-        class VocabTestY
-          include Spira::Resource
+        class VocabTestY < Spira::Base
           property :test, :predicate => "http://example.org/test"
         end
       }.should raise_error Spira::ResourceDeclarationError
@@ -47,12 +43,9 @@ describe 'default vocabularies' do
   context "using classes with a default vocabulary" do
 
     before :all do
-      class ::Bubble
-        include Spira::Resource
-      
-        default_vocabulary RDF::URI.new 'http://example.org/vocab/'
-      
-        base_uri "http://example.org/bubbles/"
+      class ::Bubble < Spira::Base
+        configure :default_vocabulary => RDF::URI.new('http://example.org/vocab/'),
+                  :base_uri => "http://example.org/bubbles/"
         property :year, :type => Integer
         property :name
         property :title, :predicate => DC.title, :type => String
@@ -87,10 +80,9 @@ describe 'default vocabularies' do
       before :all do
         class ::DefaultVocabVocab < ::RDF::Vocabulary('http://example.org/test#') ; end
 
-        class ::HashVocabTest
-          include Spira::Resource
-          default_vocabulary DefaultVocabVocab
-          base_uri "http://example.org/testing/"
+        class ::HashVocabTest < Spira::Base
+          configure :default_vocabulary => DefaultVocabVocab,
+                    :base_uri => "http://example.org/testing/"
           property :name
         end
       end

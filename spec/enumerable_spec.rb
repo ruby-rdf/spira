@@ -1,24 +1,29 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 # Tests in terms of RDF::Enumerable, and interaction with other enumerables
 
-describe Spira::Resource do
+describe Spira::Base do
+
+  before :all do
+    require 'rdf/ntriples'
+    Spira.add_repository(:default, ::RDF::Repository)
+
+    class ::EnumerableSpec < Spira::Base
+      configure :base_uri => "http://example.org/example/people"
+
+      property :name, :predicate => RDFS.label
+      property :age,  :predicate => FOAF.age,  :type => Integer
+    end
+
+    class ::EnumerableWithAssociationsSpec < Spira::Base
+      configure :base_uri => "http://example.org/example/people"
+
+      property :name, :predicate => RDFS.label
+      has_many :friends, :predicate => FOAF.person, :type => :EnumerableWithAssociationsSpec
+    end
+  end
 
   context "as an RDF::Enumerable" do
-
-    before :all do
-      require 'rdf/ntriples'
-      Spira.add_repository(:default, ::RDF::Repository)
-      
-      class ::EnumerableSpec
-        include Spira::Resource
-      
-        base_uri "http://example.org/example/people"
-      
-        property :name, :predicate => RDFS.label
-        property :age,  :predicate => FOAF.age,  :type => Integer
-      end
-    end
 
     before :each do
       @uri = RDF::URI('http://example.org/example/people/bob')
@@ -32,8 +37,32 @@ describe Spira::Resource do
       @enumerable = @person
     end
 
+    context "when just created" do
+      before do
+        @liza = EnumerableWithAssociationsSpec.new
+      end
+
+      it "should have no statements" do
+        @liza.statements.size.should be_zero
+      end
+    end
+
+    context "when has has_many association" do
+      before do
+        @another_uri = RDF::URI('http://example.org/example/people/charlie')
+        @charlie = EnumerableWithAssociationsSpec.for @another_uri
+        3.times { @charlie.friends << EnumerableWithAssociationsSpec.new }
+      end
+
+      it "should list associated statements individually" do
+        @charlie.statements.size.should eql @charlie.friends.size
+      end
+    end
+
     context "when running the rdf-spec RDF::Enumerable shared groups" do
+
       include RDF_Enumerable
+
     end
 
     context "when comparing with other RDF::Enumerables" do
@@ -54,9 +83,8 @@ describe Spira::Resource do
       end
 
       it "should allow other enumerables to be isomorphic to a resource" do
-        @enumerable_repository.should be_isomorphic_with @enumerable
+        @enumerable_repository.statements.should be_isomorphic_with @enumerable
       end
-
     end
   end
 end

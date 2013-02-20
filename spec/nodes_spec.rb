@@ -1,12 +1,11 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 # Behaviors relating to BNodes vs URIs
 
 describe 'Spira resources' do
 
   before :all do
-    class ::NodeTest
-      include Spira::Resource
+    class ::NodeTest < Spira::Base
       property :name, :predicate => FOAF.name
     end
   end

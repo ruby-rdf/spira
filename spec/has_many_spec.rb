@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 
 class Posts < RDF::Vocabulary('http://example.org/posts/predicates/')
   property :rating
@@ -8,31 +8,21 @@ describe "has_many" do
 
   before :all do
     require 'rdf/ntriples'
-    class ::Post
-    
-      include Spira::Resource
-    
-      type URI.new('http://rdfs.org/sioc/types#Post')
-    
+    class ::Post < Spira::Base
+      type RDF::URI.new('http://rdfs.org/sioc/types#Post')
+
       has_many :comments, :predicate => SIOC.has_reply, :type => :Comment
       property :title,    :predicate => DC.title
       property :body,     :predicate => SIOC.content
-    
     end
-    
-    
-    
-    class ::Comment
-    
-      include Spira::Resource
-    
-      type URI.new('http://rdfs.org/sioc/types#Comment')
-    
+
+    class ::Comment < Spira::Base
+      type RDF::URI.new('http://rdfs.org/sioc/types#Comment')
+
       property :post,     :predicate => SIOC.reply_of, :type => :Post
       property :title,    :predicate => DC.title
       property :body,     :predicate => SIOC.content
       has_many :ratings,  :predicate => Posts.rating, :type => Integer
-    
     end
   end
 
@@ -47,31 +37,27 @@ describe "has_many" do
     end
 
     it "should have a ratings method" do
-      @comment.should respond_to :ratings      
+      @comment.should respond_to :ratings
     end
 
     it "should having a ratings= method" do
       @comment.should respond_to :ratings=
     end
 
-    it "should support is_list?" do
-      Comment.should respond_to :is_list?
-    end
-
-    it "should report that ratings are a list" do
-      Comment.is_list?(:ratings).should == true
+    it "should report that ratings is an association" do
+      Comment.reflect_on_association(:ratings).should be_a AssociationReflection
     end
 
     it "should report that bodies are not a list" do
-      Comment.is_list?(:body).should == false
+      Comment.reflect_on_association(:body).should be_nil
     end
 
     it "should return an empty array of ratings for comments with none" do
-      @empty_comment.ratings.should == Set.new
+      @empty_comment.ratings.should == []
     end
 
     it "should return a set of ratings for comments with some" do
-      @comment.ratings.should be_a Set
+      @comment.ratings.should be_a Array
       @comment.ratings.size.should == 3
       @comment.ratings.sort.should == [1,3,5]
     end
@@ -137,7 +123,7 @@ describe "has_many" do
     end
 
     it "should return an empty array from comments for an object with none" do
-      @empty_post.comments.should == Set.new
+      @empty_post.comments.should == []
     end
 
     it "should return an array of comments for an object with some" do
@@ -169,9 +155,24 @@ describe "has_many" do
         comments.should include comment
       end
     end
+
+    context "given all associations have a base_uri" do
+      before do
+        Post.class_eval {
+          configure :base_uri => "http://example.org/posts"
+        }
+
+        Comment.class_eval {
+          configure :base_uri => "http://example.org/comments"
+        }
+      end
+
+      it "should assign comments by their IDs" do
+        cids = @post.comment_ids.first
+        @post.comment_ids = [cids, ""]
+
+        @post.comment_ids.should eql [cids]
+      end
+    end
   end
-  
-
-
-
 end

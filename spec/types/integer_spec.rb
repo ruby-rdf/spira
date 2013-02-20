@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/../spec_helper'
+require "spec_helper"
 
 describe Spira::Types::Integer do
 
@@ -14,9 +14,11 @@ describe Spira::Types::Integer do
 
   context "when unserializing" do
     it "should unserialize XSD integers to integers" do
-      value = Spira::Types::Integer.unserialize(RDF::Literal.new(5, :datatype => RDF::XSD.integer))
-      value.should be_a Fixnum
-      value.should == 5
+      [5, "5"].each do |num|
+        value = Spira::Types::Int.unserialize(RDF::Literal.new(num, :datatype => RDF::XSD.integer))
+        value.should be_a Fixnum
+        value.should == num.to_i
+      end
     end
   end
 

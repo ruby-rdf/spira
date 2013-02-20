@@ -1,4 +1,4 @@
-require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
+require "spec_helper"
 # These classes are to test finding based on rdfs.type
 
 
@@ -17,21 +17,23 @@ describe 'models with a defined rdf type' do
   before :all do
     require 'rdf/ntriples'
 
-    class ::Car
-      include Spira::Resource
+    class ::Car < Spira::Base
       type Cars.car
       property :name, :predicate => RDFS.label
     end
     
-    class ::Van
-      include Spira::Resource
+    class ::Van < Spira::Base
       type Cars.van
       property :name, :predicate => RDFS.label
     end
     
-    class ::Wagon
-      include Spira::Resource
+    class ::Wagon < Spira::Base
       property :name, :predicate => RDFS.label
+    end
+
+    class ::MultiCar < Spira::Base
+      type Cars.car
+      type Cars.van
     end
   end
 
@@ -43,8 +45,7 @@ describe 'models with a defined rdf type' do
   context "when declaring types" do
     it "should raise an error when declaring a non-uri type" do
       lambda {
-        class ::XYZ
-          include Spira::Resource
+        class ::XYZ < Spira::Base
           type 'a string, for example'
         end
       }.should raise_error TypeError
@@ -71,7 +72,6 @@ describe 'models with a defined rdf type' do
     it "should find 3 vans" do
       Van.count.should == 3
     end
-
   end
 
   context "when creating" do
@@ -84,14 +84,16 @@ describe 'models with a defined rdf type' do
       @car.type.should == Car.type
     end
 
-    it "should include a type statement on dump" do
-      @car.query(:predicate => RDF.type).count.should == 1
-      @car.query(:predicate => RDF.type).first.object.should == Car.type
-      @car.query(:predicate => RDF.type).first.subject.should == @car.uri
+    it "should not include a type statement on dump" do
+      # NB: declaring an object with a type does not get the type statement in the DB
+      # until the object is persisted!
+      @car.should_not have_statement(:predicate => RDF.type, :object => Car.type)
     end
 
-    it "should raise a type error when receiving a type attribute option on instantiation" do
-      lambda { Car.for RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van }.should raise_error TypeError
+    it "should not be able to assign type" do
+      lambda {
+        Car.for(RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van)
+      }.should raise_error NoMethodError
     end
 
   end
@@ -142,7 +144,7 @@ describe 'models with a defined rdf type' do
     end
 
     it "should raise an exception when trying to change the type" do
-      lambda {@car.type = Cars.van}.should raise_error TypeError
+      lambda {@car.type = Cars.van}.should raise_error
     end
 
     it "should maintain all triples related to this object on save" do
@@ -154,6 +156,13 @@ describe 'models with a defined rdf type' do
   end
 
   context "when counting" do
+    it "should count all projected types" do
+      lambda {
+        Car.for(Cars.one).save!
+        Van.for(Cars.two).save!
+      }.should change(MultiCar, :count).by(2)
+    end
+
     it "should provide a count method for resources with types" do
       Car.count.should == 1
     end
@@ -164,8 +173,8 @@ describe 'models with a defined rdf type' do
     end
 
     it "should decrease the count when items are destroyed" do
-      Car.for(Cars.car1).destroy!
-      Car.count.should == 0
+      car = Car.for(Cars.car1)
+      lambda { car.destroy }.should change(Car, :count).from(1).to(0)
     end
 
     it "should raise a Spira::NoTypeError to call #count for models without types" do
