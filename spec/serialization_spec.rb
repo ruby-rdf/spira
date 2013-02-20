@@ -6,6 +6,8 @@ describe "serialization" do
     class SpiraResource < Spira::Base
       property :name, :predicate => FOAF.givenName, :type => XSD.string
     end
+
+    Spira.add_repository(:default, RDF::Repository)
   end
 
   it "should serialize a spira resource into its subject" do
