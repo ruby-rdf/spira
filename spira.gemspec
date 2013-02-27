@@ -19,7 +19,7 @@ Gem::Specification.new do |gem|
   gem.email              = 'blavender@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
-  gem.files              = %w(CHANGES.md AUTHORS README UNLICENSE) + Dir.glob('lib/**/*.rb')
+  gem.files              = %w(CHANGES.md AUTHORS README.md UNLICENSE) + Dir.glob('lib/**/*.rb')
   gem.bindir             = %w(bin)
   gem.executables        = %w()
   gem.default_executable = gem.executables.first
