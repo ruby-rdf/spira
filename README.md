@@ -407,18 +407,11 @@ There are a number of ways to ask for help.  In declining order of preference:
  * You can post issues to the Github issue queue
  * (there might one day be a google group or other such support channel, but not yet)
 
-## Authors, Development, and License
-
-#### Authors
- * Ben Lavender <blavender@gmail.com>
- * Slava Kravchenko <https://github.com/cordawyn>
- * Aymeric Brisse <https://github.com/abrisse>
-
-#### 'License'
+## 'License'
 Spira is free and unemcumbered software released into the public
 domain.  For more information, see the included UNLICENSE file.
 
-#### Contributing
+## Contributing
 Fork it on Github and go.  Please make sure you're kosher with the UNLICENSE
 file before contributing.
 

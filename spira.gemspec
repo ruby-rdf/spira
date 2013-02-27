@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
   gem.description        = 'Spira is a framework for using the information in RDF.rb repositories as model objects.'
   gem.rubyforge_project  = 'spira'
 
-  gem.authors            = ['Ben Lavender', 'Slava Kravchenko']
+  gem.authors            = ['Ben Lavender']
   gem.email              = 'blavender@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
