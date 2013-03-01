@@ -7,6 +7,7 @@ require "spira/resource"
 require "spira/persistence"
 require "spira/validations"
 require "spira/reflections"
+require "spira/serialization"
 
 module Spira
 
@@ -351,6 +352,7 @@ module Spira
     include Types
     include Persistence
     include Validations
+    include Serialization
 
     @reflections = HashWithIndifferentAccess.new
     @properties = HashWithIndifferentAccess.new

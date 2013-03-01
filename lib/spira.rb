@@ -11,6 +11,12 @@ require "spira/utils"
 # @see http://rdf.rubyforge.org
 # @see http://github.com/bhuga/spira
 # @see Spira::Resource
+
+module RDF
+  class Repository
+  end
+end
+
 module Spira
 
   autoload :Base,             'spira/base'
@@ -32,18 +38,21 @@ module Spira
   # Add a repository to Spira's list of repositories.
   #
   # @overload add_repository(name, repo)
-  #     @param [Symbol] name The name of this repository
-  #     @param [RDF::Repository] repo An RDF::Repository
+  #   @param [Symbol] name The name of this repository
+  #   @param [RDF::Repository] repo
+  #
   # @overload add_repository(name, klass, *args)
-  #     @param [Symbol] name The name of this repository
-  #     @param [RDF::Repository, Class] repo A Class that inherits from RDF::Repository
-  #     @param [*Object] The list of arguments to instantiate the class
+  #   @param [Symbol] name The name of this repository
+  #   @param [Class] klass
+  #     A Class that inherits from `RDF::Repository`
+  #   @param [Array] args
+  #     The list of arguments to instantiate the class
+  #
   # @example Adding an ntriples file as a repository
   #     Spira.add_repository(:default, RDF::Repository.load('http://datagraph.org/jhacker/foaf.nt'))
   # @example Adding an empty repository to be instantiated on use
   #     Spira.add_repository(:default, RDF::Repository)
   # @return [Void]
-  # @see RDF::Repository
   def add_repository(name, klass, *args)
     repositories[name] =
       case klass

@@ -61,7 +61,7 @@ describe Spira::Base do
 
     context "when running the rdf-spec RDF::Enumerable shared groups" do
 
-      it_should_behave_like RDF_Enumerable
+      include RDF_Enumerable
 
     end
 
@@ -83,9 +83,8 @@ describe Spira::Base do
       end
 
       it "should allow other enumerables to be isomorphic to a resource" do
-        @enumerable_repository.should be_isomorphic_with @enumerable
+        @enumerable_repository.statements.should be_isomorphic_with @enumerable
       end
-
     end
   end
 end

@@ -27,7 +27,7 @@ module Spira
   # integer property on a Spira resource:
   #
   #     property :age, :predicate => FOAF.age, :type => Integer
-  #     property :age, :predicate => FOAF.age, :type => XSD.integer
+  #     property :age, :predicate => FOAF.age, :type => RDF::XSD.integer
   #
   # `Spira::Type`s include the RDF namespace and thus have all of the base RDF
   # vocabularies available to them without the `RDF::` prefix.
@@ -55,8 +55,8 @@ module Spira
       #
       # @param [Any] identifier The new alias in property declarations for this class
       # @return [Void]
-      def register_alias(any)
-        Spira.type_alias(any, self)
+      def register_alias(identifier)
+        Spira.type_alias(identifier, self)
       end
 
       ##

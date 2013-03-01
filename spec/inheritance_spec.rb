@@ -7,12 +7,14 @@ describe Spira do
     before :all do
       class ::InheritanceItem < Spira::Base
         property :title, :predicate => DC.title, :type => String
+        has_many :subtitle, :predicate => DC.xtitle, :type => String
         type  SIOC.item
       end
 
       class ::InheritancePost < ::InheritanceItem
         type  SIOC.post
         property :author, :predicate => DC.author
+        property :subtitle, :predicate => DC.xtitle, :type => String
       end
 
       class ::InheritedType < ::InheritanceItem
@@ -29,6 +31,24 @@ describe Spira do
       class ::InheritanceForum < ::InheritanceContainer
         type SIOC.forum
         #property :moderator, :predicate => SIOC.has_moderator
+      end
+    end
+
+    context "when redeclaring a property in a child" do
+      before :each do
+        Spira.add_repository(:default, RDF::Repository.new)
+        @item = RDF::URI('http://example.org/item').as(InheritanceItem)
+        @post = RDF::URI('http://example.org/post').as(InheritancePost)
+      end
+
+      it "should override the property on the child" do
+        @post.subtitle.should be_nil
+        @post.should_not respond_to(:subtitle_ids)
+      end
+
+      it "should not override the parent property" do
+        @item.subtitle.should be_empty
+        @item.should respond_to(:subtitle_ids)
       end
     end
 
