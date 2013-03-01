@@ -1,7 +1,7 @@
 require File.dirname(File.expand_path(__FILE__)) + '/../spec_helper'
 
 describe Spira::Types::DateTime do
-  
+
   before :all do
     @date = DateTime.now
   end
