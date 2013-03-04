@@ -268,6 +268,28 @@ Property always takes a symbol name as a name, and a variable list of options.  
    **Types** below.  Default: `Any`
  * `:predicate`: The predicate to use for this type.  This can be any RDF URI.
    This option is required unless the `default_vocabulary` has been used.
+ * `:localized`: Indicates if the property is multilingual. See 'Localized Properties'
+
+#### Localized Properties
+
+A localized property allows to define a value per language. It only works with
+properties having a single item, ie defined with `property`.
+
+    class Article < Spira::Base
+      property :label, :localized => true
+    end
+
+    # default locale :en
+    random_article = Article.for 'random-article'
+    random_article.label = "A label in english"
+    i18n.locale = :fr
+    random_article.label = "Un libellé en français"
+
+    random_article.label_native
+    # #=> [#<RDF::Literal:0xdb47c8("A label in english"@en)>, #<RDF::Literal:0xe5c3d8("Un libellé en français"@fr)>]
+
+    random_article.label_with_locales
+    # #=> {:en=>"A label in english", :fr=>"Un libellé en français"}
 
 ### Types
 
