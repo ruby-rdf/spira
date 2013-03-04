@@ -1,0 +1,3 @@
+<http://example.org/example/company> <http://example.org/example/identifier> "COMPANY" .
+<http://example.org/example/company> <http://www.w3.org/2000/01/rdf-schema#label> "société"@fr .
+<http://example.org/example/company> <http://www.w3.org/2000/01/rdf-schema#label> "company"@en .
