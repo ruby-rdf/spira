@@ -18,7 +18,7 @@ module Spira
       #
       # @return [RDF::Repository, nil]
       def repository
-        Spira.repository(repository_name)
+        Spira.repository(repository_name) || raise(NoRepositoryError)
       end
 
       ##
@@ -377,13 +377,10 @@ module Spira
     # This resource will block if the underlying repository
     # blocks the next time it accesses attributes.
     #
-    # If repository is not defined, the attributes are just not set,
-    # instead of raising a Spira::NoRepositoryError.
-    #
     # NB: "props" argument is ignored, it is handled in Base
     #
     def reload(props = {})
-      sts = self.class.repository && self.class.repository.query(:subject => subject)
+      sts = self.class.repository.query(:subject => subject)
       self.class.properties.each do |name, options|
         name = name.to_s
         if sts
