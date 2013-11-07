@@ -95,13 +95,13 @@ module Spira
   # @param [RDF::Repository] repository the repository to work on
   # @param [Symbol] name the repository name
   # @yield the block with the instructions while using the repository
-  def works_with(repository, name=:default)
+  def using_repository(repository, name=:default)
     old_repository = repositories[name]
     add_repository(name, repository)
     yield if block_given?
     repositories[name] = old_repository
   end
-  module_function :works_with
+  module_function :using_repository
 
   private
 
