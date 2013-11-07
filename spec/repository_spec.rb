@@ -4,6 +4,28 @@ require "spec_helper"
 
 describe Spira do
 
+  describe ".using_repository" do
+
+    let(:repo) { RDF::Repository.new }
+    let(:new_repo) { RDF::Repository.new }
+
+    before :each do
+      Spira.add_repository :default, repo
+    end
+
+    it "should override the original repository for the block" do
+      Spira.using_repository(new_repo, :default) do
+        Spira.repository(:default).should == new_repo
+      end
+    end
+
+    it "should restore the original repository after the block" do
+      Spira.using_repository(new_repo, :default) { }
+      Spira.repository(:default).should == repo
+    end
+
+  end
+
   context "when registering repositories" do
 
     before :all do
@@ -27,7 +49,7 @@ describe Spira do
         Spira.add_repository :default, @repo
       end
 
-      it "should be available" do
+      it "should be another instance" do
         repo = nil
 
         t = Thread.new {
@@ -35,7 +57,7 @@ describe Spira do
         }
         t.join
 
-        repo.should eql(@repo)
+        repo.should_not eql(@repo)
       end
     end
 

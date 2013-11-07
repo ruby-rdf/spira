@@ -86,10 +86,22 @@ module Spira
   # @return [Void]
   # @private
   def clear_repositories!
-    @repositories = {}
+    Thread.current[:spira_repositories] = {}
   end
   module_function :clear_repositories!
 
+  # Execute a block on a specific repository
+  #
+  # @param [RDF::Repository] repository the repository to work on
+  # @param [Symbol] name the repository name
+  # @yield the block with the instructions while using the repository
+  def using_repository(repository, name=:default)
+    old_repository = repositories[name]
+    add_repository(name, repository)
+    yield if block_given?
+    repositories[name] = old_repository
+  end
+  module_function :using_repository
 
   private
 
@@ -99,7 +111,7 @@ module Spira
   # @see http://rdf.rubyforge.org/RDF/Repository.html
   # @return [Hash{Symbol => RDF::Repository}]
   def repositories
-    @repositories ||= {}
+    Thread.current[:spira_repositories] ||= {}
   end
   module_function :repositories
 
