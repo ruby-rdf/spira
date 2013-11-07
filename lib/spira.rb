@@ -86,7 +86,7 @@ module Spira
   # @return [Void]
   # @private
   def clear_repositories!
-    @repositories = {}
+    Thread.current[:spira_repositories] = {}
   end
   module_function :clear_repositories!
 
@@ -99,7 +99,7 @@ module Spira
   # @see http://rdf.rubyforge.org/RDF/Repository.html
   # @return [Hash{Symbol => RDF::Repository}]
   def repositories
-    @repositories ||= {}
+    Thread.current[:spira_repositories] ||= {}
   end
   module_function :repositories
 

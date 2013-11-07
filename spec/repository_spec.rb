@@ -27,7 +27,7 @@ describe Spira do
         Spira.add_repository :default, @repo
       end
 
-      it "should be available" do
+      it "should be another instance" do
         repo = nil
 
         t = Thread.new {
@@ -35,7 +35,7 @@ describe Spira do
         }
         t.join
 
-        repo.should eql(@repo)
+        repo.should_not eql(@repo)
       end
     end
 
