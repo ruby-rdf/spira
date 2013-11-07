@@ -74,6 +74,7 @@ module Spira
     old_repository = Spira.repository
     Spira.repository = repo
     yield if block_given?
+  ensure
     Spira.repository = old_repository
   end
   module_function :using_repository

@@ -24,6 +24,18 @@ describe Spira do
       Spira.repository.should == repo
     end
 
+    context "when the block raises an error" do
+      it "should restore the original repository" do
+        begin
+          Spira.using_repository(new_repo) do
+            raise Exception.new('Some Error')
+          end
+        rescue Exception
+          Spira.repository.should == repo
+        end
+      end
+    end
+
   end
 
   context "when registering the repository" do
