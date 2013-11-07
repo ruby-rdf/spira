@@ -337,7 +337,7 @@ module Spira
     end
 
     def unserialize_localized_properties(values, locale)
-      v = values.detect { |s| s.language == locale || s.plain? }
+      v = values.detect { |s| s.language == locale || s.simple? }
       v && v.object
     end
 

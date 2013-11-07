@@ -73,28 +73,11 @@ describe Spira do
   context "classes using the default repository" do
 
     context "without a set repository" do
-      before :each do
-        Spira.clear_repositories!
-        @event = Event.for(RDF::URI.new('http://example.org/events/this-one'))
-      end
+      before { Spira.clear_repositories! }
 
-      it "should return nil for a repository which does not exist" do
-        Event.repository.should be_nil
+      it "should raise NoRepositoryError if a repository does not exist" do
+        expect { Event.repository }.to raise_error Spira::NoRepositoryError
       end
-
-      it "should not raise an error when accessing an attribute" do
-        lambda { @event.name }.should_not raise_error
-      end
-
-      it "should raise an error to call instance#save" do
-        @event.name = "test"
-        lambda { @event.save }.should raise_error
-      end
-
-      it "should raise an error to call instance#destroy" do
-        lambda { @event.destroy }.should raise_error
-      end
-
     end
 
     context "with a set repository" do
@@ -123,28 +106,19 @@ describe Spira do
   context "classes using a named repository" do
 
     context "without a set repository" do
-      before :each do
-        Spira.clear_repositories!
+      before { Spira.clear_repositories! }
+
+      it "should raise NoRepositoryError if a repository does not exist" do
+        expect { Stadium.repository }.to raise_error Spira::NoRepositoryError
       end
 
-      it "should return nil for a repository which does not exist" do
-        Stadium.repository.should be_nil
-      end
-
-      it "should not raise an error when accessing an attribute" do
-        stadium = RDF::URI('http://example.org/stadiums/that-one').as(Stadium)
-        lambda { stadium.name }.should_not raise_error
-      end
-
-      it "should raise an error to call instance#save" do
-        stadium = Stadium.for(RDF::URI.new('http://example.org/stadiums/this-one'))
-        stadium.name = 'test'
-        lambda { stadium.save }.should raise_error
+      it "should raise an error when instantiating" do
+        expect { RDF::URI('http://example.org/stadiums/that-one').as(Stadium) }.to raise_error Spira::NoRepositoryError
       end
     end
 
     context "with a set repository" do
-      before :each do
+      before do
         Spira.clear_repositories!
         @repo = RDF::Repository.new
         Spira.add_repository(:stadium, @repo)
