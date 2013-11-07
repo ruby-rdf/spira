@@ -90,6 +90,18 @@ module Spira
   end
   module_function :clear_repositories!
 
+  # Execute a block on a specific repository
+  #
+  # @param [RDF::Repository] repository the repository to work on
+  # @param [Symbol] name the repository name
+  # @yield the block with the instructions while using the repository
+  def works_with(repository, name=:default)
+    old_repository = repositories[name]
+    add_repository(name, repository)
+    yield if block_given?
+    repositories[name] = old_repository
+  end
+  module_function :works_with
 
   private
 
