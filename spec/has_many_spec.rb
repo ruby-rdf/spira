@@ -29,7 +29,7 @@ describe "has_many" do
   context "Comment class basics" do
     before :each do
       @posts_repository = RDF::Repository.load(fixture('has_many.nt'))
-      Spira.add_repository(:default, @posts_repository)
+      Spira.repository = @posts_repository
       @uri = RDF::URI.new('http://example.org/comments/comment1')
       @empty_uri = RDF::URI.new('http://example.org/comments/comment0')
       @comment = Comment.for @uri
@@ -102,7 +102,7 @@ describe "has_many" do
   context "Post class basics" do
     before :all do
       @posts_repository = RDF::Repository.load(fixture('has_many.nt'))
-      Spira.add_repository(:default, @posts_repository)
+      Spira.repository = @posts_repository
     end
 
     before :each do

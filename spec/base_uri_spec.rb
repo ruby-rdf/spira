@@ -3,7 +3,7 @@ require "spec_helper"
 describe 'Default URIs' do
 
   before :each do
-    Spira.add_repository(:default, ::RDF::Repository)
+    Spira.repository = ::RDF::Repository.new
   end
 
   context "classes with a base URI" do

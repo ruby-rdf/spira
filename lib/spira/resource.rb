@@ -7,7 +7,6 @@ module Spira
     # Configuration options for the Spira::Resource:
     #
     # @params[Hash] options
-    #   :repository_name    :: name of the repository to use
     #   :base_uri           :: base URI to be used for the resource
     #   :default_vocabulary :: default vocabulary to use for the properties
     #                          defined for this resource
@@ -16,8 +15,7 @@ module Spira
     #
     def configure(options = {})
       singleton_class.class_eval do
-        { :repository_name => options[:repository_name],
-          :base_uri => options[:base_uri],
+        { :base_uri => options[:base_uri],
           :default_vocabulary => options[:default_vocabulary]
         }.each do |name, value|
           # redefine reader methods only when required,

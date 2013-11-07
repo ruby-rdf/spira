@@ -23,7 +23,7 @@ describe Spira do
   context "with repository given" do
     before :each do
       @person_repository = RDF::Repository.load(fixture('bob.nt'))
-      Spira.add_repository(:default, @person_repository)
+      Spira.repository = @person_repository
     end
 
     context "The person fixture" do
@@ -178,7 +178,7 @@ describe Spira do
   end
 
   context "without a repository" do
-    before { Spira.clear_repositories! }
+    before { Spira.clear_repository! }
 
     let(:bob) { RDF::URI("http://example.org/example/people/bob").as(Person) }
 

@@ -5,7 +5,7 @@ describe 'default vocabularies' do
 
   before :all do
     @bubble_repo = RDF::Repository.new
-    Spira.add_repository(:default, @bubble_repo)
+    Spira.repository = @bubble_repo
   end
 
   before :each do

@@ -22,7 +22,7 @@ describe Spira do
 
   before :each do
     @repository = RDF::Repository.load(fixture('localized.nt'))
-    Spira.add_repository(:default, @repository)
+    Spira.repository = @repository
   end
 
   context "with a localized property" do

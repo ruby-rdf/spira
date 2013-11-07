@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe "RDF::Resource attributes" do
   before do
-    Spira.add_repository :default, RDF::Repository.new
+    Spira.repository = RDF::Repository.new
 
     class Person < Spira::Base
       property :name, :predicate => RDFS.label

@@ -37,7 +37,6 @@ A changelog is available in the {file:CHANGES.md} file.
 
  * Extensible validations system
  * Extensible types system
- * Easy to use multiple data sources
  * Easy to adapt models to existing data
  * Open-world semantics
  * Objects are still RDF.rb-compatible enumerable objects
@@ -81,7 +80,7 @@ as possible, there are a few changes that you should be aware of:
    for such resource and will only persist its properties.
    Although this is how the original Spira behaves too, I thought I'd state it
    explicitly here before you start freaking out.
- * Configuration options "base_uri", "default_vocabulary" and "repository_name" are
+ * Configuration options "base_uri", "default_vocabulary" are
    now configured via "configure" method (see the examples below).
  * A couple of (not so) subtle changes:
    1) Global caching is gone. This means that "artist.works.first.artist" (reverse lookup)
@@ -239,17 +238,6 @@ A class with a `default_vocabulary` set will transparently create predicates for
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/title'))  #=> true
     dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=> true
 
-#### repository_name
-
-Provides this class with a default repository to use instead of the `:default`
-repository if one is not set.
-
-    class Song < Spira::Base
-      configure :repository_name => :songs
-    end
-
-See 'Defining Repositories' for more information.
-
 ### Property Options
 
 Spira classes can have properties that are either singular or a list.  For a
@@ -369,36 +357,42 @@ turn an RDF::Value into a ruby object, and vice versa.
 
 ## Defining Repositories
 
-You can define multiple repositories with Spira, and use more than one at a time:
+You can work on any kind of RDF::Repository with Spira:
 
     require 'rdf/ntriples'
     require 'rdf/sesame'
-    Spira.add_repository! :cds,    RDF::Sesame::Repository.new 'some_server'
-    Spira.add_repository! :albums, RDF::Repository.load('some_file.nt')
 
-    class CD < Spira::Base
-      configure :repository_name => :cds
-    end
     class Album < Spira::Base
-      configure :repository_name => :albums
     end
 
-Objects can reference each other cross-repository.
+    Spira.repository = RDF::Sesame::Repository.new 'some_server'
+    ...
 
-If no repository has been specified, the `:default` repository will be used.
+    Spira.repository = RDF::Repository.load('some_file.nt')
+    ...
 
-    repo = RDF::Repository.new
-    Spira.add_repository! :default, repo
-    Artist.repository == repo #=> true
-
-Classes can specify a default repository to use other than `:default` with the
-`repository_name` function:
-
-    class Song < Spira::Base
-      configure :repository_name => :songs
+    Spira.using_repository(RDF::Repository.load('some_file.nt')) do
+       ...
     end
 
-    Song.repository #=> nil, won't use :default
+Spira.repository is thread-safe, which means that each thread stores its own instance.
+It allows you to work on multiple repositories at the same time:
+
+    threads = []
+    repositories = [RDF::Repository.new, RDF::Repository.new, RDF::Repository.new]
+
+    repositories.each do |repository|
+      threads << Thread.new(repository) do |repository|
+        Spira.repository = repository
+
+        album = Album.for("http://theperson.com/album/random_name")
+        album.year = 1950 + (rand*100).to_i
+        album.save!
+      end
+    end
+
+    threads.map(&:join)
+    repositories.map(&:size).join(', ') # 1, 1, 1
 
 ## Validations
 
