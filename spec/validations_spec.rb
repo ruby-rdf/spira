@@ -17,7 +17,7 @@ describe 'A Spira resource' do
       end
     end
 
-    Spira.add_repository(:default, RDF::Repository.new)
+    Spira.repository = RDF::Repository.new
   end
 
   context "when validating" do

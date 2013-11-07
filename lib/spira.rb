@@ -35,85 +35,51 @@ module Spira
   module_function :types
 
   ##
-  # Add a repository to Spira's list of repositories.
+  # The RDF::Repository used (reader)
   #
-  # @overload add_repository(name, repo)
-  #   @param [Symbol] name The name of this repository
-  #   @param [RDF::Repository] repo
-  #
-  # @overload add_repository(name, klass, *args)
-  #   @param [Symbol] name The name of this repository
-  #   @param [Class] klass
-  #     A Class that inherits from `RDF::Repository`
-  #   @param [Array] args
-  #     The list of arguments to instantiate the class
-  #
-  # @example Adding an ntriples file as a repository
-  #     Spira.add_repository(:default, RDF::Repository.load('http://datagraph.org/jhacker/foaf.nt'))
-  # @example Adding an empty repository to be instantiated on use
-  #     Spira.add_repository(:default, RDF::Repository)
-  # @return [Void]
-  def add_repository(name, klass, *args)
-    repositories[name] =
-      case klass
-      when Class
-        promise { klass.new(*args) }
-      else
-        klass
-      end
-    if (name == :default) && repository(name).nil?
-      warn "WARNING: Adding nil default repository"
-    end
-  end
-  alias_method :add_repository!, :add_repository
-  module_function :add_repository, :add_repository!
-
-  ##
-  # The RDF::Repository for the named repository
-  #
-  # @param [Symbol] name The name of the repository
   # @return [RDF::Repository]
   # @see RDF::Repository
-  def repository(name)
-    repositories[name]
+  def repository
+    Thread.current[:repository]
   end
   module_function :repository
 
   ##
-  # Clear all repositories from Spira's knowledge.  Use it if you want, but
+  # The RDF::Repository used (reader)
+  #
+  # @return [RDF::Repository]
+  # @see RDF::Repository
+  def repository=(repository)
+    Thread.current[:repository] = repository
+  end
+  module_function :repository=
+
+  ##
+  # Clear the repository from Spira's knowledge.  Use it if you want, but
   # it's really here for testing.
   #
   # @return [Void]
   # @private
-  def clear_repositories!
-    Thread.current[:spira_repositories] = {}
+  def clear_repository!
+    Spira.repository = nil
   end
-  module_function :clear_repositories!
+  module_function :clear_repository!
 
   # Execute a block on a specific repository
   #
   # @param [RDF::Repository] repository the repository to work on
   # @param [Symbol] name the repository name
   # @yield the block with the instructions while using the repository
-  def using_repository(repository, name=:default)
-    old_repository = repositories[name]
-    add_repository(name, repository)
+  def using_repository(repo)
+    old_repository = Spira.repository
+    Spira.repository = repo
     yield if block_given?
-    repositories[name] = old_repository
+  ensure
+    Spira.repository = old_repository
   end
   module_function :using_repository
 
   private
-
-  ##
-  # The list of repositories available for Spira resources
-  #
-  # @see http://rdf.rubyforge.org/RDF/Repository.html
-  # @return [Hash{Symbol => RDF::Repository}]
-  def repositories
-    Thread.current[:spira_repositories] ||= {}
-  end
-  module_function :repositories
 
   ##
   # Alias a property type to another.  This allows a range of options to be

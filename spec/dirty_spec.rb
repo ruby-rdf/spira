@@ -17,7 +17,7 @@ describe Spira do
     @repo << RDF::Statement.new(@uri, RDF::FOAF.age, 15)
     @repo << RDF::Statement.new(@uri, RDF::RDFS.seeAlso, "A Literal")
     @repo << RDF::Statement.new(@uri, RDF::RDFS.seeAlso, "Another Literal")
-    Spira.add_repository!(:default, @repo)
+    Spira.repository = @repo
   end
 
   context "when tracking dirty attributes" do

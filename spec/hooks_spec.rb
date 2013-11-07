@@ -13,7 +13,7 @@ describe 'Spira resources' do
   before :each do
     @repository = RDF::Repository.new
     @repository << RDF::Statement.new(@subject, RDF::FOAF.name, "A name")
-    Spira.add_repository(:default, @repository)
+    Spira.repository = @repository
   end
 
   context "with a before_create method" do

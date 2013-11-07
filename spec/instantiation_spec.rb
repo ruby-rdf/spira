@@ -13,8 +13,8 @@ describe Spira do
     context "when instantiating from a URI" do
       before :each do
         @uri = RDF::URI('http://example.org/example')
-        Spira.add_repository(:default, RDF::Repository.new)
-        @repo = Spira.repository(:default)
+        Spira.repository = RDF::Repository.new
+        @repo = Spira.repository
       end
 
       it "should add the 'as' method to RDF::URI" do
@@ -66,8 +66,8 @@ describe Spira do
     context "when instantiating from a BNode" do
       before :each do
         @node = RDF::Node.new
-        Spira.add_repository(:default, RDF::Repository.new)
-        @repo = Spira.repository(:default)
+        Spira.repository = RDF::Repository.new
+        @repo = Spira.repository
       end
 
       it "should add the 'as' method to RDF::" do
@@ -94,8 +94,8 @@ describe Spira do
 
     context "when creating without an identifier" do
       before :each do
-        Spira.add_repository(:default, RDF::Repository.new)
-        @repo = Spira.repository(:default)
+        Spira.repository = RDF::Repository.new
+        @repo = Spira.repository
       end
 
       it "should create an instance with a new Node identifier" do
