@@ -15,24 +15,26 @@ A changelog is available in the {file:CHANGES.md} file.
 
 ### Example
 
-    class Person < Spira::Base
+```ruby
+class Person < Spira::Base
 
-      configure :base_uri => "http://example.org/example/people"
-    
-      property :name, :predicate => FOAF.name, :type => String
-      property :age,  :predicate => FOAF.age,  :type => Integer
+  configure :base_uri => "http://example.org/example/people"
 
-    end
+  property :name, :predicate => FOAF.name, :type => String
+  property :age,  :predicate => FOAF.age,  :type => Integer
 
-    bob = RDF::URI("http://example.org/people/bob").as(Person)
-    bob.age  = 15
-    bob.name = "Bob Smith"
-    bob.save!
+end
 
-    bob.each_statement {|s| puts s}
-    #=> RDF::Statement:0x80abb80c(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .)
-    #=> RDF::Statement:0x80abb8fc(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .)
-   
+bob = RDF::URI("http://example.org/people/bob").as(Person)
+bob.age  = 15
+bob.name = "Bob Smith"
+bob.save!
+
+bob.each_statement {|s| puts s}
+#=> RDF::Statement:0x80abb80c(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .)
+#=> RDF::Statement:0x80abb8fc(<http://example.org/example/people/bob> <http://xmlns.com/foaf/0.1/age> "15"^^<http://www.w3.org/2001/XMLSchema#integer> .)
+```
+
 ### Features
 
  * Extensible validations system
@@ -100,35 +102,39 @@ To use Spira, define model classes for your RDF data.  Spira classes include
 RDF, and thus have access to all `RDF::Vocabulary` classes and `RDF::URI`
 without the `RDF::` prefix.  For example:
 
-    require 'spira'
+```ruby
+require 'spira'
     
-    class CD < Spira::Base
-      configure :base_uri => 'http://example.org/cds'
-      property :name,   :predicate => DC.title,   :type => XSD.string
-      property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
-    end
-    
-    class Artist < Spira::Base
-      configure :base_uri => 'http://example.org/artists'
-      property :name, :predicate => DC.title, :type => XSD.string
-      has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
-    end
+class CD < Spira::Base
+  configure :base_uri => 'http://example.org/cds'
+  property :name,   :predicate => DC.title,   :type => XSD.string
+  property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
+end
+
+class Artist < Spira::Base
+  configure :base_uri => 'http://example.org/artists'
+  property :name, :predicate => DC.title, :type => XSD.string
+  has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
+end
+```
 
 Then use your model classes, in a way more or less similar to any number of ORMs:
 
-    cd = CD.for("queens-greatest-hits")
-    cd.name = "Queen's greatest hits"
-    artist = Artist.for("queen")
-    artist.name = "Queen"
-    
-    cd.artist = artist
-    cd.save!
-    artist.cds = [cd]
-    artist.save!
+```ruby
+cd = CD.for("queens-greatest-hits")
+cd.name = "Queen's greatest hits"
+artist = Artist.for("queen")
+artist.name = "Queen"
 
-    queen = Artist.for('queen')
-    hits = CD.for 'queens-greatest-hits'
-    hits.artist == artist == queen
+cd.artist = artist
+cd.save!
+artist.cds = [cd]
+artist.save!
+
+queen = Artist.for('queen')
+hits = CD.for 'queens-greatest-hits'
+hits.artist == artist == queen
+```
 
 ### URIs and Blank Nodes
 
@@ -137,17 +143,23 @@ Spira instances have a subject, which is either a URI or a blank node.
 A class with a base URI can instantiate with a string (or anything, via to_s),
 and it will have a URI representation:
 
-    Artist.for('queen')
+```ruby
+Artist.for('queen')
+```
 
 However, a class is not required to have a base URI, and even if it does, it
 can always access classes with a full URI:
 
-    nk = Artist.for(RDF::URI.new('http://example.org/my-hidden-cds/new-kids'))
+```ruby
+nk = Artist.for(RDF::URI.new('http://example.org/my-hidden-cds/new-kids'))
+```
 
 If you have a URI that you would like to look at as a Spira resource, you can instantiate it from the URI:
 
-    RDF::URI.new('http://example.org/my-hidden-cds/new-kids').as(Artist)
-    # => <Artist @subject=http://example.org/my-hidden-cds/new-kids>
+```ruby
+RDF::URI.new('http://example.org/my-hidden-cds/new-kids').as(Artist)
+# => <Artist @subject=http://example.org/my-hidden-cds/new-kids>
+```
 
 Any call to 'for' with a valid identifier will always return an object with nil
 fields.  It's a way of looking at a given resource, not a closed-world mapping
@@ -155,16 +167,20 @@ to one.
 
 You can also use blank nodes more or less as you would a URI:
 
-    remix_artist = Artist.for(RDF::Node.new)
-    # => <Artist @subject=#<RDF::Node:0xd1d314(_:g13751060)>>
-    RDF::Node.new.as(Artist)
-    # => <Artist @subject=#<RDF::Node:0xd1d314(_:g13751040)>>
+```ruby
+remix_artist = Artist.for(RDF::Node.new)
+# => <Artist @subject=#<RDF::Node:0xd1d314(_:g13751060)>>
+RDF::Node.new.as(Artist)
+# => <Artist @subject=#<RDF::Node:0xd1d314(_:g13751040)>>
+```
 
 Finally, you can create an instance of a Spira projection with #new, and you'll
 get an instance with a shiny new blank node subject:
 
-    formerly_known_as_prince = Artist.new
-    # => <Artist @subject=#<RDF::Node:0xd1d314(_:g13747140)>>
+```ruby
+formerly_known_as_prince = Artist.new
+# => <Artist @subject=#<RDF::Node:0xd1d314(_:g13747140)>>
+```
 
 ### Class Options
 
@@ -176,38 +192,48 @@ A class with a `base_uri` set (either an `RDF::URI` or a `String`) will
 use that URI as a base URI for non-absolute `for` calls.
 
 Example
-    CD.for 'queens-greatest-hits' # is the same as...
-    CD.for RDF::URI.new('http://example.org/cds/queens-greatest-hits')
+```ruby
+CD.for 'queens-greatest-hits' # is the same as...
+CD.for RDF::URI.new('http://example.org/cds/queens-greatest-hits')
+```
 
 #### type
 
 A class with a `type` set is assigned an `RDF.type` on creation and saving.
 
-    class Album < Spira::Base
-      type URI.new('http://example.org/types/album')
-      property :name,   :predicate => DC.title
-    end
+```ruby
+class Album < Spira::Base
+  type URI.new('http://example.org/types/album')
+  property :name,   :predicate => DC.title
+end
 
-    rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
-    # See RDF.rb at http://rdf.rubyforge.org/RDF/Enumerable.html for more information about #has_predicate?
-    rolling_stones.has_predicate?(RDF.type) #=> true
-    Album.type #=> RDF::URI('http://example.org/types/album')
+rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
+# See RDF.rb at http://rdf.rubyforge.org/RDF/Enumerable.html for more information about #has_predicate?
+rolling_stones.has_predicate?(RDF.type) #=> true
+Album.type #=> RDF::URI('http://example.org/types/album')
+`
 
 In addition, one can count the members of a class with a `type` defined:
 
-    Album.count  #=> 1 
+```ruby
+Album.count  #=> 1 
+```
 
 
 It is possible to assign multiple types to a Spira class:
 
-    class Man < Spira::Base
-      type RDF::URI.new('http://example.org/people/father')
-      type RDF::URI.new('http://example.org/people/cop')
-    end
+```ruby
+class Man < Spira::Base
+  type RDF::URI.new('http://example.org/people/father')
+  type RDF::URI.new('http://example.org/people/cop')
+end
+```
 
 All assigned types are accessible via "types":
 
-    Man.types #=> #<Set: {#<RDF::URI:0xd5ebc0(http://example.org/people/father)>, #<RDF::URI:0xd5e4b8(http://example.org/people/cop)>}>
+```ruby
+Man.types #=> #<Set: {#<RDF::URI:0xd5ebc0(http://example.org/people/father)>, #<RDF::URI:0xd5e4b8(http://example.org/people/cop)>}>
+```
 
 Also note that "type" actually returns a first type from the list of types.
 
@@ -224,19 +250,21 @@ A class declares list members with the `has_many` function.  See `Property Optio
 
 A class with a `default_vocabulary` set will transparently create predicates for defined properties:
 
-    class Song < Spira::Base
-      configure :default_vocabulary => URI.new('http://example.org/vocab'),
-                :base_uri => 'http://example.org/songs'
-      property :title
-      property :author, :type => :artist
-    end
+```ruby
+class Song < Spira::Base
+  configure :default_vocabulary => URI.new('http://example.org/vocab'),
+            :base_uri => 'http://example.org/songs'
+  property :title
+  property :author, :type => :artist
+end
 
-    dancing_queen = Song.for 'dancing-queen'
-    dancing_queen.title = "Dancing Queen"
-    dancing_queen.artist = abba
-    # See RDF::Enumerable for #has_predicate?
-    dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/title'))  #=> true
-    dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=> true
+dancing_queen = Song.for 'dancing-queen'
+dancing_queen.title = "Dancing Queen"
+dancing_queen.artist = abba
+# See RDF::Enumerable for #has_predicate?
+dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/title'))  #=> true
+dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=> true
+```
 
 ### Property Options
 
@@ -263,21 +291,23 @@ Property always takes a symbol name as a name, and a variable list of options.  
 A localized property allows to define a value per language. It only works with
 properties having a single item, ie defined with `property`.
 
-    class Article < Spira::Base
-      property :label, :localized => true
-    end
+```ruby
+class Article < Spira::Base
+  property :label, :localized => true
+end
 
-    # default locale :en
-    random_article = Article.for 'random-article'
-    random_article.label = "A label in english"
-    i18n.locale = :fr
-    random_article.label = "Un libellé en français"
+# default locale :en
+random_article = Article.for 'random-article'
+random_article.label = "A label in english"
+i18n.locale = :fr
+random_article.label = "Un libellé en français"
 
-    random_article.label_native
-    # #=> [#<RDF::Literal:0xdb47c8("A label in english"@en)>, #<RDF::Literal:0xe5c3d8("Un libellé en français"@fr)>]
+random_article.label_native
+# #=> [#<RDF::Literal:0xdb47c8("A label in english"@en)>, #<RDF::Literal:0xe5c3d8("Un libellé en français"@fr)>]
 
-    random_article.label_with_locales
-    # #=> {:en=>"A label in english", :fr=>"Un libellé en français"}
+random_article.label_with_locales
+# #=> {:en=>"A label in english", :fr=>"Un libellé en français"}
+```
 
 ### Types
 
@@ -298,29 +328,33 @@ A type class includes Spira::Type, and can implement serialization and
 deserialization functions, and register aliases to themselves if their datatype
 is usually expressed as a URI.  Here is the built-in Spira Integer class:
 
-    module Spira::Types
-      class Integer
-    
-        include Spira::Type
-    
-        def self.unserialize(value)
-          value.object
-        end
-    
-        def self.serialize(value)
-          RDF::Literal.new(value)
-        end
-    
-        register_alias RDF::XSD.integer
-      end
+```ruby
+module Spira::Types
+  class Integer
+
+    include Spira::Type
+
+    def self.unserialize(value)
+      value.object
     end
+
+    def self.serialize(value)
+      RDF::Literal.new(value)
+    end
+
+    register_alias RDF::XSD.integer
+  end
+end
+```
 
 Classes can now use this particular type like so:
 
-    class Test < Spira::Base
-      property :test1, :type => Integer
-      property :test2, :type => RDF::XSD.integer
-    end
+```ruby
+class Test < Spira::Base
+  property :test1, :type => Integer
+  property :test2, :type => RDF::XSD.integer
+end
+```
 
 Spira classes include the Spira::Types namespace, where several default types
 are implemented:
@@ -338,61 +372,67 @@ The default type for a Spira property is `Spira::Types::Any`, which uses
 You can implement your own types as well.  Your class' serialize method should
 turn an RDF::Value into a ruby object, and vice versa.
 
-    module MyModule
-      class MyType
-        include Spira::Type
-        def self.serialize(value)
-          ...
-        end
-
-        def self.unserialize(value)
-          ...
-        end
-      end
+```ruby
+module MyModule
+  class MyType
+    include Spira::Type
+    def self.serialize(value)
+      ...
     end
 
-    class MyClass < Spira::Base
-      property :property1, :type => MyModule::MyType
+    def self.unserialize(value)
+      ...
     end
+  end
+end
+
+class MyClass < Spira::Base
+  property :property1, :type => MyModule::MyType
+end
+```
 
 ## Defining Repositories
 
 You can work on any kind of RDF::Repository with Spira:
 
-    require 'rdf/ntriples'
-    require 'rdf/sesame'
+```ruby
+require 'rdf/ntriples'
+require 'rdf/sesame'
 
-    class Album < Spira::Base
-    end
+class Album < Spira::Base
+end
 
-    Spira.repository = RDF::Sesame::Repository.new 'some_server'
-    ...
+Spira.repository = RDF::Sesame::Repository.new 'some_server'
+...
 
-    Spira.repository = RDF::Repository.load('some_file.nt')
-    ...
+Spira.repository = RDF::Repository.load('some_file.nt')
+...
 
-    Spira.using_repository(RDF::Repository.load('some_file.nt')) do
-       ...
-    end
+Spira.using_repository(RDF::Repository.load('some_file.nt')) do
+   ...
+end
+```
 
 Spira.repository is thread-safe, which means that each thread stores its own instance.
 It allows you to work on multiple repositories at the same time:
 
-    threads = []
-    repositories = [RDF::Repository.new, RDF::Repository.new, RDF::Repository.new]
+```ruby
+threads = []
+repositories = [RDF::Repository.new, RDF::Repository.new, RDF::Repository.new]
 
-    repositories.each do |repository|
-      threads << Thread.new(repository) do |repository|
-        Spira.repository = repository
+repositories.each do |repository|
+  threads << Thread.new(repository) do |repository|
+    Spira.repository = repository
 
-        album = Album.for("http://theperson.com/album/random_name")
-        album.year = 1950 + (rand*100).to_i
-        album.save!
-      end
-    end
+    album = Album.for("http://theperson.com/album/random_name")
+    album.year = 1950 + (rand*100).to_i
+    album.save!
+  end
+end
 
-    threads.map(&:join)
-    repositories.map(&:size).join(', ') # 1, 1, 1
+threads.map(&:join)
+repositories.map(&:size).join(', ') # 1, 1, 1
+```
 
 ## Validations
 
