@@ -34,7 +34,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'bundler',       '~> 1.0'
   gem.add_development_dependency 'rdf-spec',       '~> 1.0'
-  gem.add_development_dependency 'rspec',          '~> 2.12.0'
+  gem.add_development_dependency 'rspec',          '~> 2.14.0'
   gem.add_development_dependency 'yard' ,          '~> 0.8.3'
   gem.add_development_dependency 'redcarpet' ,     '~> 2.2.2' unless RUBY_ENGINE == 'jruby'
   gem.add_development_dependency 'guard',          '~> 1.2.3'

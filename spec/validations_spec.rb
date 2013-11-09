@@ -176,7 +176,7 @@ describe 'A Spira resource' do
 
       it "saves when the field is not nil" do
         @v2.title = 'xyz'
-        lambda { @v2.save! }.should_not raise_error Spira::RecordInvalid
+        lambda { @v2.save! }.should_not raise_error
       end
     end
 

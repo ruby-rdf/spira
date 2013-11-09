@@ -1,3 +1,4 @@
+require "bundler/setup"
 require 'spira'
 require 'rdf/spec/enumerable'
 require 'rdf/spec'
