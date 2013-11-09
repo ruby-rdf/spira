@@ -176,7 +176,7 @@ describe "Spira resources" do
     it "should make a valid statement referencing the assigned objects URI" do
       @kurt = Artist.for('kurt cobain')
       @cd.artist = @kurt
-      statement = @cd.query(:predicate => CDs.artist) do |statement|
+      @cd.query(:predicate => CDs.artist) do |statement|
         statement.subject.should == @cd.uri
         statement.predicate.should == CDs.artist
         statement.object.should == @kurt.uri
