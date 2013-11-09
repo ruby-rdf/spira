@@ -12,11 +12,6 @@ require "spira/utils"
 # @see http://github.com/bhuga/spira
 # @see Spira::Resource
 
-module RDF
-  class Repository
-  end
-end
-
 module Spira
 
   autoload :Base,             'spira/base'

@@ -25,7 +25,7 @@ describe 'types for properties' do
             end
           end
           t.join
-        }.should_not raise_error TypeError
+        }.should_not raise_error
       end
     end
 
@@ -48,7 +48,7 @@ describe 'types for properties' do
 
           property :test, :type => :non_existent_type
         end
-      }.should_not raise_error TypeError
+      }.should_not raise_error
     end
 
     it "should not raise an error to use an included XSD type aliased to a Spira type" do
@@ -59,7 +59,7 @@ describe 'types for properties' do
 
           property :test, :type => XSD.string
         end
-      }.should_not raise_error TypeError
+      }.should_not raise_error
     end
 
     it "should not raise an error to use an included Spira type" do
@@ -70,7 +70,7 @@ describe 'types for properties' do
 
           property :test, :type => String
         end
-      }.should_not raise_error TypeError
+      }.should_not raise_error
     end
 
   end
