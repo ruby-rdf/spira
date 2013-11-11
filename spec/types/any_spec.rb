@@ -28,15 +28,19 @@ describe Spira::Types::Any do
   end
 
   context "when unserializing" do
-    it "should unserialize to ruby types" do
-      value = Spira::Types::Any.unserialize(RDF::Literal.new(5, :datatype => RDF::XSD.integer))
-      value.should == 5
-      value = Spira::Types::Any.unserialize(RDF::Literal.new("a string"))
-      value.should == "a string"
+    specify "datatyped literal" do
+      expect(Spira::Types::Any.unserialize(RDF::Literal(5))).to eq 5
+    end
+    specify "plain literal" do
+      expect(Spira::Types::Any.unserialize(RDF::Literal("a string"))).to eq "a string"
     end
 
-    it "should unserialize URIs to URIs" do
-      Spira::Types::Any.unserialize(@uri).should == @uri
+    specify "URI" do
+      expect(Spira::Types::Any.unserialize(@uri)).to include(
+        :scheme=>"http",
+        :authority=>"example.org",
+        :host=>"example.org"
+      )
     end
   end
 

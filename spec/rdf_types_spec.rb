@@ -192,7 +192,7 @@ describe 'models with a defined rdf type' do
     end
 
     it "should return an enumerator if no block is given" do
-      Van.each.should be_a RDF::Enumerator
+      Van.each.should be_a Enumerator
     end
 
     it "should execute a block if one is given" do

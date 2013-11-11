@@ -32,8 +32,8 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version      = '>= 1.9.2'
   gem.requirements               = []
 
-  gem.add_development_dependency 'bundler',       '~> 1.0'
-  gem.add_development_dependency 'rdf-spec',       '~> 1.0'
+  gem.add_development_dependency 'bundler',        '~> 1.0'
+  gem.add_development_dependency 'rdf-spec',       '~> 1.1'
   gem.add_development_dependency 'rspec',          '~> 2.14.0'
   gem.add_development_dependency 'yard' ,          '~> 0.8.3'
   gem.add_development_dependency 'redcarpet' ,     '~> 2.2.2' unless RUBY_ENGINE == 'jruby'
@@ -41,7 +41,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'guard-rspec',    '~> 1.1.0'
   gem.add_development_dependency 'guard-ctags-bundler', '~> 0.1.1'
 
-  gem.add_runtime_dependency     'rdf',            '~> 1.0'
+  gem.add_runtime_dependency     'rdf',            '~> 1.1'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 1.0'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
   gem.add_runtime_dependency     'activemodel',    '~> 3'
