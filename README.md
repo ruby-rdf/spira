@@ -2,6 +2,10 @@
 
 It's time to breathe life into your linked data.
 
+## Need Help? Use our Google Group
+
+If you have any question on how to use Spira, please use the [Google Group ruby-rdf](https://groups.google.com/forum/#!forum/ruby-rdf).
+
 ## Synopsis
 Spira is a framework for using the information in [RDF.rb][] repositories as model
 objects.  It gives you the ability to work in a resource-oriented way without
