@@ -19,7 +19,7 @@ describe Spira::Base do
       configure :base_uri => "http://example.org/example/people"
 
       property :name, :predicate => RDFS.label
-      has_many :friends, :predicate => FOAF.person, :type => :EnumerableWithAssociationsSpec
+      has_many :friends, :predicate => FOAF.knows, :type => :EnumerableWithAssociationsSpec
     end
   end
 

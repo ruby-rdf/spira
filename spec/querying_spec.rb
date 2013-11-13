@@ -4,12 +4,12 @@ describe Spira do
 
   before :all do
     class ::LoadTest < Spira::Base
-      type FOAF.load_type
+      type FOAF.Document
       configure :base_uri => "http://example.com/loads"
 
       property :name,  :predicate => FOAF.name
       property :label, :predicate => RDFS.label
-      property :child, :predicate => FOAF.load_test, :type => 'LoadTest'
+      property :child, :predicate => FOAF.currentProject, :type => 'LoadTest'
     end
   end
 
@@ -141,7 +141,7 @@ describe Spira do
         @parent_statements = []
         @child_statements = []
 
-        st = RDF::Statement.new(:subject => @uri, :predicate => RDF::FOAF.load_test, :object => @child_uri)
+        st = RDF::Statement.new(:subject => @uri, :predicate => RDF::FOAF.currentProject, :object => @child_uri)
         # @uri and @child_uri now point at each other
         @repo << st
         @parent_statements << st
@@ -151,17 +151,17 @@ describe Spira do
         st = RDF::Statement.new(:subject => @uri, :predicate => RDF::RDFS.label, :object => RDF::Literal.new("a name"))
         @repo << st
         @parent_statements << st
-        st = RDF::Statement.new(:subject => @uri, :predicate => RDF.type, :object => RDF::FOAF.load_type)
+        st = RDF::Statement.new(:subject => @uri, :predicate => RDF.type, :object => RDF::FOAF.Document)
         @repo << st
         @parent_statements << st
 
-        st = RDF::Statement.new(:subject => @child_uri, :predicate => RDF::FOAF.load_test, :object => @uri)
+        st = RDF::Statement.new(:subject => @child_uri, :predicate => RDF::FOAF.currentProject, :object => @uri)
         @repo << st
         @child_statements << st
-        st = RDF::Statement.new(:subject => @child_uri, :predicate => RDF::FOAF.load_test, :object => @uri)
+        st = RDF::Statement.new(:subject => @child_uri, :predicate => RDF::FOAF.currentProject, :object => @uri)
         @repo << st
         @child_statements << st
-        st = RDF::Statement.new(:subject => @child_uri, :predicate => RDF.type, :object => RDF::FOAF.load_type)
+        st = RDF::Statement.new(:subject => @child_uri, :predicate => RDF.type, :object => RDF::FOAF.Document)
         @repo << st
         @child_statements << st
         # We need this copy to return from mocks, as the return value is itself queried inside spira, confusing the count
@@ -228,8 +228,8 @@ describe Spira do
         @repo.should_receive(:query).with(:subject => @uri, :predicate => RDF::FOAF.name).twice.and_return(parent_name_statements)
         @repo.should_receive(:query).with(:subject => @child_uri, :predicate => RDF::FOAF.name).twice.and_return(child_name_statements)
         @types = RDF::Repository.new
-        @types.insert *@repo.statements.select{|s| s.predicate == RDF.type && s.object == RDF::FOAF.load_type}
-        @repo.should_receive(:query).with(:predicate => RDF.type, :object => RDF::FOAF.load_type).twice.and_return(@types.statements)
+        @types.insert *@repo.statements.select{|s| s.predicate == RDF.type && s.object == RDF::FOAF.Document}
+        @repo.should_receive(:query).with(:predicate => RDF.type, :object => RDF::FOAF.Document).twice.and_return(@types.statements)
 
         # need to map to touch a property on each to make sure they actually
         # get loaded due to lazy evaluation
