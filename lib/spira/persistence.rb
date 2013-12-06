@@ -224,11 +224,6 @@ module Spira
         when identifier.respond_to?(:to_uri) && !identifier.is_a?(RDF::URI)
           id_for(identifier.to_uri)
           # see comment with #to_uri above, this might be a fragment
-        when identifier.is_a?(Addressable::URI)
-          id_for(RDF::URI.intern(identifier))
-          # This is a #to_s or a URI fragment with a base uri.  We'll treat them the same.
-          # FIXME: when #/ makes it into RDF.rb proper, this can all be wrapped
-          # into the one case statement above.
         else
           uri = identifier.is_a?(RDF::URI) ? identifier : RDF::URI.intern(identifier.to_s)
           case

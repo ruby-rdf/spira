@@ -7,14 +7,14 @@ describe Spira do
     before :all do
       class ::InheritanceItem < Spira::Base
         property :title, :predicate => DC.title, :type => String
-        has_many :subtitle, :predicate => DC.xtitle, :type => String
-        type  SIOC.item
+        has_many :subtitle, :predicate => DC.description, :type => String
+        type  SIOC.Item
       end
 
       class ::InheritancePost < ::InheritanceItem
-        type  SIOC.post
-        property :author, :predicate => DC.author
-        property :subtitle, :predicate => DC.xtitle, :type => String
+        type  SIOC.Post
+        property :creator, :predicate => DC.creator
+        property :subtitle, :predicate => DC.description, :type => String
       end
 
       class ::InheritedType < ::InheritanceItem
@@ -24,12 +24,12 @@ describe Spira do
       end
 
       class ::InheritanceContainer < Spira::Base
-        type SIOC.container
+        type SIOC.Container
         has_many :items, :type => 'InheritanceItem', :predicate => SIOC.container_of
       end
 
       class ::InheritanceForum < ::InheritanceContainer
-        type SIOC.forum
+        type SIOC.Forum
         #property :moderator, :predicate => SIOC.has_moderator
       end
     end
@@ -83,9 +83,9 @@ describe Spira do
       end
 
       it "should add properties of child classes" do
-        @post.should respond_to :author
-        @post.should respond_to :author=
-        InheritancePost.properties.should have_key :author
+        @post.should respond_to :creator
+        @post.should respond_to :creator=
+        InheritancePost.properties.should have_key :creator
       end
 
       it "should allow setting a property" do
@@ -94,19 +94,19 @@ describe Spira do
       end
 
       it "should inherit an RDFS type if one is not given" do
-        InheritedType.type.should == RDF::SIOC.item
+        InheritedType.type.should == RDF::SIOC.Item
       end
 
       it "should overwrite the RDFS type if one is given" do
-        InheritancePost.type.should == RDF::SIOC.post
+        InheritancePost.type.should == RDF::SIOC.Post
       end
 
       it "should inherit an RDFS type from the most recent ancestor" do
-        InheritanceForumPost.type.should == RDF::SIOC.post
+        InheritanceForumPost.type.should == RDF::SIOC.Post
       end
 
       it "should not define methods on parents" do
-        @item.should_not respond_to :author
+        @item.should_not respond_to :creator
       end
 
       it "should not modify the properties of the base class" do
@@ -132,15 +132,15 @@ describe Spira do
         end
 
         it "should save the new type" do
-          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF.type, :object => RDF::SIOC.post).count.should == 1
+          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count.should == 1
         end
 
         it "should not save the supertype for a subclass which has specified one" do
-          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF.type, :object => RDF::SIOC.item).count.should == 0
+          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count.should == 0
         end
 
         it "should save the supertype for a subclass which has not specified one" do
-          InheritedType.repository.query(:subject => @type.uri, :predicate => RDF.type, :object => RDF::SIOC.item).count.should == 1
+          InheritedType.repository.query(:subject => @type.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count.should == 1
         end
       end
     end
@@ -149,20 +149,20 @@ describe Spira do
   describe "multitype classes" do
     before do
       class MultiTypeThing < Spira::Base
-        type  SIOC.item
-        type  SIOC.post
+        type  SIOC.Item
+        type  SIOC.Post
       end
 
       class InheritedMultiTypeThing < MultiTypeThing
       end
 
       class InheritedWithTypesMultiTypeThing < MultiTypeThing
-        type SIOC.container
+        type SIOC.Container
       end
     end
 
     it "should have multiple types" do
-      types = Set.new [RDF::SIOC.item, RDF::SIOC.post]
+      types = Set.new [RDF::SIOC.Item, RDF::SIOC.Post]
       MultiTypeThing.types.should eql types
     end
 
@@ -171,7 +171,7 @@ describe Spira do
     end
 
     it "should overwrite types" do
-      types = Set.new << RDF::SIOC.container
+      types = Set.new << RDF::SIOC.Container
       InheritedWithTypesMultiTypeThing.types.should eql types
     end
 
@@ -182,8 +182,8 @@ describe Spira do
       end
 
       it "should store multiple classes" do
-        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.item).count.should == 1
-        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.post).count.should == 1
+        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count.should == 1
+        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count.should == 1
       end
     end
   end

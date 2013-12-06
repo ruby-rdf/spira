@@ -2,6 +2,10 @@
 
 It's time to breathe life into your linked data.
 
+## Need Help? Use our Google Group
+
+If you have any question on how to use Spira, please use the [Google Group ruby-rdf](https://groups.google.com/forum/#!forum/ruby-rdf).
+
 ## Synopsis
 Spira is a framework for using the information in [RDF.rb][] repositories as model
 objects.  It gives you the ability to work in a resource-oriented way without
@@ -464,8 +468,19 @@ Spira is free and unemcumbered software released into the public
 domain.  For more information, see the included UNLICENSE file.
 
 ## Contributing
-Fork it on Github and go.  Please make sure you're kosher with the UNLICENSE
-file before contributing.
+This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange development and release activity. All submissions _must_ be on a feature branch based on the _develop_ branch to ease staging and integration.
+
+* Do your best to adhere to the existing coding conventions and idioms.
+* Don't use hard tabs, and don't leave trailing whitespace on any line.
+* Do document every method you add using [YARD][] annotations. Read the
+  [tutorial][YARD-GS] or just look at the existing code for examples.
+* Don't touch the `.gemspec`, `VERSION` or `AUTHORS` files. If you need to
+  change them, do so on your private branch only.
+* Do feel free to add yourself to the `CREDITS` file and the corresponding
+  list in the the `README`. Alphabetical order applies.
+* Do note that in order for us to merge any non-trivial changes (as a rule
+  of thumb, additions larger than about 15 lines of code), we need an
+  explicit [public domain dedication][PDD] on record from you.
 
 [public-rdf-ruby w3c mailing list]:         http://lists.w3.org/Archives/Public/public-rdf-ruby/
-[RDF.rb]:                                   http://rdf.rubyforge.org
+[RDF.rb]:          http://rubygems.org/gems/rdf

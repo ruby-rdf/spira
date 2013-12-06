@@ -47,7 +47,7 @@ describe "Spira resources" do
         test.save!
         
         test = subject.as(RootNSTest)
-        test.name.should be_a RootNSTest
+        expect(test.name).to be_a RootNSTest
       end
     end
 
@@ -71,7 +71,7 @@ describe "Spira resources" do
         test.save!
 
         test = NSTest::X.for(subject)
-        test.name.should be_a NSTest::Y
+        expect(test.name).to be_a NSTest::Y
       end
     end
 
@@ -96,7 +96,7 @@ describe "Spira resources" do
         test.save!
 
         test = NSTest::Z.for(subject)
-        test.name.should be_a NSTestA::A
+        expect(test.name).to be_a NSTestA::A
       end
     end
   end
@@ -122,7 +122,7 @@ describe "Spira resources" do
 
       context "when reloading" do
         it "should not cause an infinite loop" do
-          @artist.reload.should eql @artist
+          expect(@artist.reload).to eql @artist
         end
       end
     end
@@ -139,47 +139,47 @@ describe "Spira resources" do
     end
 
     it "should find a cd" do
-      @cd.should be_a CD
+      expect(@cd).to be_a CD
     end
 
     it "should find the artist" do
-      @artist.should be_a Artist
+      expect(@artist).to be_a Artist
     end
 
     it "should find an artist for a cd" do
-      @cd.artist.should be_a Artist
+      expect(@cd.artist).to be_a Artist
     end
 
     it "should find the correct artist for a cd" do
-      @cd.artist.uri.should == @artist.uri
+      expect(@cd.artist.uri).to eq @artist.uri
     end
 
     it "should find CDs for an artist" do
       cds = @artist.cds
-      cds.should be_a Array
-      cds.find { |cd| cd.name == 'Nevermind' }.should be_true
-      cds.find { |cd| cd.name == 'In Utero' }.should be_true
+      expect(cds).to be_a Array
+      expect(cds.find { |cd| cd.name == 'Nevermind' }).to be_true
+      expect(cds.find { |cd| cd.name == 'In Utero' }).to be_true
     end
 
     it "should not reload an object for a simple reverse relationship" do
       pending "no longer applies as the global cache is gone"
 
-      @artist.cds.first.artist.should equal @artist
+      expect(@artist.cds.first.artist).to equal @artist
       artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
-      @cd.should equal artist_cd
+      expect(@cd).to equal artist_cd
     end
 
     it "should find a model object for a uri" do
-      @cd.artist.should == @artist
+      expect(@cd.artist).to eq @artist
     end
 
     it "should make a valid statement referencing the assigned objects URI" do
       @kurt = Artist.for('kurt cobain')
       @cd.artist = @kurt
       @cd.query(:predicate => CDs.artist) do |statement|
-        statement.subject.should == @cd.uri
-        statement.predicate.should == CDs.artist
-        statement.object.should == @kurt.uri
+        expect(statement.subject).to eq @cd.uri
+        expect(statement.predicate).to eq CDs.artist
+        expect(statement.object).to eq @kurt.uri
       end
     end
 
@@ -205,15 +205,15 @@ describe "Spira resources" do
       end
 
       it "should raise a NameError when saving an object with the invalid property" do
-        lambda {
+        expect {
           RelationsTestA.for('invalid_a', :invalid => Object.new).save!
-        }.should raise_error NameError
+        }.to raise_error NameError
       end
 
       it "should raise a NameError when accessing the invalid property on an existing object" do
-        lambda {
+        expect {
           RelationsTestA.for('invalid_b').invalid
-        }.should raise_error NameError
+        }.to raise_error NameError
       end
 
     end
@@ -226,13 +226,13 @@ describe "Spira resources" do
       end
     
       it "should should raise a TypeError when saving an object with the invalid property" do
-        lambda { RelationsTestB.new(:invalid => Object.new).save! }.should raise_error TypeError
+        expect { RelationsTestB.new(:invalid => Object.new).save! }.to raise_error TypeError
       end
 
       it "should raise a TypeError when accessing the invalid property on an existing object" do
         subject = RDF::Node.new
         @invalid_repo.insert [subject, RDF::DC.title, 'something']
-        lambda { RelationsTestB.for(subject).invalid }.should raise_error TypeError
+        expect { RelationsTestB.for(subject).invalid }.to raise_error TypeError
       end
     end
   end
