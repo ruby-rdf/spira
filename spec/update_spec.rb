@@ -17,7 +17,7 @@ describe Spira do
     @update_repo = RDF::Repository.new
     @update_repo << RDF::Statement.new(@test_uri, RDF::RDFS.label, 'Test')
     @update_repo << RDF::Statement.new(@test_uri, RDF::FOAF.age, 15)
-    Spira.add_repository(:default, @update_repo)
+    Spira.repository = @update_repo
     @test = UpdateTest.for(@test_uri)
   end
 

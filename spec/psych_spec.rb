@@ -19,12 +19,12 @@ describe Spira, :ruby => "1.9" do
 
     require 'rdf/ntriples'
     @person_repository = RDF::Repository.load(fixture('bob.nt'))
-    Spira.add_repository(:default, @person_repository)
+    Spira.repository = @person_repository
   end
 
   before :each do
     @person_repository = RDF::Repository.load(fixture('bob.nt'))
-    Spira.add_repository(:default, @person_repository)
+    Spira.repository = @person_repository
 
     @person = PsychPerson.for(RDF::URI.new('http://example.org/newperson'))
   end

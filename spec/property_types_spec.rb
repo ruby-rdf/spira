@@ -82,7 +82,7 @@ describe 'types for properties' do
     before :all do
 
       @property_types_repo = RDF::Repository.new
-      Spira.add_repository(:default, @property_types_repo)
+      Spira.repository = @property_types_repo
 
       class ::TestType
         include Spira::Type

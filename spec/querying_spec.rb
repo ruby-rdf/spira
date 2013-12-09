@@ -17,7 +17,7 @@ describe Spira do
 
     before :each do
       @repo = RDF::Repository.new
-      Spira.add_repository(:default, @repo)
+      Spira.repository = @repo
       @uri = RDF::URI('http://example.org/example')
     end
 

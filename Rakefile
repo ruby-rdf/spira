@@ -2,6 +2,9 @@ require 'rubygems'
 require 'rspec'
 require 'rspec/core/rake_task'
 require 'bundler/gem_tasks'
+require 'yard'
+
+YARD::Rake::YardocTask.new
 
 desc 'Run specs'
 task 'spec' do
@@ -30,19 +33,12 @@ task 'coverage' do
   end
 end
 
-
-
 desc "Open an irb session with everything loaded, including test fixtures"
 task :console do
   sh "irb -rubygems -I lib -r spira -I spec/fixtures -r person -r event -r cds -r cars -r posts -I spec -r spec_helper -r loading"
 end
 
 task :default => [:spec]
-
-desc "Create yardocs according to .yardopts file"
-task :yardoc do
-  `yardoc`
-end
 
 desc "Add analytics tracking information to yardocs"
 task :addanalytics do

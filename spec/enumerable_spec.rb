@@ -6,7 +6,7 @@ describe Spira::Base do
 
   before :all do
     require 'rdf/ntriples'
-    Spira.add_repository(:default, ::RDF::Repository)
+    Spira.repository = ::RDF::Repository.new
 
     class ::EnumerableSpec < Spira::Base
       configure :base_uri => "http://example.org/example/people"

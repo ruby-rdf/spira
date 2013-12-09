@@ -11,8 +11,8 @@ describe 'Spira resources' do
   end
 
   before :each do
-    Spira.clear_repositories!
-    Spira.add_repository(:default, RDF::Repository.new)
+    Spira.clear_repository!
+    Spira.repository = RDF::Repository.new
   end
 
   context "when instatiated from URIs" do

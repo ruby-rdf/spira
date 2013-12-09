@@ -36,7 +36,7 @@ describe Spira do
 
     context "when redeclaring a property in a child" do
       before :each do
-        Spira.add_repository(:default, RDF::Repository.new)
+        Spira.repository = RDF::Repository.new
         @item = RDF::URI('http://example.org/item').as(InheritanceItem)
         @post = RDF::URI('http://example.org/post').as(InheritancePost)
       end
@@ -54,7 +54,7 @@ describe Spira do
 
     context "when passing properties to children" do
       before :each do
-        Spira.add_repository(:default, RDF::Repository.new)
+        Spira.repository = RDF::Repository.new
         @item = RDF::URI('http://example.org/item').as(InheritanceItem)
         @post = RDF::URI('http://example.org/post').as(InheritancePost)
         @type = RDF::URI('http://example.org/type').as(InheritedType)

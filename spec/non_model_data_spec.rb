@@ -15,7 +15,7 @@ describe 'Resources with data not associated with a model' do
 
   before :each do
     @extra_repo = RDF::Repository.load(@filename)
-    Spira.add_repository(:default, @extra_repo)
+    Spira.repository = @extra_repo
   end
 
   context "when multiple objects exist for a property" do

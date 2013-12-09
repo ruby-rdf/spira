@@ -39,7 +39,7 @@ describe 'models with a defined rdf type' do
 
   before :each do
     @types_repository = RDF::Repository.load(fixture('types.nt'))
-    Spira.add_repository(:default, @types_repository)
+    Spira.repository = @types_repository
   end
 
   context "when declaring types" do

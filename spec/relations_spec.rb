@@ -36,7 +36,7 @@ describe "Spira resources" do
         class ::RootNSTest < Spira::Base
           property :name, :predicate => DC.title, :type => 'RootNSTest'
         end
-        Spira.add_repository!(:default, RDF::Repository.new)
+        Spira.repository = RDF::Repository.new
       end
 
       it "should find a class based on the string version of the name" do
@@ -60,7 +60,7 @@ describe "Spira resources" do
           class Y < Spira::Base
           end
         end
-        Spira.add_repository!(:default, RDF::Repository.new)
+        Spira.repository = RDF::Repository.new
       end
 
       it "should find a class based on the string version of the name" do
@@ -103,7 +103,7 @@ describe "Spira resources" do
 
   context "with many-to-many relationship" do
     before :all do
-      Spira.add_repository!(:default, RDF::Repository.new)
+      Spira.repository = RDF::Repository.new
     end
 
     before do
@@ -133,7 +133,7 @@ describe "Spira resources" do
     before :each do
       require 'rdf/ntriples'
       @cds_repository = RDF::Repository.load(fixture('relations.nt'))
-      Spira.add_repository(:default, @cds_repository)
+      Spira.repository = @cds_repository
       @cd = CD.for 'nevermind'
       @artist = Artist.for 'nirvana'
     end
@@ -189,7 +189,7 @@ describe "Spira resources" do
 
     before :all do
       @invalid_repo = RDF::Repository.new
-      Spira.add_repository(:default, @invalid_repo)
+      Spira.repository = @invalid_repo
     end
 
     context "when accessing a field named for a non-existant class" do
