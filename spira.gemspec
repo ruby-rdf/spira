@@ -19,7 +19,7 @@ Gem::Specification.new do |gem|
   gem.email              = 'blavender@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
-  gem.files              = %w(CHANGES.md AUTHORS README.md UNLICENSE) + Dir.glob('lib/**/*.rb')
+  gem.files              = %w(CHANGES.md AUTHORS README.md UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
   gem.bindir             = %w(bin)
   gem.executables        = %w()
   gem.default_executable = gem.executables.first
@@ -42,7 +42,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'guard-ctags-bundler', '~> 0.1.1'
 
   gem.add_runtime_dependency     'rdf',            '~> 1.1'
-  gem.add_runtime_dependency     'rdf-isomorphic', '~> 1.0'
+  gem.add_runtime_dependency     'rdf-isomorphic', '~> 1.1'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
   gem.add_runtime_dependency     'activemodel',    '~> 3'
   gem.add_runtime_dependency     'activesupport',  '~> 3'

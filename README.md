@@ -29,6 +29,8 @@ class Person < Spira::Base
 
 end
 
+Spira.repository = RDF::Repository.new
+
 bob = RDF::URI("http://example.org/people/bob").as(Person)
 bob.age  = 15
 bob.name = "Bob Smith"
@@ -122,9 +124,11 @@ class Artist < Spira::Base
 end
 ```
 
-Then use your model classes, in a way more or less similar to any number of ORMs:
+Then define a Spira repository (see [Defining Repositories](#defining-repositories)) to use your model classes, in a way more or less similar to any number of ORMs:
 
 ```ruby
+Spira.repository = RDF::Repository.new
+
 cd = CD.for("queens-greatest-hits")
 cd.name = "Queen's greatest hits"
 artist = Artist.for("queen")
@@ -211,6 +215,8 @@ class Album < Spira::Base
   property :name,   :predicate => DC.title
 end
 
+Spira.repository = RDF::Repository.new
+
 rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
 # See RDF.rb at http://rdf.rubyforge.org/RDF/Enumerable.html for more information about #has_predicate?
 rolling_stones.has_predicate?(RDF.type) #=> true
@@ -262,6 +268,8 @@ class Song < Spira::Base
   property :author, :type => :artist
 end
 
+Spira.repository = RDF::Repository.new
+
 dancing_queen = Song.for 'dancing-queen'
 dancing_queen.title = "Dancing Queen"
 dancing_queen.artist = abba
@@ -299,6 +307,8 @@ properties having a single item, ie defined with `property`.
 class Article < Spira::Base
   property :label, :localized => true
 end
+
+Spira.repository = RDF::Repository.new
 
 # default locale :en
 random_article = Article.for 'random-article'
