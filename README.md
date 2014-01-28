@@ -1,4 +1,4 @@
-# Spira [![Build Status](https://travis-ci.org/ruby-rdf/spira.png?branch=master)](http://travis-ci.org/ruby-rdf/spira)
+# Spira [![Build Status](https://travis-ci.org/ruby-rdf/spira.png?branch=develop)](http://travis-ci.org/ruby-rdf/spira) [![Coverage Status](https://coveralls.io/repos/ruby-rdf/spira/badge.png?branch=develop)](https://coveralls.io/r/ruby-rdf/spira) [![Code Climate](https://codeclimate.com/github/ruby-rdf/spira.png)](https://codeclimate.com/github/ruby-rdf/spira) [![Dependency Status](https://gemnasium.com/ruby-rdf/spira.png)](https://gemnasium.com/ruby-rdf/spira)
 
 It's time to breathe life into your linked data.
 
