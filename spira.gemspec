@@ -32,31 +32,11 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version      = '>= 1.9.2'
   gem.requirements               = []
 
-  gem.add_development_dependency 'bundler',        '~> 1.0'
-  gem.add_development_dependency 'rdf-spec',       '~> 1.1'
-  gem.add_development_dependency 'rspec',          '~> 2.14.0'
-  gem.add_development_dependency 'yard' ,          '~> 0.8.3'
-  gem.add_development_dependency 'redcarpet' ,     '~> 2.2.2' unless RUBY_ENGINE == 'jruby'
-  gem.add_development_dependency 'guard',          '~> 1.2.3'
-  gem.add_development_dependency 'guard-rspec',    '~> 1.1.0'
-  gem.add_development_dependency 'guard-ctags-bundler', '~> 0.1.1'
-
   gem.add_runtime_dependency     'rdf',            '~> 1.1'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 1.1'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
   gem.add_runtime_dependency     'activemodel',    '> 3.0'
   gem.add_runtime_dependency     'activesupport',  '> 3.0'
-
-  # Rubinius has it's own dependencies
-  if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "2.1.0"
-    #gem.add_runtime_dependency     "rubysl-bigdecimal"
-    #gem.add_runtime_dependency     "rubysl-digest"
-    #gem.add_runtime_dependency     "rubysl-enumerator"
-    gem.add_runtime_dependency     "rubysl-yaml"
-    gem.add_runtime_dependency     "psych"
-    #gem.add_development_dependency "rubysl-open-uri"
-    gem.add_development_dependency "rubysl-prettyprint"
-  end
 
   gem.post_install_message       = nil
 end
