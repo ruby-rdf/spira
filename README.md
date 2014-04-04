@@ -221,7 +221,7 @@ rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-h
 # See RDF.rb at http://rdf.rubyforge.org/RDF/Enumerable.html for more information about #has_predicate?
 rolling_stones.has_predicate?(RDF.type) #=> true
 Album.type #=> RDF::URI('http://example.org/types/album')
-`
+```
 
 In addition, one can count the members of a class with a `type` defined:
 
@@ -286,8 +286,10 @@ use `property`.  The semantics are otherwise the same.  A `has_many` property
 will always return a list, including an empty list for no value.  All options
 for `property` work for `has_many`.
 
-    property :artist, :type => :artist    #=> cd.artist returns a single value
-    has_many :cds,    :type => :cd        #=> artist.cds returns an array
+```ruby
+property :artist, :type => :artist    #=> cd.artist returns a single value
+has_many :cds,    :type => :cd        #=> artist.cds returns an array
+```
 
 Property always takes a symbol name as a name, and a variable list of options.  The supported options are:
 
@@ -451,12 +453,12 @@ repositories.map(&:size).join(', ') # 1, 1, 1
 ## Validations
 
 [removed]
-See the description of ActiveModel::Validations.
+See the description of `ActiveModel::Validations`.
 
 ## Hooks
 
 [removed]
-See the description of ActiveModel::Callbacks.
+See the description of `ActiveModel::Callbacks`.
 
 ## Using Model Objects as RDF.rb Objects
 
