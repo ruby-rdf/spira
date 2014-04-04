@@ -242,7 +242,8 @@ end
 All assigned types are accessible via "types":
 
 ```ruby
-Man.types #=> #<Set: {#<RDF::URI:0xd5ebc0(http://example.org/people/father)>, #<RDF::URI:0xd5e4b8(http://example.org/people/cop)>}>
+Man.types
+# => #<Set: {#<RDF::URI:0xd5ebc0(http://example.org/people/father)>, #<RDF::URI:0xd5e4b8(http://example.org/people/cop)>}>
 ```
 
 Also note that "type" actually returns a first type from the list of types.
@@ -382,8 +383,8 @@ are implemented:
   * `Any`
 
 The default type for a Spira property is `Spira::Types::Any`, which uses
-`RDF::Literal`'s automatic boxing/unboxing of XSD types as best it can.  See
-`[RDF::Literal](http://rdf.rubyforge.org/RDF/Literal.html)` for more information.
+`RDF::Literal`'s automatic boxing/unboxing of XSD types as best it can.
+See [`RDF::Literal`](http://rdf.rubyforge.org/RDF/Literal.html) for more information.
 
 You can implement your own types as well.  Your class' serialize method should
 turn an RDF::Value into a ruby object, and vice versa.
