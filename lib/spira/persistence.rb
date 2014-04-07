@@ -366,7 +366,7 @@ module Spira
     # NB: "props" argument is ignored, it is handled in Base
     #
     def reload(props = {})
-      sts = self.class.repository.query(:subject => subject)
+      sts = self.class.repository.query(:subject => subject).entries
       self.class.properties.each do |name, options|
         name = name.to_s
         if sts
