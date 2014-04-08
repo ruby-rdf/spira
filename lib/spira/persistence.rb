@@ -46,7 +46,8 @@ module Spira
       # only valid for classes which declare a `type` with the `type` method in
       # the Resource.
       #
-      # Note that the instantiated records are "promises" not real instances.
+      # Note that the instantiated records are "promises" not real instances, unless
+      # the option :instantiate => true is provided.
       #
       # @raise  [Spira::NoTypeError] if the resource class does not have an RDF type declared
       # @overload each
@@ -74,13 +75,39 @@ module Spira
           types.each do |tp|
             break if limit.zero?
             q = conditions_to_query(conditions.merge(:type => tp))
+            if options[:instantiate]
+              q.pattern [:subject, :predicate, :object]
+              items = {}
+            end
             repository.query(q) do |solution|
               break if limit.zero?
               if offset.zero?
-                yield unserialize(solution[:subject])
+                if options[:instantiate]
+                  subject = solution[:subject]
+                  predicate = solution[:predicate]
+                  object = solution[:object]
+                  #puts "#{subject.inspect}"
+                  #puts "  #{predicate.inspect}"
+                  #puts "    #{object.inspect}"
+                  if !items[subject]
+                    items[subject] = {}
+                  end
+                  self.properties.each do |name, options|
+                    if predicate == options[:predicate]
+                      items[subject][name] = object
+                    end
+                  end
+                else
+                  yield unserialize(solution[:subject])
+                end
                 limit -= 1
               else
                 offset -= 1
+              end
+            end
+            if options[:instantiate]
+              items.each do |k,v|
+                yield self.for(k, v)
               end
             end
           end
@@ -359,23 +386,25 @@ module Spira
     end
 
     ##
-    # Reload all attributes for this instance.
-    # This resource will block if the underlying repository
-    # blocks the next time it accesses attributes.
-    #
-    # NB: "props" argument is ignored, it is handled in Base
-    #
+    # Reload attributes for this instance.  If "props" is empty, load from the
+    # underlying repository, otherwise merge the props with self.attributes.
+    # When loading from the repository, this will block if the underlying
+    # repository blocks.
+    # @param [Hash{Symbol => Any}] new attributes
     def reload(props = {})
-      sts = self.class.repository.query(:subject => subject).entries
-      self.class.properties.each do |name, options|
-        name = name.to_s
-        if sts
-          objects = sts.select { |s| s.predicate == options[:predicate] }
-          attributes[name] = retrieve_attribute(name, options, objects)
+      if !props.empty?
+        @attributes.merge! props
+      else
+        sts = self.class.repository.query(:subject => subject).entries
+        self.class.properties.each do |name, options|
+          name = name.to_s
+          if sts
+            objects = sts.select { |s| s.predicate == options[:predicate] }
+            attributes[name] = retrieve_attribute(name, options, objects)
+          end
         end
       end
     end
-
 
     private
 
