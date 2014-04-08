@@ -86,9 +86,6 @@ module Spira
                   subject = solution[:subject]
                   predicate = solution[:predicate]
                   object = solution[:object]
-                  #puts "#{subject.inspect}"
-                  #puts "  #{predicate.inspect}"
-                  #puts "    #{object.inspect}"
                   if !items[subject]
                     items[subject] = {}
                   end
@@ -107,7 +104,7 @@ module Spira
             end
             if options[:instantiate]
               items.each do |k,v|
-                yield self.for(k, v)
+                yield new(v.merge(:_subject => k), {:new_record => false})
               end
             end
           end
@@ -295,7 +292,11 @@ module Spira
     # A resource is considered to be new if the repository
     # does not have statements where subject == resource type
     def new_record?
-      !self.class.repository.has_subject?(subject)
+      if @new_record == nil
+        @new_record = !self.class.repository.has_subject?(subject)
+      else
+        return @new_record
+      end
     end
 
     def destroyed?
@@ -395,12 +396,14 @@ module Spira
       if !props.empty?
         @attributes.merge! props
       else
+        @new_record = nil
         sts = self.class.repository.query(:subject => subject).entries
         self.class.properties.each do |name, options|
           name = name.to_s
           if sts
             objects = sts.select { |s| s.predicate == options[:predicate] }
             attributes[name] = retrieve_attribute(name, options, objects)
+            @new_record = false
           end
         end
       end
@@ -442,7 +445,7 @@ module Spira
           end
         else
           if attribute_changed?(name.to_s)
-            repo.delete [subject, property[:predicate], nil]
+            repo.delete [subject, property[:predicate], @attributes[name]]
             store_attribute(name, value, property[:predicate], repo)
           end
         end
