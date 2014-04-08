@@ -445,7 +445,7 @@ module Spira
           end
         else
           if attribute_changed?(name.to_s)
-            repo.delete [subject, property[:predicate], @attributes[name]]
+            repo.delete [subject, property[:predicate], nil]
             store_attribute(name, value, property[:predicate], repo)
           end
         end
