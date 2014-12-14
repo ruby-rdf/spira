@@ -20,6 +20,7 @@ module Spira
     extend ActiveModel::Naming
     include ActiveModel::Conversion
     include ActiveModel::Dirty
+    include ActiveModel::Serialization
 
     include ::RDF, ::RDF::Enumerable, ::RDF::Queryable
 
