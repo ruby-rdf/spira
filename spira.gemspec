@@ -35,8 +35,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf',            '~> 1.1'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 1.1'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
-  gem.add_runtime_dependency     'activemodel',    '~> 3.0' # until specs fixed
-  gem.add_runtime_dependency     'activesupport',  '~> 3.0' # until specs fixed
+  gem.add_runtime_dependency     'activemodel',    '> 3'
+  gem.add_runtime_dependency     'activesupport',  '> 3'
 
   gem.post_install_message       = nil
 end
