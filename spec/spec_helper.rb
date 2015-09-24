@@ -14,6 +14,9 @@ require 'rdf/spec/enumerable'
 require 'rdf/spec'
 require 'rdf/isomorphic'
 
+require 'i18n'
+I18n.enforce_available_locales = false
+
 RSpec.configure do |config|
   config.filter_run :focus => true
   config.run_all_when_everything_filtered = true
