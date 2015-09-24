@@ -83,7 +83,9 @@ describe Spira::Base do
       end
 
       it "should allow other enumerables to be isomorphic to a resource" do
-        @enumerable_repository.statements.should be_isomorphic_with @enumerable
+        pending('Awaiting fix for https://github.com/ruby-rdf/rdf-isomorphic/issues/3') do
+          @enumerable_repository.statements.should be_isomorphic_with @enumerable
+        end
       end
     end
   end
