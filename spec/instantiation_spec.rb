@@ -11,104 +11,95 @@ describe Spira do
     end
 
     context "when instantiating from a URI" do
-      before :each do
-        @uri = RDF::URI('http://example.org/example')
-        Spira.repository = RDF::Repository.new
-        @repo = Spira.repository
-      end
+      let(:uri) {RDF::URI('http://example.org/example')}
+      before(:each) {Spira.repository = RDF::Repository.new}
 
       it "should add the 'as' method to RDF::URI" do
-        @uri.should respond_to :as
+        expect(uri).to respond_to :as
       end
 
       it "should allow instantiation from a URI using RDF::URI#as" do
-        @uri.as(InstantiationTest).should be_a InstantiationTest
+        expect(uri.as(InstantiationTest)).to be_a InstantiationTest
       end
 
       it "should yield the new instance to a block given to #as" do
-        test = @uri.as(InstantiationTest) do |test|
+        test = uri.as(InstantiationTest) do |test|
           test.name = "test name"
         end
-        test.name.should == "test name"
+        expect(test.name).to eql "test name"
       end
 
       it "should allow instantiation from a resource class using #for" do
-        InstantiationTest.for(@uri).should be_a InstantiationTest
+        expect(InstantiationTest.for(uri)).to be_a InstantiationTest
       end
 
       it "should yield the new instance to a block given to #for" do
-        test = InstantiationTest.for(@uri) do |test|
+        test = InstantiationTest.for(uri) do |test|
           test.name = "test name"
         end
-        test.name.should == "test name"
+        expect(test.name).to eql "test name"
       end
 
       it "should allow instantiation from a URI with attributes given" do
-        test = @uri.as(InstantiationTest, :name => "a name")
-        test.name.should == "a name"
+        test = uri.as(InstantiationTest, :name => "a name")
+        expect(test.name).to eql "a name"
       end
 
       it "should know if a URI does not exist" do
-        InstantiationTest.for(@uri).should_not be_persisted
+        expect(InstantiationTest.for(uri)).not_to be_persisted
       end
 
       it "should know if a URI exists" do
-        InstantiationTest.repository << RDF::Statement.new(@uri, RDF::FOAF.name, 'test')
-        InstantiationTest.for(@uri).should be_persisted
+        InstantiationTest.repository << RDF::Statement.new(uri, RDF::FOAF.name, 'test')
+        expect(InstantiationTest.for(uri)).to be_persisted
       end
 
       it "should allow the use of #[] as an alias to #for" do
-        InstantiationTest.repository << RDF::Statement.new(@uri, RDF::FOAF.name, 'test')
-        InstantiationTest[@uri].should be_persisted
+        InstantiationTest.repository << RDF::Statement.new(uri, RDF::FOAF.name, 'test')
+        expect(InstantiationTest[uri]).to be_persisted
       end
     end
 
     context "when instantiating from a BNode" do
-      before :each do
-        @node = RDF::Node.new
-        Spira.repository = RDF::Repository.new
-        @repo = Spira.repository
-      end
+      let(:node) {RDF::Node.new}
+      before {Spira.repository = RDF::Repository.new}
 
       it "should add the 'as' method to RDF::" do
-        @node.should respond_to :as
+        expect(node).to respond_to :as
       end
 
       it "should allow instantiation from a Node using RDF::Node#as" do
-        @node.as(InstantiationTest).should be_a InstantiationTest 
+        expect(node.as(InstantiationTest)).to be_a InstantiationTest 
       end
 
       it "should allow instantiation from a resource class using #for" do
-        InstantiationTest.for(@node).should be_a InstantiationTest
+        expect(InstantiationTest.for(node)).to be_a InstantiationTest
       end
 
       it "should allow instantiation from a Node with attributes given" do
-        test = @node.as(InstantiationTest, :name => "a name")
-        test.name.should == "a name"
+        test = node.as(InstantiationTest, :name => "a name")
+        expect(test.name).to eql "a name"
       end
 
       it "should allow the use of #[] as an alias to #for" do
-        InstantiationTest[@node].should be_a InstantiationTest
+        expect(InstantiationTest[node]).to be_a InstantiationTest
       end
     end
 
     context "when creating without an identifier" do
-      before :each do
-        Spira.repository = RDF::Repository.new
-        @repo = Spira.repository
-      end
+      before {Spira.repository = RDF::Repository.new}
 
       it "should create an instance with a new Node identifier" do
         test = InstantiationTest.new
-        test.subject.should be_a RDF::Node
-        test.uri.should be_nil
+        expect(test.subject).to be_a RDF::Node
+        expect(test.uri).to be_nil
       end
 
       it "should yield the new instance to a block given to #new" do
         test = InstantiationTest.new do |test|
           test.name = "test name"
         end
-        test.name.should == "test name"
+        expect(test.name).to eql "test name"
       end
     end
 

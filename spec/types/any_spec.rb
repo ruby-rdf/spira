@@ -13,17 +13,17 @@ describe Spira::Types::Any do
   context "when serializing" do
     it "should serialize literals to RDF Literals" do
       serialized = Spira::Types::Any.serialize(15)
-      serialized.should be_a RDF::Literal
+      expect(serialized).to be_a RDF::Literal
       serialized = Spira::Types::Any.serialize("test")
-      serialized.should be_a RDF::Literal
+      expect(serialized).to be_a RDF::Literal
     end
 
     it "should keep RDF::URIs as URIs" do
-      Spira::Types::Any.serialize(@uri).should == @uri
+      expect(Spira::Types::Any.serialize(@uri)).to eql @uri
     end
 
     it "should fail to serialize collections" do
-      lambda { Spira::Types::Any.serialize([]) }.should raise_error TypeError
+      expect { Spira::Types::Any.serialize([]) }.to raise_error TypeError
     end
   end
 

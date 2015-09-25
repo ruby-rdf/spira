@@ -9,13 +9,13 @@ describe 'types for properties' do
         t = Thread.new { types = Spira.types }
         t.join
 
-        types.should satisfy do |ts|
+        expect(types).to satisfy do |ts|
           ts.any? && ts == Spira.types
         end
       end
 
       it "should be declared" do
-        lambda {
+        expect {
           t = Thread.new do
             class ::PropTypeA < Spira::Base
               configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
@@ -25,52 +25,52 @@ describe 'types for properties' do
             end
           end
           t.join
-        }.should_not raise_error
+        }.not_to raise_error
       end
     end
 
     it "should raise a type error to use a type that has not been declared" do
-      lambda {
+      expect {
         class ::PropTypeA < Spira::Base
           configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
                     :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => XSD.non_existent_type
         end
-      }.should raise_error TypeError
+      }.to raise_error TypeError
     end
 
     it "should not raise a type error to use a symbol type, even if the class has not been declared yet" do
-      lambda {
+      expect {
         class ::PropTypeB < Spira::Base
           configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
                     :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => :non_existent_type
         end
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
     it "should not raise an error to use an included XSD type aliased to a Spira type" do
-      lambda {
+      expect {
         class ::PropTypeD < Spira::Base
           configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
                     :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => XSD.string
         end
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
     it "should not raise an error to use an included Spira type" do
-      lambda {
+      expect {
         class ::PropTypeC < Spira::Base
           configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
                     :base_uri => RDF::URI.new('http://example.org/props')
 
           property :test, :type => String
         end
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
   end
@@ -81,8 +81,7 @@ describe 'types for properties' do
 
     before :all do
 
-      @property_types_repo = RDF::Repository.new
-      Spira.repository = @property_types_repo
+      Spira.repository = RDF::Repository.new
 
       class ::TestType
         include Spira::Type
@@ -107,25 +106,23 @@ describe 'types for properties' do
       end
     end
 
-    before :each do
-      @resource = PropTest.for 'test'
-    end
+    subject {PropTest.for 'test'}
 
     it "uses the given serialize function" do
-      @resource.test = "a string"
-      @resource.should have_object RDF::Literal.new("a string", :datatype => RDF::XSD.test_type)
+      subject.test = "a string"
+      expect(subject).to have_object RDF::Literal.new("a string", :datatype => RDF::XSD.test_type)
     end
 
     it "uses the given unserialize function" do
-      @resource.test = "a string"
-      @resource.save!
-      @resource.test.should == "a string"
-      @resource.test.should == PropTest.for('test').test
+      subject.test = "a string"
+      subject.save!
+      expect(subject.test).to eql "a string"
+      expect(subject.test).to eql PropTest.for('test').test
     end
 
     it "correctly associates a URI datatype alias to the correct class" do
-      Spira.types[RDF::XSD.test_type].should == TestType
-      PropTest.properties[:xsd_test][:type].should == TestType
+      expect(Spira.types[RDF::XSD.test_type]).to eql TestType
+      expect(PropTest.properties[:xsd_test][:type]).to eql TestType
     end
 
   end

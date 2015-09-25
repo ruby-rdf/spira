@@ -27,132 +27,121 @@ describe "has_many" do
   end
 
   context "Comment class basics" do
-    before :each do
-      @posts_repository = RDF::Repository.load(fixture('has_many.nt'))
-      Spira.repository = @posts_repository
-      @uri = RDF::URI.new('http://example.org/comments/comment1')
-      @empty_uri = RDF::URI.new('http://example.org/comments/comment0')
-      @comment = Comment.for @uri
-      @empty_comment = Comment.for @empty_uri
-    end
+    let(:url) {RDF::URI.new('http://example.org/comments/comment1')}
+    let(:comment) {Comment.for url}
+    let(:empty_comment) {Comment.for RDF::URI.new('http://example.org/comments/comment0')}
+    before {Spira.repository = RDF::Repository.load(fixture('has_many.nt'))}
 
     it "should have a ratings method" do
-      @comment.should respond_to :ratings
+      expect(comment).to respond_to :ratings
     end
 
     it "should having a ratings= method" do
-      @comment.should respond_to :ratings=
+      expect(comment).to respond_to :ratings=
     end
 
     it "should report that ratings is an association" do
-      Comment.reflect_on_association(:ratings).should be_a AssociationReflection
+      expect(Comment.reflect_on_association(:ratings)).to be_a AssociationReflection
     end
 
     it "should report that bodies are not a list" do
-      Comment.reflect_on_association(:body).should be_nil
+      expect(Comment.reflect_on_association(:body)).to be_nil
     end
 
     it "should return an empty array of ratings for comments with none" do
-      @empty_comment.ratings.should == []
+      expect(empty_comment.ratings).to eql []
     end
 
     it "should return a set of ratings for comments with some" do
-      @comment.ratings.should be_a Array
-      @comment.ratings.size.should == 3
-      @comment.ratings.sort.should == [1,3,5]
+      expect(comment.ratings).to be_a Array
+      expect(comment.ratings.size).to eql 3
+      expect(comment.ratings.sort).to eql [1,3,5]
     end
 
     it "should allow setting and saving non-array elements" do
-      @comment.title = 'test'
-      @comment.title.should == 'test'
-      @comment.save!
-      @comment.title.should == 'test'
+      comment.title = 'test'
+      expect(comment.title).to eql 'test'
+      comment.save!
+      expect(comment.title).to eql 'test'
     end
 
     it "should allow setting on array elements" do
-      @comment.ratings = [1,2,4]
-      @comment.save!
-      @comment.ratings.sort.should == [1,2,4]
+      comment.ratings = [1,2,4]
+      comment.save!
+      expect(comment.ratings.sort).to eql [1,2,4]
     end
 
     it "should allow saving array elements" do
-      @comment.ratings = [1,2,4]
-      @comment.ratings.sort.should == [1,2,4]
-      @comment.save!
-      @comment.ratings.sort.should == [1,2,4]
-      @comment = Comment.for @uri
-      @comment.ratings.sort.should == [1,2,4]
+      comment.ratings = [1,2,4]
+      expect(comment.ratings.sort).to eql [1,2,4]
+      comment.save!
+      expect(comment.ratings.sort).to eql [1,2,4]
+      comment = Comment.for url
+      expect(comment.ratings.sort).to eql [1,2,4]
     end
 
     it "should allow appending to array elements" do
-      @comment.ratings << 6
-      @comment.ratings.sort.should == [1,3,5,6]
-      @comment.save!
-      @comment.ratings.sort.should == [1,3,5,6]
+      comment.ratings << 6
+      expect(comment.ratings.sort).to eql [1,3,5,6]
+      comment.save!
+      expect(comment.ratings.sort).to eql [1,3,5,6]
     end
 
     it "should allow saving of appended elements" do
-      @comment.ratings << 6
-      @comment.save!
-      @comment = Comment.for @uri
-      @comment.ratings.sort.should == [1,3,5,6]
+      comment.ratings << 6
+      comment.save!
+      comment = Comment.for url
+      expect(comment.ratings.sort).to eql [1,3,5,6]
     end
   end
 
   context "Post class basics" do
     before :all do
-      @posts_repository = RDF::Repository.load(fixture('has_many.nt'))
-      Spira.repository = @posts_repository
+      Spira.repository = RDF::Repository.load(fixture('has_many.nt'))
     end
-
-    before :each do
-      @uri = RDF::URI.new('http://example.org/posts/post1')
-      @empty_uri = RDF::URI.new('http://example.org/posts/post0')
-      @post = Post.for @uri
-      @empty_post = Post.for @empty_uri
-      @empty_comment_uri = RDF::URI.new('http://example.org/comments/comment0')
-      @empty_comment = Comment.for @empty_comment_uri
-    end
+    let(:post) {Post.for RDF::URI.new('http://example.org/posts/post1')}
+    let(:empty_post) {Post.for RDF::URI.new('http://example.org/posts/post0')}
+    let(:empty_comment) {Comment.for RDF::URI.new('http://example.org/comments/comment0')}
 
     it "should have a comments method" do
-      @post.should respond_to :comments
+      expect(post).to respond_to :comments
     end
 
     it "should have a comments= method" do
-      @post.should respond_to :comments=
+      expect(post).to respond_to :comments=
     end
 
     it "should return an empty array from comments for an object with none" do
-      @empty_post.comments.should == []
+      expect(empty_post.comments).to eql []
     end
 
     it "should return an array of comments for an object with some" do
-      @post.comments.size.should == 2
-      @post.comments.each do |comment|
-        comment.should be_a Comment
+      expect(post.comments.size).to eql 2
+      post.comments.each do |comment|
+        expect(comment).to be_a Comment
       end
     end
 
     it "should allow setting and saving non-array elements" do
-      @post.title = "test post title"
-      @post.save!
-      @post.title.should == 'test post title'
+      post.title = "test post title"
+      post.save!
+      expect(post.title).to eql 'test post title'
     end
 
     it "should allow setting array elements" do
-      @post.comments = (@post.comments + [@empty_comment])
-      @post.comments.size.should == 3
-      @post.comments.should include @empty_comment
+      post.comments = (post.comments + [empty_comment])
+      expect(post.comments.size).to eql 3
+      expect(post.comments).to include empty_comment
     end
 
     it "should allow saving array elements" do
-      comments = @post.comments + [@empty_comment]
-      @post.comments = (@post.comments + [@empty_comment])
-      @post.comments.size.should == 3
-      @post.save!
-      @post.comments.size.should == 3
-      @post.comments.each do |comment|
-        comments.should include comment
+      comments = post.comments + [empty_comment]
+      post.comments = (post.comments + [empty_comment])
+      expect(post.comments.size).to eql 3
+      post.save!
+      expect(post.comments.size).to eql 3
+      post.comments.each do |comment|
+        expect(comments).to include comment
       end
     end
 
@@ -168,10 +157,10 @@ describe "has_many" do
       end
 
       it "should assign comments by their IDs" do
-        cids = @post.comment_ids.first
-        @post.comment_ids = [cids, ""]
+        cids = post.comment_ids.first
+        post.comment_ids = [cids, ""]
 
-        @post.comment_ids.should eql [cids]
+        expect(post.comment_ids).to eql [cids]
       end
     end
   end

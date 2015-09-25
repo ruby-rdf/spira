@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "RDF::Resource attributes" do
-  before do
+  let(:person) do
     Spira.repository = RDF::Repository.new
 
     class Person < Spira::Base
@@ -12,46 +12,46 @@ describe "RDF::Resource attributes" do
     friend = Person.new(:name => "Dick")
     friend.save!
 
-    @person = Person.new(:name => "Charlie")
-    @person.friends << friend
-    @person.save!
+    p = Person.new(:name => "Charlie")
+    p.friends << friend
+    p.save!
   end
 
   describe "#reload" do
     it "should reload single-value attributes from the repository" do
-      @person.name = "Jennifer"
+      person.name = "Jennifer"
 
-      lambda {
-        @person.reload
-      }.should change(@person, :name).from("Jennifer").to("Charlie")
+      expect {
+        person.reload
+      }.to change(person, :name).from("Jennifer").to("Charlie")
     end
 
     it "should reload list attributes from the repository" do
       friend = Person.new(:name => "Bob")
       friend.save!
-      @person.friends << friend
+      person.friends << friend
 
-      expect(@person.friends.length).to eql 2
+      expect(person.friends.length).to eql 2
 
-      @person.reload
-      expect(@person.friends.length).to eql 1
+      person.reload
+      expect(person.friends.length).to eql 1
     end
   end
 
   context "when assigning a value to a non-existing property" do
     context "via #update_attributes" do
       it "should raise a NoMethodError" do
-        lambda {
-          @person.update_attributes(:nonexisting_attribute => 0)
-        }.should raise_error NoMethodError
+        expect {
+          person.update_attributes(:nonexisting_attribute => 0)
+        }.to raise_error NoMethodError
       end
     end
 
     context "via #write_attribute" do
       it "should raise a Spira::PropertyMissingError" do
-        lambda {
-          @person.send :write_attribute, :nonexisting_attribute, 0
-        }.should raise_error Spira::PropertyMissingError
+        expect {
+          person.send :write_attribute, :nonexisting_attribute, 0
+        }.to raise_error Spira::PropertyMissingError
       end
     end
   end

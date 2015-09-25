@@ -18,25 +18,19 @@ describe Spira, :ruby => "1.9" do
     end
 
     require 'rdf/ntriples'
-    @person_repository = RDF::Repository.load(fixture('bob.nt'))
-    Spira.repository = @person_repository
+    Spira.repository = RDF::Repository.load(fixture('bob.nt'))
   end
 
-  before :each do
-    @person_repository = RDF::Repository.load(fixture('bob.nt'))
-    Spira.repository = @person_repository
-
-    @person = PsychPerson.for(RDF::URI.new('http://example.org/newperson'))
-  end
+  subject {PsychPerson.for(RDF::URI.new('http://example.org/newperson'))}
 
   it "serializes to YAML" do
-    yaml = Psych.dump(@person)
-    yaml.should be_a(String)
+    yaml = Psych.dump(subject)
+    expect(yaml).to be_a(String)
   end
 
   it "de-serializes from YAML" do
-    yaml = Psych.dump(@person)
-    person2 = Psych.load(yaml)
-    person2.should == @person
+    yaml = Psych.dump(subject)
+    person = Psych.load(yaml)
+    expect(person).to eq subject
   end
 end

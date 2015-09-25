@@ -5,18 +5,18 @@ describe Spira::Types::Decimal do
   context "when serializing" do
     it "should serialize decimals to XSD decimals" do
       serialized = Spira::Types::Decimal.serialize(5.15)
-      serialized.should be_a RDF::Literal
-      serialized.should have_datatype
-      serialized.datatype.should == RDF::XSD.decimal
-      serialized.should == RDF::Literal.new(5.15, :datatype => RDF::XSD.decimal)
+      expect(serialized).to be_a RDF::Literal
+      expect(serialized).to have_datatype
+      expect(serialized.datatype).to eql RDF::XSD.decimal
+      expect(serialized).to eql RDF::Literal.new(5.15, :datatype => RDF::XSD.decimal)
     end
   end
 
   context "when unserializing" do
     it "should unserialize XSD decimals to BigDecimals" do
       value = Spira::Types::Decimal.unserialize(RDF::Literal.new(5.15, :datatype => RDF::XSD.decimal))
-      value.should be_a BigDecimal
-      value.should == BigDecimal.new('5.15')
+      expect(value).to be_a BigDecimal
+      expect(value).to eql BigDecimal.new('5.15')
     end
   end
 
@@ -26,7 +26,7 @@ describe Spira::Types::Decimal do
       literal = RDF::Literal.new(5.15, :datatype => RDF::XSD.decimal)
       unserialized = Spira::Types::Decimal.unserialize(literal)
       serialized = Spira::Types::Decimal.serialize(unserialized)
-      serialized.should == literal
+      expect(serialized).to eql literal
     end
   end
 

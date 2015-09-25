@@ -16,56 +16,30 @@ describe 'Spira resources' do
   end
 
   context "when instatiated from URIs" do
-    before :each do
-      @uri = RDF::URI('http://example.org/bob')
-      @test = @uri.as(NodeTest)
-    end
+    let(:uri) {RDF::URI('http://example.org/bob')}
+    subject {uri.as(NodeTest)}
 
-    it "should respond to :to_uri" do
-      @test.should respond_to :to_uri
-    end
+    it {is_expected.to respond_to :to_uri}
 
-    it "should not respond to :to_node" do
-      @test.should_not respond_to :to_node
-    end
+    it {is_expected.not_to respond_to :to_node}
 
-    it "should not be a node" do
-      @test.node?.should be_falsey
-    end
+    its(:node?) {is_expected.to be_falsey}
+    its(:to_uri) {is_expected.to eql uri}
 
-    it "should return the subject URI for :to_uri" do
-      @test.to_uri.should == @uri
-    end
-
-    it "should raise a NoMethodError for :to_node" do
-      lambda { @test.to_node }.should raise_error NoMethodError
-    end
+    specify {expect { subject.to_node }.to raise_error NoMethodError}
   end
 
   context "when instantiated from Nodes" do
-    before :each do
-      @node = RDF::Node.new
-      @test = @node.as(NodeTest)
-    end
+    let(:node) {RDF::Node.new}
+    subject {node.as(NodeTest)}
     
-    it "should not respond to :to_uri" do
-      @test.should_not respond_to :to_uri
-    end
+    it {is_expected.not_to respond_to :to_uri}
 
-    it "should respond to :to_node" do
-      @test.should respond_to :to_node
-    end
+    it {is_expected.to respond_to :to_node}
 
-    it "should not be a node" do
-      @test.node?.should be_truthy
-    end
+    its(:node?) {is_expected.to be_truthy}
+    its(:to_node) {is_expected.to eql node}
 
-    it "should return the subject URI for :to_node" do
-      @test.to_node.should == @node
-    end
-
-    it "should raise a NoMethodError for :to_uri" do
-      lambda { @test.to_uri }.should raise_error NoMethodError
-    end
+    specify {expect { subject.to_uri }.to raise_error NoMethodError}
   end
 end

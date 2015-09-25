@@ -24,51 +24,48 @@ describe Spira::Base do
   end
 
   context "as an RDF::Enumerable" do
-
-    before :each do
-      @uri = RDF::URI('http://example.org/example/people/bob')
-      @person = EnumerableSpec.for @uri
-      @enumerable_repository = RDF::Repository.new
-      @enumerable_repository << RDF::Statement.new(@uri, RDF::FOAF.age, 15)
-      @enumerable_repository << RDF::Statement.new(@uri, RDF::RDFS.label, "Bob Smith")
-      @statements = @enumerable_repository
-      @person.name = "Bob Smith"
-      @person.age = 15
-      @enumerable = @person
+    let(:uri) {RDF::URI('http://example.org/example/people/bob')}
+    let(:person) do
+      p = EnumerableSpec.for uri
+      p.name = "Bob Smith"
+      p.age = 15
+      p
+    end
+    let(:enumerable_repository) do
+      RDF::Repository.new do |repo|
+        repo << RDF::Statement.new(uri, RDF::FOAF.age, 15)
+        repo << RDF::Statement.new(uri, RDF::RDFS.label, "Bob Smith")
+      end
     end
 
     context "when just created" do
-      before do
-        @liza = EnumerableWithAssociationsSpec.new
-      end
-
-      it "should have no statements" do
-        @liza.statements.size.should be_zero
-      end
+      subject {EnumerableWithAssociationsSpec.new}
+      its(:statements) {is_expected.to be_empty}
     end
 
     context "when has has_many association" do
+      subject { EnumerableWithAssociationsSpec.for RDF::URI('http://example.org/example/people/charlie') }
       before do
-        @another_uri = RDF::URI('http://example.org/example/people/charlie')
-        @charlie = EnumerableWithAssociationsSpec.for @another_uri
-        3.times { @charlie.friends << EnumerableWithAssociationsSpec.new }
+        3.times { subject.friends << EnumerableWithAssociationsSpec.new }
       end
 
       it "should list associated statements individually" do
-        @charlie.statements.size.should eql @charlie.friends.size
+        expect(subject.statements.size).to eql subject.friends.size
       end
     end
 
-    context "when running the rdf-spec RDF::Enumerable shared groups" do
-
-      include RDF_Enumerable
-
+    # @see lib/rdf/spec/enumerable.rb in rdf-spec
+    it_behaves_like 'an RDF::Enumerable' do
+      before(:each) do
+        @statements = enumerable_repository
+      end
+      let(:enumerable) {  person }
     end
 
     context "when comparing with other RDF::Enumerables" do
       
       it "should be equal if they are completely the same" do
-        @enumerable.should == @enumerable_repository
+        expect(person).to eq enumerable_repository
       end
 
       # This one is a tough call.  Are two resources really equal if one is a
@@ -84,7 +81,7 @@ describe Spira::Base do
       end
 
       it "should allow other enumerables to be isomorphic to a resource" do
-        @enumerable_repository.statements.should be_isomorphic_with @enumerable
+        expect(enumerable_repository.statements).to be_isomorphic_with person
       end
     end
   end

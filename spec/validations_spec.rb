@@ -1,6 +1,9 @@
 require "spec_helper"
 
 describe 'A Spira resource' do
+  let(:uri) {RDF::URI.intern('http://example.org/bank1')}
+  let(:valid) {V2.for(uri, :title => 'xyz')}
+  let(:invalid) {V2.for(uri, :title => 'not xyz')}
 
   before :all do
     class ::Bank < Spira::Base
@@ -33,50 +36,41 @@ describe 'A Spira resource' do
       end
     end
 
-    before :each do
-      @uri = RDF::URI.intern('http://example.org/bank1')
-      @uri2 = RDF::URI.intern('http://example.org/bank2')
-      @valid = V2.for(@uri, :title => 'xyz')
-      @invalid = V2.for(@uri, :title => 'not xyz')
-    end
-
     context "with #validate" do
       it "returns true when the model is valid" do
-        @valid.should be_valid
+        expect(valid).to be_valid
       end
 
       it "returns an empty errors object after validating when the model is valid" do
-        @valid.valid?
-        @valid.errors.should be_empty
+        valid.valid?
+        expect(valid.errors).to be_empty
       end
 
       it "returns false when the model is invalid" do
-        @invalid.should_not be_valid
+        expect(invalid).not_to be_valid
       end
 
       it "returns an errors object with errors after validating when the model is invalid" do
-        @invalid.valid?
-        @invalid.errors.should_not be_empty
+        invalid.valid?
+        expect(invalid.errors).not_to be_empty
       end
     end
 
     context "an invalid model" do
       before :each do
-        @uri2 = RDF::URI.intern('http://example.org/bank2')
-        @invalid = V2.for(@uri, :title => 'not xyz')
-        @invalid.valid?
+        invalid.valid?
       end
 
       it "returns a non-empty errors object afterwards" do
-        @invalid.errors.should_not be_empty
+        expect(invalid.errors).not_to be_empty
       end
 
       it "has an error for an invalid field" do
-        @invalid.errors[:title].should_not be_empty
+        expect(invalid.errors[:title]).not_to be_empty
       end
 
       it "has the correct error string for the invalid field" do
-        @invalid.errors[:title].first.should == 'is not xyz'
+        expect(invalid.errors[:title].first).to eql 'is not xyz'
       end
 
     end
@@ -85,14 +79,14 @@ describe 'A Spira resource' do
   context "when saving with validations, " do
     it "does not save an invalid model" do
       bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
-      lambda { bank.save! }.should raise_error Spira::RecordInvalid
+      expect { bank.save! }.to raise_error Spira::RecordInvalid
     end
 
     it "saves a valid model" do
       bank = Bank.for RDF::URI.new('http://example.org/banks/bank1')
       bank.title = "A bank"
       bank.balance = 1000
-      lambda { bank.save! }.should_not raise_error
+      expect { bank.save! }.not_to raise_error
     end
   end
 
@@ -106,18 +100,16 @@ describe 'A Spira resource' do
         end
       end
 
-      before :each do
-        @v1 = V1.for RDF::URI.new('http://example.org/v1/first')
-      end
+      let(:v1) {V1.for RDF::URI.new('http://example.org/v1/first')}
 
       it "does not save when the assertion is false" do
-        @v1.title = 'abc'
-        lambda { @v1.save! }.should raise_error Spira::RecordInvalid
+        v1.title = 'abc'
+        expect { v1.save! }.to raise_error Spira::RecordInvalid
       end
 
       it "saves when the assertion is true" do
-        @v1.title = 'xyz'
-        lambda { @v1.save! }.should_not raise_error
+        v1.title = 'xyz'
+        expect { v1.save! }.not_to raise_error
       end
     end
 
@@ -140,21 +132,21 @@ describe 'A Spira resource' do
         v1 = V4.for RDF::URI.new('http://example.org/v2/first')
         v1.name = v1.name
         v1.save
-        v1.errors[:name].should be_empty
+        expect(v1.errors[:name]).to be_empty
       end
 
       it "should have errors on :name" do
         v2 = V4.for RDF::URI.new('http://example.org/v2/second')
         v2.name = "unique name"
         v2.save
-        v2.errors[:name].should_not be_empty
+        expect(v2.errors[:name]).not_to be_empty
       end
 
       it "should have no errors on :name" do
         v3 = V4.for RDF::URI.new('http://example.org/v2/second')
         v3.name = "another name"
         v3.save
-        v3.errors[:name].should be_empty
+        expect(v3.errors[:name]).to be_empty
       end
     end
 
@@ -166,17 +158,15 @@ describe 'A Spira resource' do
         end
       end
 
-      before :each do
-        @v2 = V2.for RDF::URI.new('http://example.org/v2/first')
-      end
+      let(:v2) {V2.for RDF::URI.new('http://example.org/v2/first')}
 
       it "does not save when the field is nil" do
-        lambda { @v2.save! }.should raise_error Spira::RecordInvalid
+        expect { v2.save! }.to raise_error Spira::RecordInvalid
       end
 
       it "saves when the field is not nil" do
-        @v2.title = 'xyz'
-        lambda { @v2.save! }.should_not raise_error
+        v2.title = 'xyz'
+        expect { v2.save! }.not_to raise_error
       end
     end
 
@@ -188,22 +178,20 @@ describe 'A Spira resource' do
         end
       end
 
-      before :each do
-        @v3 = V3.for RDF::URI.new('http://example.org/v3/first')
-      end
+      let(:v3) {V3.for RDF::URI.new('http://example.org/v3/first')}
 
       it "does not save when the field is nil" do
-        lambda { @v3.save! }.should raise_error Spira::RecordInvalid
+        expect { v3.save! }.to raise_error Spira::RecordInvalid
       end
 
       it "does not save when the field is not numeric" do
-        @v3.title = 'xyz'
-        lambda { @v3.save! }.should raise_error Spira::RecordInvalid
+        v3.title = 'xyz'
+        expect { v3.save! }.to raise_error Spira::RecordInvalid
       end
 
       it "saves when the field is numeric" do
-        @v3.title = 15
-        lambda { @v3.save! }.should_not raise_error
+        v3.title = 15
+        expect { v3.save! }.not_to raise_error
       end
     end
   end
