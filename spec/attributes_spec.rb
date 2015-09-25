@@ -31,10 +31,10 @@ describe "RDF::Resource attributes" do
       friend.save!
       @person.friends << friend
 
-      @person.should have(2).friends
+      expect(@person.friends.length).to eql 2
 
       @person.reload
-      @person.should have(1).friends
+      expect(@person.friends.length).to eql 1
     end
   end
 

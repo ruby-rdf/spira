@@ -82,8 +82,8 @@ describe Spira do
       it "should mark attributes as dirty when updated" do
         # TODO: a fix is pending for this, read comments on #persist! method
         pending "ActiveModel::Dirty cannot track that - read its docs"
-        # @test.items << "Steve"
-        # @test.changed_attributes.should include(:items)
+        @test.items << "Steve"
+        @test.changed_attributes.should include(:items)
       end
 
     end

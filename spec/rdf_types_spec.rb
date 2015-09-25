@@ -133,7 +133,7 @@ describe 'models with a defined rdf type' do
   context "When getting/setting" do
     before :each do
       @car = Car.for Cars.car1
-      @car.nil?.should_not be_true
+      @car.nil?.should_not be_truthy
     end
 
     it "should allow setting other properties" do
@@ -201,7 +201,7 @@ describe 'models with a defined rdf type' do
         vans << resource
       end
       [Cars.van1, Cars.van2, Cars.van3].each do |uri|
-        vans.any? { |van| van.uri == uri }.should be_true
+        vans.any? { |van| van.uri == uri }.should be_truthy
       end
     end
   end

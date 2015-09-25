@@ -157,8 +157,8 @@ describe "Spira resources" do
     it "should find CDs for an artist" do
       cds = @artist.cds
       expect(cds).to be_a Array
-      expect(cds.find { |cd| cd.name == 'Nevermind' }).to be_true
-      expect(cds.find { |cd| cd.name == 'In Utero' }).to be_true
+      expect(cds.find { |cd| cd.name == 'Nevermind' }).to be_truthy
+      expect(cds.find { |cd| cd.name == 'In Utero' }).to be_truthy
     end
 
     it "should not reload an object for a simple reverse relationship" do

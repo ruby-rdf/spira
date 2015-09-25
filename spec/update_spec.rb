@@ -142,12 +142,12 @@ describe Spira do
       end
 
       it "should return true on success" do
-        @test.destroy.should be_true
+        @test.destroy.should be_truthy
       end
 
       it "should return false on failure" do
         @update_repo.should_receive(:delete).once.and_return(nil)
-        @test.destroy.should be_false
+        @test.destroy.should be_falsey
       end
 
       it "should raise an exception on failure" do
@@ -183,7 +183,7 @@ describe Spira do
 
     context "with #copy" do
       it "supports #copy" do
-        @test.respond_to?(:copy).should be_true
+        @test.respond_to?(:copy).should be_truthy
       end
 
       it "copies to a given subject" do
@@ -201,7 +201,7 @@ describe Spira do
 
     context "with #copy!" do
       it "supports #copy!" do
-        @test.respond_to?(:copy!).should be_true
+        @test.respond_to?(:copy!).should be_truthy
       end
 
       it "copies to a given subject" do

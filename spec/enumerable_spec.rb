@@ -80,12 +80,11 @@ describe Spira::Base do
       # which has the same uri and all the same properties, and then some.
       it "should be equal if the resource is a subgraph of the repository" do
         pending "Awaiting subgraph implementation in rdf_isomorphic"
+        fail
       end
 
       it "should allow other enumerables to be isomorphic to a resource" do
-        pending('Awaiting fix for https://github.com/ruby-rdf/rdf-isomorphic/issues/3') do
-          @enumerable_repository.statements.should be_isomorphic_with @enumerable
-        end
+        @enumerable_repository.statements.should be_isomorphic_with @enumerable
       end
     end
   end

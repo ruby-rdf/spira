@@ -17,7 +17,7 @@ describe Spira::Utils do
 
     # context "with #rename!" do
     #   it "supports #rename!" do
-    #     @test.respond_to?(:rename!).should be_true
+    #     @test.respond_to?(:rename!).should be_truthy
     #   end
 
     #   it "copies model data to a given subject" do

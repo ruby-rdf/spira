@@ -30,7 +30,7 @@ describe 'Spira resources' do
     end
 
     it "should not be a node" do
-      @test.node?.should be_false
+      @test.node?.should be_falsey
     end
 
     it "should return the subject URI for :to_uri" do
@@ -57,7 +57,7 @@ describe 'Spira resources' do
     end
 
     it "should not be a node" do
-      @test.node?.should be_true
+      @test.node?.should be_truthy
     end
 
     it "should return the subject URI for :to_node" do

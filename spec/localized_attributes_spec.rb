@@ -49,7 +49,7 @@ describe Spira do
 
     describe "the _native getter" do
       it "should return all the labels" do
-        company.label_native.should have(2).elements
+        expect(company.label_native.length).to eql 2
       end
 
       it "should return the labels as RDF Literals" do
@@ -83,14 +83,14 @@ describe Spira do
     describe "the _native setter" do
       it "should be locale independant" do
         company.label_native = [RDF::Literal.new('Company', :language => :en)]
-        company.label_native.should have(1).elements
+        expect(company.label_native.length).to eql 1
       end
     end
 
     describe "the _with_locales setter" do
       it "should be locale independant" do
         company.label_with_locales = { :en => 'Company', :fr => 'Société' }
-        company.label_native.should have(2).elements
+        expect(company.label_native.length).to eql 2
       end
     end
   end
