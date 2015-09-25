@@ -2,8 +2,18 @@ module Spira
   module Validations
     class UniquenessValidator < ActiveModel::EachValidator
       # Unfortunately, we have to tie Uniqueness validators to a class.
-      def setup(klass)
-        @klass = klass
+      # Note: the `setup` hook has been deprecated in rails 4.1 and completely
+      # removed in rails 4.2; the klass is now found in #{options[:class]}.
+      if ActiveModel::VERSION::MAJOR <= 3 ||
+         (ActiveModel::VERSION::MAJOR == 4 && ActiveModel::VERSION::MINOR < 1)
+        def setup(klass)
+          @klass = klass
+        end
+      else
+        def initialize(options)
+          super
+          @klass = options.fetch(:class)
+        end
       end
 
       def validate_each(record, attribute, value)
