@@ -12,7 +12,9 @@ class Cars < RDF::Vocabulary('http://example.org/cars/')
 end
 
 describe 'models with a defined rdf type' do
-
+  subject {RDF::Repository.load(fixture('types.nt'))}
+  let(:car1) {Car.for Cars.car1}
+  let(:car2) {Car.for Cars.car2}
 
   before :all do
     require 'rdf/ntriples'
@@ -37,162 +39,143 @@ describe 'models with a defined rdf type' do
     end
   end
 
-  before :each do
-    @types_repository = RDF::Repository.load(fixture('types.nt'))
-    Spira.repository = @types_repository
-  end
+  before {Spira.repository = subject}
 
   context "when declaring types" do
     it "should raise an error when declaring a non-uri type" do
-      lambda {
+      expect {
         class ::XYZ < Spira::Base
           type 'a string, for example'
         end
-      }.should raise_error TypeError
+      }.to raise_error TypeError
     end
 
     it "should provide a class method which returns the type" do
-      Car.should respond_to :type
+      expect(Car).to respond_to :type
     end
     
     it "should return the correct type" do
-      Car.type.should == Cars.car
+      expect(Car.type).to eql Cars.car
     end
 
     it "should return nil if no type is declared" do
-      Wagon.type.should == nil
+      expect(Wagon.type).to eql nil
     end
   end
 
   context "When finding by types" do
     it "should find 1 car" do
-      Car.count.should == 1
+      expect(Car.count).to eql 1
     end
 
     it "should find 3 vans" do
-      Van.count.should == 3
+      expect(Van.count).to eql 3
     end
   end
 
   context "when creating" do
-   
-    before :each do
-      @car = Car.for RDF::URI.new('http://example.org/cars/newcar')
-    end
+    subject {Car.for RDF::URI.new('http://example.org/cars/newcar')}
 
-    it "should have a type on creation" do
-      @car.type.should == Car.type
-    end
+    its(:type) {is_expected.to eql Car.type}
 
     it "should not include a type statement on dump" do
       # NB: declaring an object with a type does not get the type statement in the DB
       # until the object is persisted!
-      @car.should_not have_statement(:predicate => RDF.type, :object => Car.type)
+      expect(subject).not_to have_statement(:predicate => RDF.type, :object => Car.type)
     end
 
     it "should not be able to assign type" do
-      lambda {
+      expect {
         Car.for(RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van)
-      }.should raise_error NoMethodError
+      }.to raise_error NoMethodError
     end
 
   end
 
   context "when loading" do
-    before :each do
-      @car1 = Car.for Cars.car1
-      @car2 = Car.for Cars.car2
-    end
-
     it "should have a type" do
-      @car1.type.should == Car.type
+      expect(car1.type).to eql Car.type
     end
 
     it "should have a type when loading a resource without one in the data store" do
-      @car2.type.should == Car.type
+      expect(car2.type).to eql Car.type
     end
   end
 
   context "when saving" do
-    before :each do
-      @car2 = Car.for Cars.car2
-    end
-
     it "should save a type for resources which don't have one in the data store" do
-      @car2.save!
-      @types_repository.query(:subject => Cars.car2, :predicate => RDF.type, :object => Cars.car).count.should == 1
+      car2.save!
+      expect(subject.query(:subject => Cars.car2, :predicate => RDF.type, :object => Cars.car).count).to eql 1
     end
 
     it "should save a type for newly-created resources which in the data store" do
       car3 = Car.for(Cars.car3)
       car3.save!
-      @types_repository.query(:subject => Cars.car3, :predicate => RDF.type, :object => Cars.car).count.should == 1
+      expect(subject.query(:subject => Cars.car3, :predicate => RDF.type, :object => Cars.car).count).to eql 1
     end
   end
 
   context "When getting/setting" do
     before :each do
-      @car = Car.for Cars.car1
-      @car.nil?.should_not be_true
+      expect(car1).not_to be_nil
     end
 
     it "should allow setting other properties" do
-      @car.name = "prius"
-      @car.save!
-      @car.type.should == Cars.car
-      @car.name.should == "prius"
+      car1.name = "prius"
+      car1.save!
+      expect(car1.type).to eql Cars.car
+      expect(car1.name).to eql "prius"
     end
 
     it "should raise an exception when trying to change the type" do
-      lambda {@car.type = Cars.van}.should raise_error
+      expect {car1.type = Cars.van}.to raise_error(NoMethodError)
     end
 
     it "should maintain all triples related to this object on save" do
-      original_triples = @types_repository.query(:subject => Cars.car1)
-      @car.name = 'testing123'
-      @car.save!
-      @types_repository.query(:subject => Cars.car1).count.should == original_triples.size
+      original_triples = subject.query(:subject => Cars.car1)
+      car1.name = 'testing123'
+      car1.save!
+      expect(subject.query(:subject => Cars.car1).count).to eql original_triples.size
     end
   end
 
   context "when counting" do
     it "should count all projected types" do
-      lambda {
+      expect {
         Car.for(Cars.one).save!
         Van.for(Cars.two).save!
-      }.should change(MultiCar, :count).by(2)
+      }.to change(MultiCar, :count).by(2)
     end
 
     it "should provide a count method for resources with types" do
-      Car.count.should == 1
+      expect(Car.count).to eql 1
     end
 
     it "should increase the count when items are saved" do
       Car.for(Cars.toyota).save!
-      Car.count.should == 2
+      expect(Car.count).to eql 2
     end
 
     it "should decrease the count when items are destroyed" do
-      car = Car.for(Cars.car1)
-      lambda { car.destroy }.should change(Car, :count).from(1).to(0)
+      expect { car1.destroy }.to change(Car, :count).from(1).to(0)
     end
 
     it "should raise a Spira::NoTypeError to call #count for models without types" do
-      lambda { Wagon.count }.should raise_error Spira::NoTypeError
+      expect { Wagon.count }.to raise_error Spira::NoTypeError
     end
   end
 
   context "when enumerating" do
     it "should provide an each method for resources with types" do
-      Van.each.to_a.size.should == 3
+      expect(Van.each.to_a.size).to eql 3
     end
 
     it "should raise a Spira::NoTypeError to call #each for models without types" do
-      lambda { Wagon.each }.should raise_error Spira::NoTypeError
+      expect { Wagon.each }.to raise_error Spira::NoTypeError
     end
 
     it "should return an enumerator if no block is given" do
-      Van.each.should be_a Enumerator
+      expect(Van.each).to be_a Enumerator
     end
 
     it "should execute a block if one is given" do
@@ -201,7 +184,7 @@ describe 'models with a defined rdf type' do
         vans << resource
       end
       [Cars.van1, Cars.van2, Cars.van3].each do |uri|
-        vans.any? { |van| van.uri == uri }.should be_true
+        expect(vans.any? { |van| van.uri == uri }).to be_truthy
       end
     end
   end

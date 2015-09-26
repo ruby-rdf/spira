@@ -12,63 +12,50 @@ describe 'Resources with data not associated with a model' do
     end
     @filename = fixture('non_model_data.nt')
   end
+  let(:extra_repo) {RDF::Repository.load(fixture('non_model_data.nt'))}
 
-  before :each do
-    @extra_repo = RDF::Repository.load(@filename)
-    Spira.repository = @extra_repo
-  end
+  before {Spira.repository = extra_repo}
 
   context "when multiple objects exist for a property" do
-    before :each do
-      @example2 = ExtraDataTest.for('example2')
-      @uri = @example2.uri
-    end
+    subject {ExtraDataTest.for('example2')}
 
     it "should not raise an error to load a model with multiple instances of a property predicate" do
-      lambda { @example = ExtraDataTest.for('example2') }.should_not raise_error
+      expect { ExtraDataTest.for('example2') }.not_to raise_error
     end
 
-    it "should treat the property as a single property" do
-      @example2.property.should be_a Fixnum
-    end
+    its(:property) {is_expected.to be_a Fixnum}
 
     it "should load one of the available property examples as the property" do
-      [15,20].should include @example2.property
+      expect([15,20]).to include subject.property
     end
 
   end
 
   context "when deleting" do
-    before :each do
-      @example1 = ExtraDataTest.for('example1')
-      @uri = @example1.uri
-    end
+    subject {ExtraDataTest.for('example1')}
 
     it "should not delete non-model data on Resource#!destroy" do
-      @example1.destroy!
-      @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.name).count.should == 1
+      subject.destroy!
+      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::FOAF.name).count).to eql 1
     end
 
   end
 
   context "when updating" do
-    before :each do
-      @example1 = ExtraDataTest.for('example1')
-      @uri = @example1.uri
-    end
+    subject {ExtraDataTest.for('example1')}
 
     it "should save model data" do
-      @example1.property = 17
-      @example1.save!
-      @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.age).count.should == 1
-      @extra_repo.first_value(:subject => @uri, :predicate => RDF::FOAF.age).to_i.should == 17
+      subject.property = 17
+      subject.save!
+      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::FOAF.age).count).to eql 1
+      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::FOAF.age).to_i).to eql 17
     end
 
     it "should not affect non-model data" do
-      @example1.property = 17
-      @example1.save!
-      @extra_repo.query(:subject => @uri, :predicate => RDF::FOAF.name).count.should == 1
-      @extra_repo.first_value(:subject => @uri, :predicate => RDF::FOAF.name).should == "Not in the model"
+      subject.property = 17
+      subject.save!
+      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::FOAF.name).count).to eql 1
+      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::FOAF.name)).to eql "Not in the model"
     end
   end
 

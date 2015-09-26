@@ -35,112 +35,110 @@ describe Spira do
     end
 
     context "when redeclaring a property in a child" do
-      before :each do
-        Spira.repository = RDF::Repository.new
-        @item = RDF::URI('http://example.org/item').as(InheritanceItem)
-        @post = RDF::URI('http://example.org/post').as(InheritancePost)
-      end
+      let(:item) {RDF::URI('http://example.org/item').as(InheritanceItem)}
+      let(:post) {RDF::URI('http://example.org/post').as(InheritancePost)}
+
+      before {Spira.repository = RDF::Repository.new}
 
       it "should override the property on the child" do
-        @post.subtitle.should be_nil
-        @post.should_not respond_to(:subtitle_ids)
+        expect(post.subtitle).to be_nil
+        expect(post).not_to respond_to(:subtitle_ids)
       end
 
       it "should not override the parent property" do
-        @item.subtitle.should be_empty
-        @item.should respond_to(:subtitle_ids)
+        expect(item.subtitle).to be_empty
+        expect(item).to respond_to(:subtitle_ids)
       end
     end
 
     context "when passing properties to children" do
-      before :each do
-        Spira.repository = RDF::Repository.new
-        @item = RDF::URI('http://example.org/item').as(InheritanceItem)
-        @post = RDF::URI('http://example.org/post').as(InheritancePost)
-        @type = RDF::URI('http://example.org/type').as(InheritedType)
-        @forum = RDF::URI('http://example.org/forum').as(InheritanceForumPost)
-      end
+      let(:item) {RDF::URI('http://example.org/item').as(InheritanceItem)}
+      let(:post) {RDF::URI('http://example.org/post').as(InheritancePost)}
+      let(:type) {RDF::URI('http://example.org/type').as(InheritedType)}
+      let(:forum) {RDF::URI('http://example.org/forum').as(InheritanceForumPost)}
+
+      before {Spira.repository = RDF::Repository.new}
 
       it "should respond to a property getter" do
-        @post.should respond_to :title
+        expect(post).to respond_to :title
       end
 
       it "should respond to a property setter" do
-        @post.should respond_to :title=
+        expect(post).to respond_to :title=
       end
 
       it "should respond to a propety getter on a grandchild class" do
-        @forum.should respond_to :title 
+        expect(forum).to respond_to :title 
       end
 
       it "should respond to a propety setter on a grandchild class" do
-        @forum.should respond_to :title= 
+        expect(forum).to respond_to :title= 
       end
 
       it "should maintain property metadata" do
-        InheritancePost.properties.should have_key :title
-        InheritancePost.properties[:title][:type].should == Spira::Types::String
+        expect(InheritancePost.properties).to have_key :title
+        expect(InheritancePost.properties[:title][:type]).to eql Spira::Types::String
       end
 
       it "should add properties of child classes" do
-        @post.should respond_to :creator
-        @post.should respond_to :creator=
-        InheritancePost.properties.should have_key :creator
+        expect(post).to respond_to :creator
+        expect(post).to respond_to :creator=
+        expect(InheritancePost.properties).to have_key :creator
       end
 
       it "should allow setting a property" do
-        @post.title = "test title"
-        @post.title.should == "test title"
+        post.title = "test title"
+        expect(post.title).to eql "test title"
       end
 
       it "should inherit an RDFS type if one is not given" do
-        InheritedType.type.should == RDF::SIOC.Item
+        expect(InheritedType.type).to eql RDF::SIOC.Item
       end
 
       it "should overwrite the RDFS type if one is given" do
-        InheritancePost.type.should == RDF::SIOC.Post
+        expect(InheritancePost.type).to eql RDF::SIOC.Post
       end
 
       it "should inherit an RDFS type from the most recent ancestor" do
-        InheritanceForumPost.type.should == RDF::SIOC.Post
+        expect(InheritanceForumPost.type).to eql RDF::SIOC.Post
       end
 
       it "should not define methods on parents" do
-        @item.should_not respond_to :creator
+        expect(item).not_to respond_to :creator
       end
 
       it "should not modify the properties of the base class" do
-        Spira::Base.properties.should be_empty
+        expect(Spira::Base.properties).to be_empty
       end
 
       context "when saving properties" do
         before :each do
-          @post.title = "test title"
-          @post.save!
-          @type.title = "type title"
-          @type.save!
-          @forum.title = "forum title"
-          @forum.save!
+          post.title = "test title"
+          post.save!
+          type.title = "type title"
+          type.save!
+          forum.title = "forum title"
+          forum.save!
         end
 
         it "should save an edited property" do
-          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF::DC.title).count.should == 1
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF::DC.title).count).to eql 1
         end
 
         it "should save an edited property on a grandchild class" do
-          InheritanceForumPost.repository.query(:subject => @forum.uri, :predicate => RDF::DC.title).count.should == 1
+          expect(InheritanceForumPost.repository.query(:subject => forum.uri, :predicate => RDF::DC.title).count).to eql 1
         end
 
         it "should save the new type" do
-          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count.should == 1
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count).to eql 1
         end
 
         it "should not save the supertype for a subclass which has specified one" do
-          InheritancePost.repository.query(:subject => @post.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count.should == 0
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count).to eql 0
         end
 
         it "should save the supertype for a subclass which has not specified one" do
-          InheritedType.repository.query(:subject => @type.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count.should == 1
+          expect(InheritedType.repository.query(:subject => type.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count).to eql 1
         end
       end
     end
@@ -163,16 +161,16 @@ describe Spira do
 
     it "should have multiple types" do
       types = Set.new [RDF::SIOC.Item, RDF::SIOC.Post]
-      MultiTypeThing.types.should eql types
+      expect(MultiTypeThing.types).to eql types
     end
 
     it "should inherit multiple types" do
-      InheritedMultiTypeThing.types.should eql MultiTypeThing.types
+      expect(InheritedMultiTypeThing.types).to eql MultiTypeThing.types
     end
 
     it "should overwrite types" do
       types = Set.new << RDF::SIOC.Container
-      InheritedWithTypesMultiTypeThing.types.should eql types
+      expect(InheritedWithTypesMultiTypeThing.types).to eql types
     end
 
     context "when saved" do
@@ -182,8 +180,8 @@ describe Spira do
       end
 
       it "should store multiple classes" do
-        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count.should == 1
-        MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count.should == 1
+        expect(MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count).to eql 1
+        expect(MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count).to eql 1
       end
     end
   end
@@ -194,10 +192,10 @@ describe Spira do
     end
 
     it "should have access to Spira DSL methods" do
-      BaseChild.should respond_to :property
-      BaseChild.should respond_to :base_uri
-      BaseChild.should respond_to :has_many
-      BaseChild.should respond_to :default_vocabulary
+      expect(BaseChild).to respond_to :property
+      expect(BaseChild).to respond_to :base_uri
+      expect(BaseChild).to respond_to :has_many
+      expect(BaseChild).to respond_to :default_vocabulary
     end
   end
 end

@@ -102,82 +102,80 @@ describe "Spira resources" do
   end
 
   context "with many-to-many relationship" do
+    subject(:artist) {Artist.for "Beard"}
+    subject(:team) {Team.for "ZZ Top"}
+
     before :all do
       Spira.repository = RDF::Repository.new
     end
 
-    before do
-      @artist = Artist.for "Beard"
-      @team = Team.for "ZZ Top"
-    end
-
     context "with resources referencing each other" do
       before do
-        @artist.teams = [@team]
-        @team.artists = [@artist]
+        artist.teams = [team]
+        team.artists = [artist]
 
-        @artist.save!
-        @team.save!
+        artist.save!
+        team.save!
       end
 
       context "when reloading" do
         it "should not cause an infinite loop" do
-          expect(@artist.reload).to eql @artist
+          expect(artist.reload).to eql artist
         end
       end
     end
   end
 
   context "with a one-to-many relationship" do
+    subject(:artist) {Artist.for "nirvana"}
+    subject(:cd) {CD.for 'nevermind'}
   
     before :each do
       require 'rdf/ntriples'
-      @cds_repository = RDF::Repository.load(fixture('relations.nt'))
-      Spira.repository = @cds_repository
+      Spira.repository = RDF::Repository.load(fixture('relations.nt'))
       @cd = CD.for 'nevermind'
-      @artist = Artist.for 'nirvana'
     end
 
     it "should find a cd" do
-      expect(@cd).to be_a CD
+      expect(cd).to be_a CD
     end
 
     it "should find the artist" do
-      expect(@artist).to be_a Artist
+      expect(artist).to be_a Artist
     end
 
     it "should find an artist for a cd" do
-      expect(@cd.artist).to be_a Artist
+      expect(cd.artist).to be_a Artist
     end
 
     it "should find the correct artist for a cd" do
-      expect(@cd.artist.uri).to eq @artist.uri
+      expect(cd.artist.uri).to eq artist.uri
     end
 
     it "should find CDs for an artist" do
-      cds = @artist.cds
+      cds = artist.cds
       expect(cds).to be_a Array
-      expect(cds.find { |cd| cd.name == 'Nevermind' }).to be_true
-      expect(cds.find { |cd| cd.name == 'In Utero' }).to be_true
+      expect(cds.find { |cd| cd.name == 'Nevermind' }).to be_truthy
+      expect(cds.find { |cd| cd.name == 'In Utero' }).to be_truthy
     end
 
     it "should not reload an object for a simple reverse relationship" do
       pending "no longer applies as the global cache is gone"
 
-      expect(@artist.cds.first.artist).to equal @artist
-      artist_cd = @cd.artist.cds.find { | list_cd | list_cd.uri == @cd.uri }
-      expect(@cd).to equal artist_cd
+      expect(artist.cds.first.artist).to equal artist
+      artist_cd = cd.artist.cds.find { | list_cd | list_cd.uri == cd.uri }
+      expect(cd).to equal artist_cd
     end
 
     it "should find a model object for a uri" do
-      expect(@cd.artist).to eq @artist
+      expect(cd.artist).to eq artist
     end
 
     it "should make a valid statement referencing the assigned objects URI" do
       @kurt = Artist.for('kurt cobain')
-      @cd.artist = @kurt
-      @cd.query(:predicate => CDs.artist) do |statement|
-        expect(statement.subject).to eq @cd.uri
+      cd.artist = @kurt
+      cd.query(:predicate => CDs.artist) do |statement|
+        expect(statement.subject).to eq cd.uri
         expect(statement.predicate).to eq CDs.artist
         expect(statement.object).to eq @kurt.uri
       end
@@ -186,22 +184,19 @@ describe "Spira resources" do
   end
 
   context "with invalid relationships" do
+    let(:invalid_repo) {RDF::Repository.new}
 
-    before :all do
-      @invalid_repo = RDF::Repository.new
-      Spira.repository = @invalid_repo
-    end
+    before {Spira.repository = invalid_repo}
 
     context "when accessing a field named for a non-existant class" do
       
-      before :all do
+      before do
         class ::RelationsTestA < Spira::Base
           configure :base_uri => CDs.cds
           property :invalid, :predicate => CDs.artist, :type => :non_existant_type
         end
 
-        @uri_b = RDF::URI.new(CDs.cds.to_s + "/invalid_b")
-        @invalid_repo.insert(RDF::Statement.new(@uri_b, CDs.artist, "whatever"))
+        invalid_repo.insert(RDF::Statement.new(RDF::URI.new(CDs.cds.to_s + "/invalid_b"), CDs.artist, "whatever"))
       end
 
       it "should raise a NameError when saving an object with the invalid property" do
@@ -231,7 +226,7 @@ describe "Spira resources" do
 
       it "should raise a TypeError when accessing the invalid property on an existing object" do
         subject = RDF::Node.new
-        @invalid_repo.insert [subject, RDF::DC.title, 'something']
+        invalid_repo.insert [subject, RDF::DC.title, 'something']
         expect { RelationsTestB.for(subject).invalid }.to raise_error TypeError
       end
     end

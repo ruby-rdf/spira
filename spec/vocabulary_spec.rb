@@ -4,39 +4,34 @@ require "spec_helper"
 describe 'default vocabularies' do
 
   before :all do
-    @bubble_repo = RDF::Repository.new
-    Spira.repository = @bubble_repo
-  end
-
-  before :each do
-    @vocabulary = RDF::URI.new('http://example.org/vocabulary/')
+    Spira.repository =  RDF::Repository.new
   end
 
   context "defining classes" do
     it "should allow a property without a predicate if there is a default vocabulary" do
-      lambda {
+      expect {
         class VocabTestX < Spira::Base
           configure :default_vocabulary => RDF::URI.new('http://example.org/vocabulary/')
           property :test
         end
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
     it "should raise a ResourceDeclarationError to set a property without a default vocabulary" do
-      lambda {
+      expect {
         class VocabTestY < Spira::Base
           property :test
         end
-      }.should raise_error Spira::ResourceDeclarationError
+      }.to raise_error Spira::ResourceDeclarationError
     end
 
     # FIXME: reexamine this behavior.  Static typing in the DSL?  Why?  Why not create a URI out of anything we can #to_s?
     it "should raise a ResourceDelcarationError to set a predicate without a default vocabulary that is not an RDF::URI" do
-      lambda {
+      expect {
         class VocabTestY < Spira::Base
           property :test, :predicate => "http://example.org/test"
         end
-      }.should raise_error Spira::ResourceDeclarationError
+      }.to raise_error Spira::ResourceDeclarationError
     end
   end
 
@@ -52,10 +47,8 @@ describe 'default vocabularies' do
       end
     end
 
-    before :each do
-      @year = RDF::URI.new 'http://example.org/vocab/year'
-      @name = RDF::URI.new 'http://example.org/vocab/name'
-    end
+    let(:year) {RDF::URI.new 'http://example.org/vocab/year'}
+    let(:name) {RDF::URI.new 'http://example.org/vocab/name'}
 
     it "should do non-default sets and gets normally" do
       bubble = Bubble.for 'tulips'
@@ -63,8 +56,8 @@ describe 'default vocabularies' do
       bubble.title = "Holland tulip"
       bubble.save!
 
-      bubble.title.should == "Holland tulip"
-      bubble.should have_predicate RDF::DC.title
+      expect(bubble.title).to eql "Holland tulip"
+      expect(bubble).to have_predicate RDF::DC.title
     end
     it "should create a predicate for a given property" do
       bubble = Bubble.for 'dotcom'
@@ -72,8 +65,8 @@ describe 'default vocabularies' do
       bubble.name = 'Dot-com boom'
 
       bubble.save!
-      bubble.should have_predicate @year
-      bubble.should have_predicate @name
+      expect(bubble).to have_predicate year
+      expect(bubble).to have_predicate name
     end
 
     context "that ends in a hash seperator" do
@@ -87,20 +80,15 @@ describe 'default vocabularies' do
         end
       end
 
-      before :each do
-        @name = RDF::URI("http://example.org/test#name")
-      end
+      let(:name) {RDF::URI.new 'http://example.org/test#name'}
 
       it "should correctly not append a slash" do
         test = HashVocabTest.for('test1')
         test.name = "test1"
         test.save!
-        test.should have_predicate @name
+        expect(test).to have_predicate name
       end
 
     end
   end
-
-
-
 end

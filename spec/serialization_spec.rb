@@ -14,22 +14,22 @@ describe "serialization" do
     res = SpiraResource.for RDF::URI.new("http://example.com/resources/res1")
 
     serialized = SpiraResource.serialize(res)
-    serialized.should_not be_nil
-    serialized.should eql res.subject
+    expect(serialized).not_to be_nil
+    expect(serialized).to eql res.subject
   end
 
   it "should serialize a blank ruby object into nil" do
-    SpiraResource.serialize("").should be_nil
+    expect(SpiraResource.serialize("")).to be_nil
   end
 
   it "should raise TypeError exception when trying to serialize an object it cannot serialize" do
-    lambda { SpiraResource.serialize(1) }.should raise_error TypeError
+    expect { SpiraResource.serialize(1) }.to raise_error TypeError
   end
 
   context "of UTF-8 literals" do
     it "should produce proper UTF-8 output" do
       res = SpiraResource.create(:name => "日本語")
-      res.reload.name.should eql "日本語"
+      expect(res.reload.name).to eql "日本語"
     end
   end
 end

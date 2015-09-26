@@ -20,54 +20,51 @@ describe Spira do
     ::Concept.for('http://example.org/example/company')
   }
 
-  before :each do
-    @repository = RDF::Repository.load(fixture('localized.nt'))
-    Spira.repository = @repository
-  end
+  before {Spira.repository =  RDF::Repository.load(fixture('localized.nt'))}
 
   context "with a localized property" do
     it "should have the default getter" do
-      company.should respond_to :label
+      expect(company).to respond_to :label
     end
 
     it "should have a _native getter" do
-      company.should respond_to :label_native
+      expect(company).to respond_to :label_native
     end
 
     it "should have a _with_locales getter" do
-      company.should respond_to :label_with_locales
+      expect(company).to respond_to :label_with_locales
     end
 
     describe "the default getter" do
       it "should take in account the current locale" do
         I18n.locale = :en
-        company.label.should == "company"
+        expect(company.label).to eql "company"
         I18n.locale = :fr
-        company.label.should == "société"
+        expect(company.label).to eql "société"
       end
     end
 
     describe "the _native getter" do
       it "should return all the labels" do
-        company.label_native.should have(2).elements
+        expect(company.label_native.length).to eql 2
       end
 
       it "should return the labels as RDF Literals" do
-        company.label_native.first.should be_a(RDF::Literal)
+        expect(company.label_native.first).to be_a(RDF::Literal)
       end
     end
 
     describe "the _with_locales getter" do
       it "should return a hash" do
-        company.label_with_locales.should be_a(Hash)
+        expect(company.label_with_locales).to be_a(Hash)
       end
 
       it "should contains all the locales" do
-        company.label_with_locales.keys.should include(:fr, :en)
+        expect(company.label_with_locales.keys).to include(:fr, :en)
       end
 
       it "should contains all the labels" do
-        company.label_with_locales[:fr].should == 'société'
+        expect(company.label_with_locales[:fr]).to eql 'société'
       end
     end
 
@@ -76,21 +73,21 @@ describe Spira do
         I18n.locale = :en
         company.label = nil
         I18n.locale = :fr
-        company.label.should == "société"
+        expect(company.label).to eql "société"
       end
     end
 
     describe "the _native setter" do
       it "should be locale independant" do
         company.label_native = [RDF::Literal.new('Company', :language => :en)]
-        company.label_native.should have(1).elements
+        expect(company.label_native.length).to eql 1
       end
     end
 
     describe "the _with_locales setter" do
       it "should be locale independant" do
         company.label_with_locales = { :en => 'Company', :fr => 'Société' }
-        company.label_native.should have(2).elements
+        expect(company.label_native.length).to eql 2
       end
     end
   end

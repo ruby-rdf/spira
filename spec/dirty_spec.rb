@@ -10,80 +10,69 @@ describe Spira do
     end
   end
 
+  let(:uri) {RDF::URI("http://example.org/example/people/alice")}
   before :each do
-    @repo = RDF::Repository.new
-    @uri = RDF::URI("http://example.org/example/people/alice")
-    @repo << RDF::Statement.new(@uri, RDF::RDFS.label, "Alice")
-    @repo << RDF::Statement.new(@uri, RDF::FOAF.age, 15)
-    @repo << RDF::Statement.new(@uri, RDF::RDFS.seeAlso, "A Literal")
-    @repo << RDF::Statement.new(@uri, RDF::RDFS.seeAlso, "Another Literal")
-    Spira.repository = @repo
+    Spira.repository = RDF::Repository.new do |repo|
+      repo << RDF::Statement.new(uri, RDF::RDFS.label, "Alice")
+      repo << RDF::Statement.new(uri, RDF::FOAF.age, 15)
+      repo << RDF::Statement.new(uri, RDF::RDFS.seeAlso, "A Literal")
+      repo << RDF::Statement.new(uri, RDF::RDFS.seeAlso, "Another Literal")
+    end
   end
 
   context "when tracking dirty attributes" do
+    subject {DirtyTest.for(uri)}
 
-    before :each do
-      @test = DirtyTest.for(@uri)
-    end
-
-    it "should not mark the projetion as dirty initially" do
-      @test.should_not be_changed
-    end
+    it {is_expected.not_to be_changed}
 
     context "that are properties" do
 
       it "should not mark attributes as dirty when loading" do
-        @test.changed_attributes.should_not include("name")
-        @test.changed_attributes.should_not include("age")
+        expect(subject.changed_attributes).not_to include("name")
+        expect(subject.changed_attributes).not_to include("age")
       end
   
       it "should mark the projection as dirty if an attribute is dirty" do
-        @test.name = "Steve"
-        @test.should be_changed
+        subject.name = "Steve"
+        is_expected.to be_changed
       end
   
       it "should mark attributes as dirty when changed" do
-        @test.name = "Steve"
-        @test.changed_attributes.should include("name")
-        @test.changed_attributes.should_not include("age")
+        subject.name = "Steve"
+        expect(subject.changed_attributes).to include("name")
+        expect(subject.changed_attributes).not_to include("age")
       end
 
       it "should mark attributes as dirty when providing them as arguments" do
-        test = DirtyTest.for(@uri, :name => "Steve")
-
-        @test.changed_attributes.should_not include("name")
-        @test.changed_attributes.should_not include("age")
+        expect(subject.changed_attributes).not_to include("name")
+        expect(subject.changed_attributes).not_to include("age")
       end
     end
 
     context "that are lists" do
-      it "should not mark attributes as dirty when loading" do
-        @test.changed_attributes.should_not include("items")
-      end
+      its(:changed_attributes) {is_expected.not_to include("items")}
 
       it "should mark the projection as dirty if an attribute is dirty" do
-        @test.items = ["Steve"]
-        @test.changed_attributes.should include("items")
+        subject.items = ["Steve"]
+        expect(subject.changed_attributes).to include("items")
       end
 
       it "should mark attributes as dirty when changed" do
-        @test.items = ["Steve"]
-        @test.changed_attributes.should include("items")
-        @test.changed_attributes.should_not include("age")
+        subject.items = ["Steve"]
+        expect(subject.changed_attributes).to include("items")
+        expect(subject.changed_attributes).not_to include("age")
       end
   
       it "should not mark attributes as dirty when providing them as arguments" do
-        test = DirtyTest.for(@uri, :items => ["Steve"])
-
-        @test.changed_attributes.should_not include("items")
-        @test.changed_attributes.should_not include("age")
+        expect(subject.changed_attributes).not_to include("items")
+        expect(subject.changed_attributes).not_to include("age")
       end
 
       it "should mark attributes as dirty when updated" do
         # TODO: a fix is pending for this, read comments on #persist! method
         pending "ActiveModel::Dirty cannot track that - read its docs"
-        # @test.items << "Steve"
-        # @test.changed_attributes.should include(:items)
+        subject.items << "Steve"
+        expect(subject.changed_attributes).to include(:items)
       end
 
     end

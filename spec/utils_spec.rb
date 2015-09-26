@@ -3,8 +3,7 @@ require "spec_helper"
 describe Spira::Utils do
 
   describe "rename!" do
-
-    # TODO: adapt to Spira::Utils.rename!
+    it "TODO: adapt to Spira::Utils.rename!"
 
     # before :each do
     #   @new_uri = RDF::URI('http://example.org/people/test2')
@@ -17,36 +16,36 @@ describe Spira::Utils do
 
     # context "with #rename!" do
     #   it "supports #rename!" do
-    #     @test.respond_to?(:rename!).should be_true
+    #     expect(@test.respond_to?(:rename!)).to be_truthy
     #   end
 
     #   it "copies model data to a given subject" do
     #     new = @test.rename!(@new_uri)
-    #     new.name.should == @name
-    #     new.age.should == @age
+    #     expect(new.name).to eql @name
+    #     expect(new.age).to eql @age
     #   end
 
     #   it "updates references to the old subject as objects" do
     #     new = @test.rename!(@new_uri)
-    #     @update_repo.should have_statement RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @new_uri)
-    #     @update_repo.should_not have_statement RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @test_uri)
+    #     expect(@update_repo).to have_statement RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @new_uri)
+    #     expect(@update_repo).not_to have_statement RDF::Statement.new(@other_uri, RDF::RDFS.seeAlso, @test_uri)
     #   end
 
     #   it "saves the copy immediately" do
     #     @test.rename!(@new_uri)
-    #     @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::RDFS.label, @name)
-    #     @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @age)
+    #     expect(@update_repo).to have_statement RDF::Statement.new(@new_uri, RDF::RDFS.label, @name)
+    #     expect(@update_repo).to have_statement RDF::Statement.new(@new_uri, RDF::FOAF.age, @age)
     #   end
 
     #   it "deletes the old model data" do
     #     @test.rename!(@new_uri)
-    #     @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @name)
-    #     @update_repo.should_not have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @age)
+    #     expect(@update_repo).not_to have_statement RDF::Statement.new(@test_uri, RDF::RDFS.label, @name)
+    #     expect(@update_repo).not_to have_statement RDF::Statement.new(@test_uri, RDF::FOAF.age, @age)
     #   end
 
     #   it "copies non-model data to the given subject" do
     #     new = @test.rename!(@new_uri)
-    #     @update_repo.should have_statement RDF::Statement.new(@new_uri, RDF::FOAF.name, 'Not in model')
+    #     expect(@update_repo).to have_statement RDF::Statement.new(@new_uri, RDF::FOAF.name, 'Not in model')
     #   end
 
     #   it "deletes all data about the old subject" do
