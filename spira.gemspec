@@ -32,7 +32,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version      = '>= 1.9.2'
   gem.requirements               = []
 
-  gem.add_runtime_dependency     'rdf',            '~> 1.1'
+  gem.add_runtime_dependency     'rdf',            '~> 1.1', '>= 1.1.16.1'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 1.1'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
   gem.add_runtime_dependency     'activemodel',    '> 3'
