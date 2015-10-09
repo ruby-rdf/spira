@@ -6,8 +6,6 @@ require "spec_helper"
 describe Spira do
 
   before :all do
-    require 'rdf/ntriples'
-
     class ::Person < Spira::Base
       configure :base_uri => "http://example.org/example/people"
       property :name, :predicate => RDFS.label

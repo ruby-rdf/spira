@@ -5,6 +5,7 @@ gem 'rake', '~> 10.0'
 gem 'rdf', git: "git://github.com/ruby-rdf/rdf.git", branch: "develop"
 
 group :development, :test do
+  gem 'byebug',    platform: :mri_21
   gem 'redcarpet', '~> 3.2.2' unless RUBY_ENGINE == 'jruby'
   gem 'psych',      platforms: [:mri, :rbx]
 end

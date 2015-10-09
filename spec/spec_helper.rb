@@ -1,3 +1,8 @@
+require 'rdf/spec/enumerable'
+require 'rdf/spec'
+require 'rdf/isomorphic'
+require 'rdf/ntriples'
+require 'rdf/turtle'
 require 'simplecov'
 require 'coveralls'
 
@@ -10,9 +15,6 @@ SimpleCov.start do
 end
 
 require 'spira'
-require 'rdf/spec/enumerable'
-require 'rdf/spec'
-require 'rdf/isomorphic'
 
 require 'i18n'
 I18n.enforce_available_locales = false
