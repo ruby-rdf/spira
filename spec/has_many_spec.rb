@@ -7,7 +7,6 @@ end
 describe "has_many" do
 
   before :all do
-    require 'rdf/ntriples'
     class ::Post < Spira::Base
       type RDF::URI.new('http://rdfs.org/sioc/types#Post')
 

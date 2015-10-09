@@ -7,8 +7,6 @@ require "spec_helper"
 describe Spira do
 
   before :all do
-    require 'rdf/ntriples'
-
     class ::Concept < Spira::Base
       configure :base_uri => "http://example.org/example/"
       property :label, :predicate => RDFS.label, :localized => true

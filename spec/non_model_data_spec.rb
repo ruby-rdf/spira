@@ -3,14 +3,12 @@ require "spec_helper"
 describe 'Resources with data not associated with a model' do
 
   before :all do
-    require 'rdf/ntriples'
     class ::ExtraDataTest < Spira::Base
       configure :base_uri => "http://example.org/example"
 
       property :property, :predicate => FOAF.age, :type => Integer
       has_many :list,     :predicate => RDFS.label
     end
-    @filename = fixture('non_model_data.nt')
   end
   let(:extra_repo) {RDF::Repository.load(fixture('non_model_data.nt'))}
 

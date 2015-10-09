@@ -1,5 +1,4 @@
 require "spec_helper"
-require 'rdf/ntriples'
 
 describe Spira::Utils do
   class ::Person < Spira::Base

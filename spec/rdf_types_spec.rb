@@ -17,8 +17,6 @@ describe 'models with a defined rdf type' do
   let(:car2) {Car.for Cars.car2}
 
   before :all do
-    require 'rdf/ntriples'
-
     class ::Car < Spira::Base
       type Cars.car
       property :name, :predicate => RDFS.label

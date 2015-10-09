@@ -5,7 +5,6 @@ require "spec_helper"
 describe Spira::Base do
 
   before :all do
-    require 'rdf/ntriples'
     Spira.repository = ::RDF::Repository.new
 
     class ::EnumerableSpec < Spira::Base

@@ -131,7 +131,6 @@ describe "Spira resources" do
     subject(:cd) {CD.for 'nevermind'}
   
     before :each do
-      require 'rdf/ntriples'
       Spira.repository = RDF::Repository.load(fixture('relations.nt'))
       @cd = CD.for 'nevermind'
     end

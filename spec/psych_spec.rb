@@ -17,7 +17,6 @@ describe Spira, :ruby => "1.9" do
       property :age,  :predicate => FOAF.age, :type => Integer
     end
 
-    require 'rdf/ntriples'
     Spira.repository = RDF::Repository.load(fixture('bob.nt'))
   end
 
