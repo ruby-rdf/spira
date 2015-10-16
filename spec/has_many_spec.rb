@@ -10,17 +10,17 @@ describe "has_many" do
     class ::Post < Spira::Base
       type RDF::URI.new('http://rdfs.org/sioc/types#Post')
 
-      has_many :comments, :predicate => SIOC.has_reply, :type => :Comment
-      property :title,    :predicate => DC.title
-      property :body,     :predicate => SIOC.content
+      has_many :comments, :predicate => RDF::Vocab::SIOC.has_reply, :type => :Comment
+      property :title,    :predicate => RDF::Vocab::DC.title
+      property :body,     :predicate => RDF::Vocab::SIOC.content
     end
 
     class ::Comment < Spira::Base
       type RDF::URI.new('http://rdfs.org/sioc/types#Comment')
 
-      property :post,     :predicate => SIOC.reply_of, :type => :Post
-      property :title,    :predicate => DC.title
-      property :body,     :predicate => SIOC.content
+      property :post,     :predicate => RDF::Vocab::SIOC.reply_of, :type => :Post
+      property :title,    :predicate => RDF::Vocab::DC.title
+      property :body,     :predicate => RDF::Vocab::SIOC.content
       has_many :ratings,  :predicate => Posts.rating, :type => Integer
     end
   end

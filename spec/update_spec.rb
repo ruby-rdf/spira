@@ -8,7 +8,7 @@ describe Spira do
     class ::UpdateTest < Spira::Base
       configure :base_uri => "http://example.org/example/people"
       property :name, :predicate => RDFS.label
-      property :age,  :predicate => FOAF.age,  :type => Integer
+      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
     end
   end
 

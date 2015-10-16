@@ -4,14 +4,14 @@ describe 'Spira resources' do
 
   before :all do
     class ::HookTest < ::Spira::Base
-      property :name, :predicate => FOAF.name
-      property :age,  :predicate => FOAF.age
+      property :name, :predicate => RDF::Vocab::FOAF.name
+      property :age,  :predicate => RDF::Vocab::FOAF.age
     end
   end
   subject {RDF::URI.intern('http://example.org/test')}
   let(:repository) do
     RDF::Repository.new do |repo|
-      repo << RDF::Statement.new(subject, RDF::FOAF.name, "A name")
+      repo << RDF::Statement.new(subject, RDF::Vocab::FOAF.name, "A name")
     end
   end
 
@@ -20,7 +20,7 @@ describe 'Spira resources' do
   context "with a before_create method" do
     before :all do
       class ::BeforeCreateTest < ::HookTest
-      type FOAF.Person
+      type RDF::Vocab::FOAF.Person
         before_create :update_name
 
         def update_name
@@ -62,7 +62,7 @@ describe 'Spira resources' do
   context "with an after_create method" do
     before :all do
       class ::AfterCreateTest < ::HookTest
-        type FOAF.Person
+        type RDF::Vocab::FOAF.Person
         after_create :update_name
 
         def update_name
@@ -223,7 +223,7 @@ describe 'Spira resources' do
       end
 
       class ::PrivateHookTest < ::HookTest
-        type FOAF.Person
+        type RDF::Vocab::FOAF.Person
 
         before_create :add_bc_counter
         after_create :add_ac_counter

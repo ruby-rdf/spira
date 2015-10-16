@@ -6,15 +6,15 @@ describe Spira do
 
     before :all do
       class ::InheritanceItem < Spira::Base
-        property :title, :predicate => DC.title, :type => String
-        has_many :subtitle, :predicate => DC.description, :type => String
-        type  SIOC.Item
+        property :title, :predicate => RDF::Vocab::DC.title, :type => String
+        has_many :subtitle, :predicate => RDF::Vocab::DC.description, :type => String
+        type  RDF::SIOC.Item
       end
 
       class ::InheritancePost < ::InheritanceItem
-        type  SIOC.Post
-        property :creator, :predicate => DC.creator
-        property :subtitle, :predicate => DC.description, :type => String
+        type  RDF::SIOC.Post
+        property :creator, :predicate => RDF::Vocab::DC.creator
+        property :subtitle, :predicate => RDF::Vocab::DC.description, :type => String
       end
 
       class ::InheritedType < ::InheritanceItem
@@ -24,13 +24,13 @@ describe Spira do
       end
 
       class ::InheritanceContainer < Spira::Base
-        type SIOC.Container
-        has_many :items, :type => 'InheritanceItem', :predicate => SIOC.container_of
+        type RDF::SIOC.Container
+        has_many :items, :type => 'InheritanceItem', :predicate => RDF::SIOC.container_of
       end
 
       class ::InheritanceForum < ::InheritanceContainer
-        type SIOC.Forum
-        #property :moderator, :predicate => SIOC.has_moderator
+        type RDF::Vocab::SIOC.Forum
+        #property :moderator, :predicate => RDF::Vocab::SIOC.has_moderator
       end
     end
 
@@ -122,11 +122,11 @@ describe Spira do
         end
 
         it "should save an edited property" do
-          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF::DC.title).count).to eql 1
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF::Vocab::DC.title).count).to eql 1
         end
 
         it "should save an edited property on a grandchild class" do
-          expect(InheritanceForumPost.repository.query(:subject => forum.uri, :predicate => RDF::DC.title).count).to eql 1
+          expect(InheritanceForumPost.repository.query(:subject => forum.uri, :predicate => RDF::Vocab::DC.title).count).to eql 1
         end
 
         it "should save the new type" do
@@ -147,15 +147,15 @@ describe Spira do
   describe "multitype classes" do
     before do
       class MultiTypeThing < Spira::Base
-        type  SIOC.Item
-        type  SIOC.Post
+        type  RDF::Vocab::SIOC.Item
+        type  RDF::Vocab::SIOC.Post
       end
 
       class InheritedMultiTypeThing < MultiTypeThing
       end
 
       class InheritedWithTypesMultiTypeThing < MultiTypeThing
-        type SIOC.Container
+        type RDF::Vocab::SIOC.Container
       end
     end
 

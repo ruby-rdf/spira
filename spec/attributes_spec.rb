@@ -5,8 +5,8 @@ describe "RDF::Resource attributes" do
     Spira.repository = RDF::Repository.new
 
     class Person < Spira::Base
-      property :name, :predicate => RDFS.label
-      has_many :friends, :predicate => FOAF.knows, :type => :Person
+      property :name, :predicate => RDF::RDFS.label
+      has_many :friends, :predicate => RDF::Vocab::FOAF.knows, :type => :Person
     end
 
     friend = Person.new(:name => "Dick")

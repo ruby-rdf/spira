@@ -6,12 +6,12 @@ describe Spira do
 
   before :all do
     class ::LoadTest < Spira::Base
-      type FOAF.Document
+      type RDF::Vocab::FOAF.Document
       configure :base_uri => "http://example.com/loads"
 
-      property :name,  :predicate => FOAF.name
+      property :name,  :predicate => RDF::Vocab::FOAF.name
       property :label, :predicate => RDFS.label
-      property :child, :predicate => FOAF.currentProject, :type => 'LoadTest'
+      property :child, :predicate => RDF::Vocab::FOAF.currentProject, :type => 'LoadTest'
     end
   end
 

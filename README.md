@@ -24,8 +24,8 @@ class Person < Spira::Base
 
   configure :base_uri => "http://example.org/example/people"
 
-  property :name, :predicate => FOAF.name, :type => String
-  property :age,  :predicate => FOAF.age,  :type => Integer
+  property :name, :predicate => RDF::Vocab::FOAF.name, :type => String
+  property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
 
 end
 
@@ -113,13 +113,13 @@ require 'spira'
     
 class CD < Spira::Base
   configure :base_uri => 'http://example.org/cds'
-  property :name,   :predicate => DC.title,   :type => XSD.string
+  property :name,   :predicate => RDF::Vocab::DC.title,   :type => XSD.string
   property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
 end
 
 class Artist < Spira::Base
   configure :base_uri => 'http://example.org/artists'
-  property :name, :predicate => DC.title, :type => XSD.string
+  property :name, :predicate => RDF::Vocab::DC.title, :type => XSD.string
   has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
 end
 ```
@@ -212,7 +212,7 @@ A class with a `type` set is assigned an `RDF.type` on creation and saving.
 ```ruby
 class Album < Spira::Base
   type URI.new('http://example.org/types/album')
-  property :name,   :predicate => DC.title
+  property :name,   :predicate => RDF::Vocab::DC.title
 end
 
 Spira.repository = RDF::Repository.new

@@ -43,7 +43,7 @@ describe 'default vocabularies' do
                   :base_uri => "http://example.org/bubbles/"
         property :year, :type => Integer
         property :name
-        property :title, :predicate => DC.title, :type => String
+        property :title, :predicate => RDF::Vocab::DC.title, :type => String
       end
     end
 
@@ -57,7 +57,7 @@ describe 'default vocabularies' do
       bubble.save!
 
       expect(bubble.title).to eql "Holland tulip"
-      expect(bubble).to have_predicate RDF::DC.title
+      expect(bubble).to have_predicate RDF::Vocab::DC.title
     end
     it "should create a predicate for a given property" do
       bubble = Bubble.for 'dotcom'

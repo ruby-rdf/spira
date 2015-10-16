@@ -4,9 +4,9 @@ describe Spira do
 
   before :all do
     class ::DirtyTest < Spira::Base
-      property :name,  :predicate => RDFS.label
-      property :age,   :predicate => FOAF.age,  :type => Integer
-      has_many :items, :predicate => RDFS.seeAlso
+      property :name,  :predicate => RDF::RDFS.label
+      property :age,   :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+      has_many :items, :predicate => RDF::RDFS.seeAlso
     end
   end
 
@@ -14,7 +14,7 @@ describe Spira do
   before :each do
     Spira.repository = RDF::Repository.new do |repo|
       repo << RDF::Statement.new(uri, RDF::RDFS.label, "Alice")
-      repo << RDF::Statement.new(uri, RDF::FOAF.age, 15)
+      repo << RDF::Statement.new(uri, RDF::Vocab::FOAF.age, 15)
       repo << RDF::Statement.new(uri, RDF::RDFS.seeAlso, "A Literal")
       repo << RDF::Statement.new(uri, RDF::RDFS.seeAlso, "Another Literal")
     end

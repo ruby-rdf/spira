@@ -4,7 +4,7 @@ require "spec_helper"
 describe "serialization" do
   before :all do
     class SpiraResource < Spira::Base
-      property :name, :predicate => FOAF.givenName, :type => XSD.string
+      property :name, :predicate => RDF::Vocab::FOAF.givenName, :type => XSD.string
     end
 
     Spira.repository = RDF::Repository.new

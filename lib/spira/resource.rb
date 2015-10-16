@@ -61,11 +61,11 @@ module Spira
     # represents an RDF predicate.
     #
     # @example A simple string property
-    #     property :name, :predicate => FOAF.name, :type => String
+    #     property :name, :predicate => RDF::Vocab::FOAF.name, :type => String
     # @example A property which defaults to {Spira::Types::Any}
-    #     property :name, :predicate => FOAF.name
+    #     property :name, :predicate => RDF::Vocab::FOAF.name
     # @example An integer property
-    #     property :age,  :predicate => FOAF.age, :type => Integer
+    #     property :age,  :predicate => RDF::Vocab::FOAF.age, :type => Integer
     # @param  [Symbol] name The name of this property
     # @param  [Hash{Symbol => Any}] opts property options
     # @option opts [RDF::URI]            :predicate The RDF predicate which will refer to this property

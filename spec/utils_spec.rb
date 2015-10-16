@@ -3,8 +3,8 @@ require "spec_helper"
 describe Spira::Utils do
   class ::Person < Spira::Base
     configure :base_uri => "http://example.org/example/people"
-    property :name, :predicate => RDFS.label
-    property :age,  :predicate => FOAF.age,  :type => Integer
+    property :name, :predicate => RDF::RDFS.label
+    property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
   end
 
   let(:repository) do

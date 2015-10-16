@@ -6,7 +6,7 @@ describe Spira do
 
     before :all do
       class ::InstantiationTest < Spira::Base
-        property :name, :predicate => FOAF.name
+        property :name, :predicate => RDF::Vocab::FOAF.name
       end
     end
 

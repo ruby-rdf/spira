@@ -3,6 +3,7 @@ require 'rdf/spec'
 require 'rdf/isomorphic'
 require 'rdf/ntriples'
 require 'rdf/turtle'
+require 'rdf/vocab'
 require 'simplecov'
 require 'coveralls'
 

@@ -6,7 +6,7 @@ describe 'Resources with data not associated with a model' do
     class ::ExtraDataTest < Spira::Base
       configure :base_uri => "http://example.org/example"
 
-      property :property, :predicate => FOAF.age, :type => Integer
+      property :property, :predicate => RDF::Vocab::FOAF.age, :type => Integer
       has_many :list,     :predicate => RDFS.label
     end
   end

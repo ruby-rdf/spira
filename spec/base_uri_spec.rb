@@ -9,12 +9,12 @@ describe 'Default URIs' do
     before :all do
       class ::BaseURITest < Spira::Base
         configure :base_uri => "http://example.org/example"
-        property :name, :predicate => RDFS.label
+        property :name, :predicate => RDF::RDFS.label
       end
 
       class ::HashBaseURITest < Spira::Base
         configure :base_uri => "http://example.org/example#"
-        property :name, :predicate => RDFS.label
+        property :name, :predicate => RDF::RDFS.label
       end
     end
 
