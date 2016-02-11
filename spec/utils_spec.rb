@@ -9,7 +9,7 @@ describe Spira::Utils do
 
   let(:repository) do
     repo = RDF::Repository.load(fixture('bob.nt'))
-    repo << RDF::Statement.new(test_uri, RDF::FOAF.name, 'Not in model')
+    repo << RDF::Statement.new(test_uri, RDF::Vocab::FOAF.name, 'Not in model')
     repo
   end
   before(:each) {Spira.repository = repository}
@@ -44,18 +44,18 @@ describe Spira::Utils do
       expect(subject.name).to eql name
       expect(subject.age).to eql age
       expect(repository).to have_statement RDF::Statement.new(new_uri, RDF::RDFS.label, name)
-      expect(repository).to have_statement RDF::Statement.new(new_uri, RDF::FOAF.age, age)
+      expect(repository).to have_statement RDF::Statement.new(new_uri, RDF::Vocab::FOAF.age, age)
     end
 
     it "deletes the old model data" do
       subject.rename!(new_uri)
       expect(repository).not_to have_statement RDF::Statement.new(test_uri, RDF::RDFS.label, name)
-      expect(repository).not_to have_statement RDF::Statement.new(test_uri, RDF::FOAF.age, age)
+      expect(repository).not_to have_statement RDF::Statement.new(test_uri, RDF::Vocab::FOAF.age, age)
     end
 
     it "copies non-model data to the given subject" do
       subject.rename!(new_uri)
-      expect(repository).to have_statement RDF::Statement.new(new_uri, RDF::FOAF.name, 'Not in model')
+      expect(repository).to have_statement RDF::Statement.new(new_uri, RDF::Vocab::FOAF.name, 'Not in model')
     end
 
     it "deletes all data about the old subject" do

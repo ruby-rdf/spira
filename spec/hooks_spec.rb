@@ -35,27 +35,27 @@ describe 'Spira resources' do
       end
     end
 
-    before {repository << RDF::Statement.new(subject, RDF.type, RDF::FOAF.Person)}
+    before {repository << RDF::Statement.new(subject, RDF.type, RDF::Vocab::FOAF.Person)}
 
     it "calls the before_create method before saving a resouce for the first time" do
       test = RDF::URI('http://example.org/new').as(::BeforeCreateTest)
       test.save
       expect(test.name).to eql "Everyone has this name"
-      expect(repository).to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
+      expect(repository).to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "Everyone has this name")
     end
 
     it "does not call the before_create method if the resource previously existed" do
       test = subject.as(::BeforeCreateTest)
       test.save
       expect(test.name).to eql "A name"
-      expect(repository).to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "A name")
-      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
+      expect(repository).to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "A name")
+      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "Everyone has this name")
     end
 
     it "does not call the before_create method without a type declaration" do
       test = RDF::URI('http://example.org/new').as(::BeforeCreateWithoutTypeTest)
       test.save
-      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
+      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "Everyone has this name")
     end
   end
 
@@ -79,21 +79,21 @@ describe 'Spira resources' do
       end
     end
 
-    before {repository << RDF::Statement.new(subject, RDF.type, RDF::FOAF.Person)}
+    before {repository << RDF::Statement.new(subject, RDF.type, RDF::Vocab::FOAF.Person)}
 
     it "calls the after_create method after saving a resource for the first time" do
       test = RDF::URI('http://example.org/new').as(::AfterCreateTest)
       test.save
       expect(test.name).to eql "Everyone has this unsaved name"
-      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
+      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "Everyone has this name")
     end
 
     it "does not call after_create if the resource previously existed" do
       test = subject.as(::AfterCreateTest)
       test.save
       expect(test.name).to eql "A name"
-      expect(repository).to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "A name")
-      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::FOAF.name, "Everyone has this name")
+      expect(repository).to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "A name")
+      expect(repository).not_to have_statement RDF::Statement.new(test.subject, RDF::Vocab::FOAF.name, "Everyone has this name")
     end
 
     it "does not call the after_create method without a type declaration" do
@@ -146,7 +146,7 @@ describe 'Spira resources' do
       expect(test.age).to be_nil
       test.save
       expect(test.age).to eql 15
-      expect(repository).to have_statement RDF::Statement(subject, RDF::FOAF.age, 15)
+      expect(repository).to have_statement RDF::Statement(subject, RDF::Vocab::FOAF.age, 15)
     end
   end
 
@@ -167,7 +167,7 @@ describe 'Spira resources' do
       expect(test.age).to be_nil
       test.save
       expect(test.age).to eql 15
-      expect(repository).not_to have_statement RDF::Statement(subject, RDF::FOAF.age, 15)
+      expect(repository).not_to have_statement RDF::Statement(subject, RDF::Vocab::FOAF.age, 15)
     end
 
   end
@@ -178,12 +178,12 @@ describe 'Spira resources' do
         before_destroy :cleanup
 
         def cleanup
-          self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.nick,nil))
+          self.class.repository.delete(RDF::Statement.new(nil, RDF::Vocab::FOAF.nick,nil))
         end
       end
     end
 
-    before {repository << RDF::Statement.new(RDF::URI('http://example.org/new'), RDF::FOAF.nick, "test")}
+    before {repository << RDF::Statement.new(RDF::URI('http://example.org/new'), RDF::Vocab::FOAF.nick, "test")}
 
     it "calls the before_destroy method before destroying" do
       subject.as(::BeforeDestroyTest).destroy(:completely)
@@ -197,19 +197,19 @@ describe 'Spira resources' do
         after_destroy :cleanup
 
         def cleanup
-          self.class.repository.delete(RDF::Statement.new(nil,RDF::FOAF.nick,nil))
+          self.class.repository.delete(RDF::Statement.new(nil, RDF::Vocab::FOAF.nick,nil))
           raise Exception if self.class.repository.has_subject?(self.subject)
         end
       end
     end
 
-    before {repository << RDF::Statement.new(RDF::URI('http://example.org/new'), RDF::FOAF.nick, "test")}
+    before {repository << RDF::Statement.new(RDF::URI('http://example.org/new'), RDF::Vocab::FOAF.nick, "test")}
 
     it "calls the after_destroy method after destroying" do
       # This would raise an exception if after_destroy were called before deleting is confirmed
       expect { subject.as(::AfterDestroyTest).destroy(:completely) }.not_to raise_error
       # This one makes sure that after_destory got called at all
-      expect(repository).not_to have_predicate RDF::FOAF.nick
+      expect(repository).not_to have_predicate RDF::Vocab::FOAF.nick
     end
   end
 
@@ -269,7 +269,7 @@ describe 'Spira resources' do
       end
     end
 
-    before {repository << RDF::Statement.new(subject, RDF.type, RDF::FOAF.Person)}
+    before {repository << RDF::Statement.new(subject, RDF.type, RDF::Vocab::FOAF.Person)}
 
     it "should call the hook methods" do
       subject = RDF::URI.new('http://example.org/test1').as(::PrivateHookTest)

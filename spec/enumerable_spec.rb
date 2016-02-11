@@ -32,8 +32,8 @@ describe Spira::Base do
     end
     let(:enumerable_repository) do
       RDF::Repository.new do |repo|
-        repo << RDF::Statement.new(uri, RDF::FOAF.age, 15)
-        repo << RDF::Statement.new(uri, RDF::RDFS.label, "Bob Smith")
+        repo << RDF::Statement.new(uri, RDF::Vocab::FOAF.age, 15)
+        repo << RDF::Statement.new(uri, RDF::Vocab::RDFS.label, "Bob Smith")
       end
     end
 

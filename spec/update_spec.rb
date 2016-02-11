@@ -16,7 +16,7 @@ describe Spira do
   let(:update_repo) {
     RDF::Repository.new do |repo|
       repo << RDF::Statement.new(test_uri, RDF::RDFS.label, 'Test')
-      repo << RDF::Statement.new(test_uri, RDF::FOAF.age, 15)
+      repo << RDF::Statement.new(test_uri, RDF::Vocab::FOAF.age, 15)
     end
   }
   let(:test) {UpdateTest.for(test_uri)}
@@ -97,8 +97,8 @@ describe Spira do
         test.save!
         test.age = 17
         test.save!
-        expect(update_repo.query(:subject => test_uri, :predicate => RDF::FOAF.age).size).to eql 1
-        expect(update_repo.first_value(:subject => test_uri, :predicate => RDF::FOAF.age)).to eql "17"
+        expect(update_repo.query(:subject => test_uri, :predicate => RDF::Vocab::FOAF.age).size).to eql 1
+        expect(update_repo.first_value(:subject => test_uri, :predicate => RDF::Vocab::FOAF.age)).to eql "17"
       end
 
       it "should not remove non-model data" do
@@ -138,7 +138,7 @@ describe Spira do
 
     context "via #destroy" do
       before :each do
-        update_repo << RDF::Statement.new(test_uri, RDF::FOAF.name, 'Not in model')
+        update_repo << RDF::Statement.new(test_uri, RDF::Vocab::FOAF.name, 'Not in model')
         update_repo << RDF::Statement.new(RDF::URI('http://example.org/test'), RDF::RDFS.seeAlso, test_uri)
       end
 
@@ -159,7 +159,7 @@ describe Spira do
       it "should delete all statements in the model" do
         test.destroy!
         expect(update_repo).not_to have_predicate(RDF::RDFS.label)
-        expect(update_repo).not_to have_predicate(RDF::FOAF.age)
+        expect(update_repo).not_to have_predicate(RDF::Vocab::FOAF.age)
       end
 
       it "should delete all statements not in the model where it is referred to as object" do
@@ -169,7 +169,7 @@ describe Spira do
 
       it "should not delete statements with predicates not defined in the model" do
         test.destroy!
-        expect(update_repo).to have_predicate(RDF::FOAF.name)
+        expect(update_repo).to have_predicate(RDF::Vocab::FOAF.name)
       end
 
     end
@@ -178,7 +178,7 @@ describe Spira do
 
   context "when copying" do
     let(:new_uri) {RDF::URI('http://example.org/people/test2')}
-    before {update_repo << RDF::Statement.new(test_uri, RDF::FOAF.name, 'Not in model')}
+    before {update_repo << RDF::Statement.new(test_uri, RDF::Vocab::FOAF.name, 'Not in model')}
 
     context "with #copy" do
       it "supports #copy" do
@@ -217,7 +217,7 @@ describe Spira do
       it "saves the copy immediately" do
         new = test.copy!(new_uri)
         expect(update_repo).to have_statement RDF::Statement.new(new_uri, RDF::RDFS.label, test.name)
-        expect(update_repo).to have_statement RDF::Statement.new(new_uri, RDF::FOAF.age, test.age)
+        expect(update_repo).to have_statement RDF::Statement.new(new_uri, RDF::Vocab::FOAF.age, test.age)
       end
     end
   end

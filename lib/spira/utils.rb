@@ -22,7 +22,7 @@ module RDF
     # @param [RDF::Resource] new_subject
     # @return [self]
     def rename!(old_subject, new_subject)
-      transaction do |tx|
+      transaction(mutable: true) do |tx|
         query(subject: old_subject) do |statement|
           tx.insert RDF::Statement.new(new_subject, statement.predicate, statement.object)
           tx.delete(statement)
