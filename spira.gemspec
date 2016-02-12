@@ -35,8 +35,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf',            '>= 2.0.0.beta', '< 3'
   gem.add_runtime_dependency     'rdf-isomorphic', '>= 2.0.0.beta', '< 3'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
-  gem.add_runtime_dependency     'activemodel',    '> 3'
-  gem.add_runtime_dependency     'activesupport',  '> 3'
+  gem.add_runtime_dependency     'activemodel',    '> 4'
+  gem.add_runtime_dependency     'activesupport',  '> 4'
 
   gem.add_development_dependency 'rdf-spec',      '>= 2.0.0.beta', '< 3'
   gem.add_development_dependency 'rdf-turtle',    '>= 2.0.0.beta', '< 3'
