@@ -6,15 +6,15 @@ describe Spira do
 
     before :all do
       class ::InheritanceItem < Spira::Base
-        property :title, :predicate => DC.title, :type => String
-        has_many :subtitle, :predicate => DC.description, :type => String
-        type  SIOC.Item
+        property :title, :predicate => RDF::Vocab::DC.title, :type => String
+        has_many :subtitle, :predicate => RDF::Vocab::DC.description, :type => String
+        type  RDF::Vocab::SIOC.Item
       end
 
       class ::InheritancePost < ::InheritanceItem
-        type  SIOC.Post
-        property :creator, :predicate => DC.creator
-        property :subtitle, :predicate => DC.description, :type => String
+        type  RDF::Vocab::SIOC.Post
+        property :creator, :predicate => RDF::Vocab::DC.creator
+        property :subtitle, :predicate => RDF::Vocab::DC.description, :type => String
       end
 
       class ::InheritedType < ::InheritanceItem
@@ -24,13 +24,13 @@ describe Spira do
       end
 
       class ::InheritanceContainer < Spira::Base
-        type SIOC.Container
-        has_many :items, :type => 'InheritanceItem', :predicate => SIOC.container_of
+        type RDF::Vocab::SIOC.Container
+        has_many :items, :type => 'InheritanceItem', :predicate => RDF::Vocab::SIOC.container_of
       end
 
       class ::InheritanceForum < ::InheritanceContainer
-        type SIOC.Forum
-        #property :moderator, :predicate => SIOC.has_moderator
+        type RDF::Vocab::SIOC.Forum
+        #property :moderator, :predicate => RDF::Vocab::SIOC.has_moderator
       end
     end
 
@@ -92,15 +92,15 @@ describe Spira do
       end
 
       it "should inherit an RDFS type if one is not given" do
-        expect(InheritedType.type).to eql RDF::SIOC.Item
+        expect(InheritedType.type).to eql RDF::Vocab::SIOC.Item
       end
 
       it "should overwrite the RDFS type if one is given" do
-        expect(InheritancePost.type).to eql RDF::SIOC.Post
+        expect(InheritancePost.type).to eql RDF::Vocab::SIOC.Post
       end
 
       it "should inherit an RDFS type from the most recent ancestor" do
-        expect(InheritanceForumPost.type).to eql RDF::SIOC.Post
+        expect(InheritanceForumPost.type).to eql RDF::Vocab::SIOC.Post
       end
 
       it "should not define methods on parents" do
@@ -122,23 +122,23 @@ describe Spira do
         end
 
         it "should save an edited property" do
-          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF::DC.title).count).to eql 1
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF::Vocab::DC.title).count).to eql 1
         end
 
         it "should save an edited property on a grandchild class" do
-          expect(InheritanceForumPost.repository.query(:subject => forum.uri, :predicate => RDF::DC.title).count).to eql 1
+          expect(InheritanceForumPost.repository.query(:subject => forum.uri, :predicate => RDF::Vocab::DC.title).count).to eql 1
         end
 
         it "should save the new type" do
-          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count).to eql 1
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF.type, :object => RDF::Vocab::SIOC.Post).count).to eql 1
         end
 
         it "should not save the supertype for a subclass which has specified one" do
-          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count).to eql 0
+          expect(InheritancePost.repository.query(:subject => post.uri, :predicate => RDF.type, :object => RDF::Vocab::SIOC.Item).to_a).to be_empty
         end
 
         it "should save the supertype for a subclass which has not specified one" do
-          expect(InheritedType.repository.query(:subject => type.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count).to eql 1
+          expect(InheritedType.repository.query(:subject => type.uri, :predicate => RDF.type, :object => RDF::Vocab::SIOC.Item).count).to eql 1
         end
       end
     end
@@ -147,20 +147,20 @@ describe Spira do
   describe "multitype classes" do
     before do
       class MultiTypeThing < Spira::Base
-        type  SIOC.Item
-        type  SIOC.Post
+        type  RDF::Vocab::SIOC.Item
+        type  RDF::Vocab::SIOC.Post
       end
 
       class InheritedMultiTypeThing < MultiTypeThing
       end
 
       class InheritedWithTypesMultiTypeThing < MultiTypeThing
-        type SIOC.Container
+        type RDF::Vocab::SIOC.Container
       end
     end
 
     it "should have multiple types" do
-      types = Set.new [RDF::SIOC.Item, RDF::SIOC.Post]
+      types = Set.new [RDF::Vocab::SIOC.Item, RDF::Vocab::SIOC.Post]
       expect(MultiTypeThing.types).to eql types
     end
 
@@ -169,7 +169,7 @@ describe Spira do
     end
 
     it "should overwrite types" do
-      types = Set.new << RDF::SIOC.Container
+      types = Set.new << RDF::Vocab::SIOC.Container
       expect(InheritedWithTypesMultiTypeThing.types).to eql types
     end
 
@@ -180,8 +180,8 @@ describe Spira do
       end
 
       it "should store multiple classes" do
-        expect(MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Item).count).to eql 1
-        expect(MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::SIOC.Post).count).to eql 1
+        expect(MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::Vocab::SIOC.Item).count).to eql 1
+        expect(MultiTypeThing.repository.query(:subject => @thing.uri, :predicate => RDF.type, :object => RDF::Vocab::SIOC.Post).count).to eql 1
       end
     end
   end

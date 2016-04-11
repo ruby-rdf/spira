@@ -13,13 +13,13 @@ describe "Spira resources" do
     
     class ::CD < Spira::Base
       configure :base_uri => CDs.cds
-      property :name,   :predicate => DC.title,   :type => String
+      property :name,   :predicate => RDF::Vocab::DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
     
     class ::Artist < Spira::Base
       configure :base_uri => CDs.artists
-      property :name, :predicate => DC.title, :type => String
+      property :name, :predicate => RDF::Vocab::DC.title, :type => String
       has_many :cds, :predicate => CDs.has_cd, :type => :CD
       has_many :teams, :predicate => CDs.teams, :type => :Team
     end
@@ -34,7 +34,7 @@ describe "Spira resources" do
     context "in the root namespace" do
       before :all do
         class ::RootNSTest < Spira::Base
-          property :name, :predicate => DC.title, :type => 'RootNSTest'
+          property :name, :predicate => RDF::Vocab::DC.title, :type => 'RootNSTest'
         end
         Spira.repository = RDF::Repository.new
       end
@@ -55,7 +55,7 @@ describe "Spira resources" do
       before :all do
         module ::NSTest
           class X < Spira::Base
-            property :name, :predicate => DC.title, :type => 'Y'
+            property :name, :predicate => RDF::Vocab::DC.title, :type => 'Y'
           end
           class Y < Spira::Base
           end
@@ -79,7 +79,7 @@ describe "Spira resources" do
       before :all do
         module ::NSTest
           class Z < Spira::Base
-            property :name, :predicate => DC.title, :type => 'NSTestA::A'
+            property :name, :predicate => RDF::Vocab::DC.title, :type => 'NSTestA::A'
           end
         end
         module ::NSTestA
@@ -131,7 +131,6 @@ describe "Spira resources" do
     subject(:cd) {CD.for 'nevermind'}
   
     before :each do
-      require 'rdf/ntriples'
       Spira.repository = RDF::Repository.load(fixture('relations.nt'))
       @cd = CD.for 'nevermind'
     end
@@ -216,7 +215,7 @@ describe "Spira resources" do
     context "when accessing a field for a class that is not a Spira::Resource" do
       before :all do
         class ::RelationsTestB < Spira::Base
-          property :invalid, :predicate => DC.title, :type => 'Object'
+          property :invalid, :predicate => RDF::Vocab::DC.title, :type => 'Object'
         end
       end
     
@@ -226,7 +225,7 @@ describe "Spira resources" do
 
       it "should raise a TypeError when accessing the invalid property on an existing object" do
         subject = RDF::Node.new
-        invalid_repo.insert [subject, RDF::DC.title, 'something']
+        invalid_repo.insert [subject, RDF::Vocab::DC.title, 'something']
         expect { RelationsTestB.for(subject).invalid }.to raise_error TypeError
       end
     end

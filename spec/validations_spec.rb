@@ -27,7 +27,7 @@ describe 'A Spira resource' do
 
     before :all do
       class ::V2 < Spira::Base
-        property :title, :predicate => DC.title
+        property :title, :predicate => RDF::Vocab::DC.title
         validate :title_is_bad
 
         def title_is_bad
@@ -95,7 +95,7 @@ describe 'A Spira resource' do
 
       before :all do
         class ::V1 < Spira::Base
-          property :title, :predicate => DC.title
+          property :title, :predicate => RDF::Vocab::DC.title
           validates_inclusion_of :title, :in => ["xyz"]
         end
       end
@@ -116,8 +116,8 @@ describe 'A Spira resource' do
     describe "validates_uniqueness_of" do
       before :all do
         class ::V4 < Spira::Base
-          type FOAF.Person
-          property :name, :predicate => DC.title
+          type RDF::Vocab::FOAF.Person
+          property :name, :predicate => RDF::Vocab::DC.title
           validates_uniqueness_of :name
         end
       end
@@ -153,7 +153,7 @@ describe 'A Spira resource' do
     describe "validates_presence_of" do
       before :all do
         class ::V2 < Spira::Base
-          property :title, :predicate => DC.title
+          property :title, :predicate => RDF::Vocab::DC.title
           validates_presence_of :title
         end
       end
@@ -173,7 +173,7 @@ describe 'A Spira resource' do
     describe "validates_numericality_of" do
       before :all do
         class ::V3 < Spira::Base
-          property :title, :predicate => DC.title, :type => Integer
+          property :title, :predicate => RDF::Vocab::DC.title, :type => Integer
           validates_numericality_of :title
         end
       end

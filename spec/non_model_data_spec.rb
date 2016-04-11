@@ -3,14 +3,12 @@ require "spec_helper"
 describe 'Resources with data not associated with a model' do
 
   before :all do
-    require 'rdf/ntriples'
     class ::ExtraDataTest < Spira::Base
       configure :base_uri => "http://example.org/example"
 
-      property :property, :predicate => FOAF.age, :type => Integer
+      property :property, :predicate => RDF::Vocab::FOAF.age, :type => Integer
       has_many :list,     :predicate => RDFS.label
     end
-    @filename = fixture('non_model_data.nt')
   end
   let(:extra_repo) {RDF::Repository.load(fixture('non_model_data.nt'))}
 
@@ -36,7 +34,7 @@ describe 'Resources with data not associated with a model' do
 
     it "should not delete non-model data on Resource#!destroy" do
       subject.destroy!
-      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::FOAF.name).count).to eql 1
+      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.name).count).to eql 1
     end
 
   end
@@ -47,15 +45,15 @@ describe 'Resources with data not associated with a model' do
     it "should save model data" do
       subject.property = 17
       subject.save!
-      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::FOAF.age).count).to eql 1
-      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::FOAF.age).to_i).to eql 17
+      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.age).count).to eql 1
+      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.age).to_i).to eql 17
     end
 
     it "should not affect non-model data" do
       subject.property = 17
       subject.save!
-      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::FOAF.name).count).to eql 1
-      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::FOAF.name)).to eql "Not in the model"
+      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.name).count).to eql 1
+      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.name)).to eql "Not in the model"
     end
   end
 

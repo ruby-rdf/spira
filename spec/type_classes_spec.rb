@@ -59,12 +59,12 @@ describe 'types' do
       before :all do
         class ::TypeWithRDF
           include Spira::Type
-          register_alias DC.title
+          register_alias RDF::Vocab::DC.title
         end
       end
 
       it "should have the RDF namespace included for default vocabularies" do
-        expect(Spira.types[::RDF::DC.title]).to eql TypeWithRDF
+        expect(Spira.types[::RDF::Vocab::DC.title]).to eql TypeWithRDF
       end
     end
   end

@@ -20,8 +20,9 @@ module Spira
     extend ActiveModel::Naming
     include ActiveModel::Conversion
     include ActiveModel::Dirty
+    include ActiveModel::Serialization
 
-    include ::RDF, ::RDF::Enumerable, ::RDF::Queryable
+    include ::RDF, ::RDF::Enumerable, ::RDF::Queryable, Utils
 
     define_model_callbacks :save, :destroy, :create, :update
 

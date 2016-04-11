@@ -1,18 +1,21 @@
+require 'rdf/spec/enumerable'
+require 'rdf/spec'
+require 'rdf/isomorphic'
+require 'rdf/ntriples'
+require 'rdf/turtle'
+require 'rdf/vocab'
 require 'simplecov'
 require 'coveralls'
 
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter
-]
+])
 SimpleCov.start do
   add_filter '/.bundle/'
 end
 
 require 'spira'
-require 'rdf/spec/enumerable'
-require 'rdf/spec'
-require 'rdf/isomorphic'
 
 require 'i18n'
 I18n.enforce_available_locales = false

@@ -1,12 +1,19 @@
 source "https://rubygems.org"
 gemspec
 
-gem 'rake', '~> 10.0'
-gem 'rdf', git: "git://github.com/ruby-rdf/rdf.git", branch: "develop"
+gem 'rdf', github: "ruby-rdf/rdf", branch: "develop"
 
 group :development, :test do
-  gem 'redcarpet', '~> 3.2.2' unless RUBY_ENGINE == 'jruby'
-  gem 'psych',      platforms: [:mri, :rbx]
+  gem 'ebnf',           github: "gkellogg/ebnf",            branch: "develop"
+  gem 'rdf-isomorphic', github: "ruby-rdf/rdf-isomorphic",  branch: "develop"
+  gem 'rdf-spec',       github: "ruby-rdf/rdf-spec",        branch: "develop"
+  gem 'rdf-turtle',     github: "ruby-rdf/rdf-turtle",      branch: "develop"
+  gem 'rdf-vocab',      github: "ruby-rdf/rdf-vocab",       branch: "develop"
+  gem 'sxp',            github: "gkellogg/sxp-ruby",        branch: "develop"
+  gem 'rake',           '~> 10.0'
+  gem 'redcarpet',      '~> 3.2.2' unless RUBY_ENGINE == 'jruby'
+  gem 'byebug',         platform: :mri
+  gem 'psych',          platforms: [:mri, :rbx]
 end
 
 group :test do

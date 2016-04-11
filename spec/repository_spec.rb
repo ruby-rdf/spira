@@ -39,7 +39,7 @@ describe Spira do
 
     before :all do
       class ::Event < Spira::Base
-        property :name, :predicate => DC.title
+        property :name, :predicate => RDF::Vocab::DC.title
       end
     end
 

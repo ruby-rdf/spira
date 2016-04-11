@@ -26,8 +26,8 @@ module Spira
   # Spira by default.  It allows either of the following forms to declare an
   # integer property on a Spira resource:
   #
-  #     property :age, :predicate => FOAF.age, :type => Integer
-  #     property :age, :predicate => FOAF.age, :type => RDF::XSD.integer
+  #     property :age, :predicate => RDF::Vocab::FOAF.age, :type => Integer
+  #     property :age, :predicate => RDF::Vocab::FOAF.age, :type => RDF::XSD.integer
   #
   # `Spira::Type`s include the RDF namespace and thus have all of the base RDF
   # vocabularies available to them without the `RDF::` prefix.

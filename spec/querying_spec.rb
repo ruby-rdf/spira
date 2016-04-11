@@ -6,12 +6,12 @@ describe Spira do
 
   before :all do
     class ::LoadTest < Spira::Base
-      type FOAF.Document
+      type RDF::Vocab::FOAF.Document
       configure :base_uri => "http://example.com/loads"
 
-      property :name,  :predicate => FOAF.name
-      property :label, :predicate => RDFS.label
-      property :child, :predicate => FOAF.currentProject, :type => 'LoadTest'
+      property :name,  :predicate => RDF::Vocab::FOAF.name
+      property :label, :predicate => RDF::RDFS.label
+      property :child, :predicate => RDF::Vocab::FOAF.currentProject, :type => 'LoadTest'
     end
   end
 
@@ -127,34 +127,34 @@ describe Spira do
       let(:parent_statements) {[]}
       let(:child_statements) {[]}
       before :each do
-        st = RDF::Statement.new(:subject => uri, :predicate => RDF::FOAF.currentProject, :object => child_uri)
+        st = RDF::Statement.new(:subject => uri, :predicate => RDF::Vocab::FOAF.currentProject, :object => child_uri)
         # uri and child_uri now point at each other
         repo << st
         parent_statements << st
-        st = RDF::Statement.new(:subject => uri, :predicate => RDF::FOAF.name, :object => RDF::Literal.new("a name"))
+        st = RDF::Statement.new(:subject => uri, :predicate => RDF::Vocab::FOAF.name, :object => RDF::Literal.new("a name"))
         repo << st
         parent_statements << st
         st = RDF::Statement.new(:subject => uri, :predicate => RDF::RDFS.label, :object => RDF::Literal.new("a name"))
         repo << st
         parent_statements << st
-        st = RDF::Statement.new(:subject => uri, :predicate => RDF.type, :object => RDF::FOAF.Document)
+        st = RDF::Statement.new(:subject => uri, :predicate => RDF.type, :object => RDF::Vocab::FOAF.Document)
         repo << st
         parent_statements << st
 
-        st = RDF::Statement.new(:subject => child_uri, :predicate => RDF::FOAF.currentProject, :object => uri)
+        st = RDF::Statement.new(:subject => child_uri, :predicate => RDF::Vocab::FOAF.currentProject, :object => uri)
         repo << st
         child_statements << st
-        st = RDF::Statement.new(:subject => child_uri, :predicate => RDF::FOAF.currentProject, :object => uri)
+        st = RDF::Statement.new(:subject => child_uri, :predicate => RDF::Vocab::FOAF.currentProject, :object => uri)
         repo << st
         child_statements << st
-        st = RDF::Statement.new(:subject => child_uri, :predicate => RDF.type, :object => RDF::FOAF.Document)
+        st = RDF::Statement.new(:subject => child_uri, :predicate => RDF.type, :object => RDF::Vocab::FOAF.Document)
         repo << st
         child_statements << st
         # We need this copy to return from mocks, as the return value is itself queried inside spira, confusing the count
       end
 
       it "should not query the repository when loading a parent and not accessing a child" do
-        name_statements = parent_statements.select {|st| st.predicate == RDF::FOAF.name }
+        name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
         expect(repo).to receive(:query).with(:subject => uri).once.and_return(name_statements)
 
         test = uri.as(LoadTest)
@@ -162,7 +162,7 @@ describe Spira do
       end
 
       it "should query the repository when loading a parent and accessing a field on a child" do
-        name_statements = parent_statements.select {|st| st.predicate == RDF::FOAF.name }
+        name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
         expect(repo).to receive(:query).with(:subject => uri).once.and_return(parent_statements)
         expect(repo).to receive(:query).with(:subject => child_uri).once.and_return(name_statements)
 
@@ -171,7 +171,7 @@ describe Spira do
       end
 
       it "should not re-query to access a child twice" do
-        name_statements = parent_statements.select {|st| st.predicate == RDF::FOAF.name }
+        name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
         expect(repo).to receive(:query).with(:subject => uri).once.and_return(parent_statements)
         expect(repo).to receive(:query).with(:subject => child_uri).once.and_return(name_statements)
 
@@ -180,7 +180,7 @@ describe Spira do
       end
 
       it "should re-query to access a child's parent from the child" do
-        name_statements = parent_statements.select {|st| st.predicate == RDF::FOAF.name }
+        name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
         expect(repo).to receive(:query).with(:subject => uri).twice.and_return(parent_statements)
         expect(repo).to receive(:query).with(:subject => child_uri).once.and_return(child_statements)
 
@@ -191,8 +191,8 @@ describe Spira do
       end
 
       it "should re-query for children after a #reload" do
-        parent_name_statements = parent_statements.select {|st| st.predicate == RDF::FOAF.name }
-        child_name_statements = child_statements.select {|st| st.predicate == RDF::FOAF.name }
+        parent_name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
+        child_name_statements = child_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
         expect(repo).to receive(:query).with(:subject => uri).exactly(4).times.and_return(parent_statements)
         expect(repo).to receive(:query).with(:subject => child_uri).twice.and_return(child_statements)
 
@@ -209,13 +209,13 @@ describe Spira do
 
         # once to get the list of subjects, once for uri, once for child_uri, 
         # and once for the list of subjects again
-        parent_name_statements = parent_statements.select {|st| st.predicate == RDF::FOAF.name }
-        child_name_statements = child_statements.select {|st| st.predicate == RDF::FOAF.name }
-        expect(repo).to receive(:query).with(:subject => uri, :predicate => RDF::FOAF.name).twice.and_return(parent_name_statements)
-        expect(repo).to receive(:query).with(:subject => child_uri, :predicate => RDF::FOAF.name).twice.and_return(child_name_statements)
+        parent_name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
+        child_name_statements = child_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
+        expect(repo).to receive(:query).with(:subject => uri, :predicate => RDF::Vocab::FOAF.name).twice.and_return(parent_name_statements)
+        expect(repo).to receive(:query).with(:subject => child_uri, :predicate => RDF::Vocab::FOAF.name).twice.and_return(child_name_statements)
         @types = RDF::Repository.new
-        @types.insert *repo.statements.select{|s| s.predicate == RDF.type && s.object == RDF::FOAF.Document}
-        expect(repo).to receive(:query).with(:predicate => RDF.type, :object => RDF::FOAF.Document).twice.and_return(@types.statements)
+        @types.insert *repo.statements.select{|s| s.predicate == RDF.type && s.object == RDF::Vocab::FOAF.Document}
+        expect(repo).to receive(:query).with(:predicate => RDF.type, :object => RDF::Vocab::FOAF.Document).twice.and_return(@types.statements)
 
         # need to map to touch a property on each to make sure they actually
         # get loaded due to lazy evaluation

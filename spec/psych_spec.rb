@@ -9,15 +9,14 @@ describe Spira, :ruby => "1.9" do
     class PsychPerson < Spira::Base
       configure :base_uri => "http://example.org/example/people"
       property :name, :predicate => RDFS.label
-      property :age,  :predicate => FOAF.age,  :type => Integer
+      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
     end
     
     class PsychEmployee < Spira::Base
       property :name, :predicate => RDFS.label
-      property :age,  :predicate => FOAF.age, :type => Integer
+      property :age,  :predicate => RDF::Vocab::FOAF.age, :type => Integer
     end
 
-    require 'rdf/ntriples'
     Spira.repository = RDF::Repository.load(fixture('bob.nt'))
   end
 

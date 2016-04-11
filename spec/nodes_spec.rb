@@ -6,7 +6,7 @@ describe 'Spira resources' do
 
   before :all do
     class ::NodeTest < Spira::Base
-      property :name, :predicate => FOAF.name
+      property :name, :predicate => RDF::Vocab::FOAF.name
     end
   end
 

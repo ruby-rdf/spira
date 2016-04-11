@@ -5,21 +5,20 @@ require "spec_helper"
 describe Spira::Base do
 
   before :all do
-    require 'rdf/ntriples'
     Spira.repository = ::RDF::Repository.new
 
     class ::EnumerableSpec < Spira::Base
       configure :base_uri => "http://example.org/example/people"
 
-      property :name, :predicate => RDFS.label
-      property :age,  :predicate => FOAF.age,  :type => Integer
+      property :name, :predicate => RDF::RDFS.label
+      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
     end
 
     class ::EnumerableWithAssociationsSpec < Spira::Base
       configure :base_uri => "http://example.org/example/people"
 
-      property :name, :predicate => RDFS.label
-      has_many :friends, :predicate => FOAF.knows, :type => :EnumerableWithAssociationsSpec
+      property :name, :predicate => RDF::RDFS.label
+      has_many :friends, :predicate => RDF::Vocab::FOAF.knows, :type => :EnumerableWithAssociationsSpec
     end
   end
 
@@ -33,8 +32,8 @@ describe Spira::Base do
     end
     let(:enumerable_repository) do
       RDF::Repository.new do |repo|
-        repo << RDF::Statement.new(uri, RDF::FOAF.age, 15)
-        repo << RDF::Statement.new(uri, RDF::RDFS.label, "Bob Smith")
+        repo << RDF::Statement.new(uri, RDF::Vocab::FOAF.age, 15)
+        repo << RDF::Statement.new(uri, RDF::Vocab::RDFS.label, "Bob Smith")
       end
     end
 

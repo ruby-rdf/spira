@@ -6,7 +6,7 @@ describe Spira do
 
     before :all do
       class ::InstantiationTest < Spira::Base
-        property :name, :predicate => FOAF.name
+        property :name, :predicate => RDF::Vocab::FOAF.name
       end
     end
 
@@ -50,12 +50,12 @@ describe Spira do
       end
 
       it "should know if a URI exists" do
-        InstantiationTest.repository << RDF::Statement.new(uri, RDF::FOAF.name, 'test')
+        InstantiationTest.repository << RDF::Statement.new(uri, RDF::Vocab::FOAF.name, 'test')
         expect(InstantiationTest.for(uri)).to be_persisted
       end
 
       it "should allow the use of #[] as an alias to #for" do
-        InstantiationTest.repository << RDF::Statement.new(uri, RDF::FOAF.name, 'test')
+        InstantiationTest.repository << RDF::Statement.new(uri, RDF::Vocab::FOAF.name, 'test')
         expect(InstantiationTest[uri]).to be_persisted
       end
     end

@@ -460,7 +460,7 @@ module Spira
     # Destroy all model data
     # AND non-model data, where this resource is referred to as object.
     def destroy_model_data(*args)
-      if self.class.repository.delete(*statements) && self.class.repository.delete([nil, nil, subject])
+      if self.class.repository.delete(statements) && self.class.repository.delete([nil, nil, subject])
         @destroyed = true
         freeze
       end
