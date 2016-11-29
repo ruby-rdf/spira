@@ -10,7 +10,6 @@ desc 'Run specs'
 task 'spec' do
   RSpec::Core::RakeTask.new("spec") do |t|
     t.pattern = 'spec/**/*.{spec,rb}'
-    t.rcov = false
     t.rspec_opts = ["-c"]
   end
 end
@@ -19,8 +18,7 @@ desc 'Run specs with backtrace'
 task 'tracespec' do
   RSpec::Core::RakeTask.new("tracespec") do |t|
     t.pattern = 'spec/**/*.{spec,rb}'
-    t.rcov = false
-    t.rspec_opts = ["-bcfn"]
+    t.rspec_opts = ["-bcf documentation"]
   end
 end
 
@@ -28,7 +26,6 @@ desc 'Run coverage'
 task 'coverage' do
   RSpec::Core::RakeTask.new("coverage") do |t|
     t.pattern = 'spec/**/*.{spec,rb}'
-    t.rcov = true
     t.rspec_opts = ["-c"]
   end
 end
