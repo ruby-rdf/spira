@@ -9,7 +9,7 @@ group :development, :test do
   gem 'rdf-spec',       github: "ruby-rdf/rdf-spec",        branch: "develop"
   gem 'rdf-turtle',     github: "ruby-rdf/rdf-turtle",      branch: "develop"
   gem 'rdf-vocab',      github: "ruby-rdf/rdf-vocab",       branch: "develop"
-  gem 'sxp',            github: "gkellogg/sxp-ruby",        branch: "develop"
+  gem 'sxp',            github: "gkellogg/sxp-ruby",        branch: "master"
   gem 'rake',           '~> 10.0'
   gem 'redcarpet',      '~> 3.2.2' unless RUBY_ENGINE == 'jruby'
   gem 'byebug',         platform: :mri
