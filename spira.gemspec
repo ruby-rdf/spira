@@ -29,14 +29,14 @@ Gem::Specification.new do |gem|
   gem.has_rdoc           = false
   gem.has_yardoc         = true if gem.respond_to?(:has_yardoc)
 
-  gem.required_ruby_version      = '>= 2.0'
+  gem.required_ruby_version      = '>= 2.2.2'
   gem.requirements               = []
 
   gem.add_runtime_dependency     'rdf',            '~> 2.0'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 2.0'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
-  gem.add_runtime_dependency     'activemodel',    '> 4'
-  gem.add_runtime_dependency     'activesupport',  '> 4'
+  gem.add_runtime_dependency     'activemodel',    '~> 5.0'
+  gem.add_runtime_dependency     'activesupport',  '~> 5.0'
 
   gem.add_development_dependency 'rdf-spec',      '~> 2.0'
   gem.add_development_dependency 'rdf-turtle',    '~> 2.0'
