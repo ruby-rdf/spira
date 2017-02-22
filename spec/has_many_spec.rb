@@ -95,9 +95,10 @@ describe "has_many" do
   end
 
   context "Post class basics" do
-    before :all do
+    before :each do
       Spira.repository = RDF::Repository.load(fixture('has_many.nt'))
     end
+    
     let(:post) {Post.for RDF::URI.new('http://example.org/posts/post1')}
     let(:empty_post) {Post.for RDF::URI.new('http://example.org/posts/post0')}
     let(:empty_comment) {Comment.for RDF::URI.new('http://example.org/comments/comment0')}

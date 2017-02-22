@@ -10,7 +10,7 @@ desc 'Run specs'
 task 'spec' do
   RSpec::Core::RakeTask.new("spec") do |t|
     t.pattern = 'spec/**/*.{spec,rb}'
-    t.rspec_opts = ["-c"]
+    t.rspec_opts = ["-c --order rand"]
   end
 end
 

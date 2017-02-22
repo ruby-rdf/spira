@@ -37,10 +37,8 @@ describe Spira do
 
   context "when registering the repository" do
 
-    before :all do
-      class ::Event < Spira::Base
-        property :name, :predicate => RDF::Vocab::DC.title
-      end
+    class ::Event < Spira::Base
+      property :name, :predicate => RDF::Vocab::DC.title
     end
 
     before :each do
