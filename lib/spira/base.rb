@@ -329,7 +329,7 @@ module Spira
     def merge_localized_property(name, arg)
       values = read_attribute("#{name}_native")
       values.delete_if { |s| s.language == I18n.locale }
-      values << serialize_localized_property(arg, I18n.locale)
+      values << serialize_localized_property(arg, I18n.locale) if arg
       values
     end
 
