@@ -6,12 +6,10 @@ require "spec_helper"
 
 describe Spira do
 
-  before :all do
-    class ::Concept < Spira::Base
-      configure :base_uri => "http://example.org/example/"
-      property :label, :predicate => RDFS.label, :localized => true
-      property :num_employees, :predicate => RDF::URI.new('http://example.org/example/identifier')
-    end
+  class ::Concept < Spira::Base
+    configure :base_uri => "http://example.org/example/"
+    property :label, :predicate => RDF::RDFS.label, :localized => true
+    property :num_employees, :predicate => RDF::URI.new('http://example.org/example/identifier')
   end
 
   let(:company) {
@@ -86,6 +84,15 @@ describe Spira do
       it "should be locale independant" do
         company.label_with_locales = { :en => 'Company', :fr => 'Société' }
         expect(company.label_native.length).to eql 2
+      end
+    end
+
+    describe "#save" do
+      it "only serializes the set values" do
+        I18n.locale = :en
+        company.label = nil
+        company.save!
+        expect(Spira.repository.size).to eq 2
       end
     end
   end

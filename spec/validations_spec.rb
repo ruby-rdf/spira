@@ -5,34 +5,31 @@ describe 'A Spira resource' do
   let(:valid) {V2.for(uri, :title => 'xyz')}
   let(:invalid) {V2.for(uri, :title => 'not xyz')}
 
-  before :all do
-    class ::Bank < Spira::Base
-      configure :default_vocabulary => RDF::URI.new('http://example.org/banks/vocab')
+  class ::Bank < Spira::Base
+    configure :default_vocabulary => RDF::URI.new('http://example.org/banks/vocab')
 
-      property :title, :predicate => RDFS.label
-      property :balance, :type => Integer
+    property :title, :predicate => RDFS.label
+    property :balance, :type => Integer
 
-      validate :validate_bank
+    validate :validate_bank
 
-      def validate_bank
-        errors.add(:title, "must not be blank") if title.blank?
-        errors.add(:balance, "must be a number") unless balance.is_a?(Numeric)
-      end
+    def validate_bank
+      errors.add(:title, "must not be blank") if title.blank?
+      errors.add(:balance, "must be a number") unless balance.is_a?(Numeric)
     end
+  end
 
+  before do
     Spira.repository = RDF::Repository.new
   end
 
   context "when validating" do
+    class ::V2 < Spira::Base
+      property :title, :predicate => RDF::Vocab::DC.title
+      validate :title_is_bad
 
-    before :all do
-      class ::V2 < Spira::Base
-        property :title, :predicate => RDF::Vocab::DC.title
-        validate :title_is_bad
-
-        def title_is_bad
-          errors.add(:title, "is not xyz") unless title == "xyz"
-        end
+      def title_is_bad
+        errors.add(:title, "is not xyz") unless title == "xyz"
       end
     end
 
