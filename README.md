@@ -114,13 +114,13 @@ require 'spira'
 class CD < Spira::Base
   configure :base_uri => 'http://example.org/cds'
   property :name,   :predicate => RDF::Vocab::DC.title,   :type => XSD.string
-  property :artist, :predicate => URI.new('http://example.org/vocab/artist'), :type => :artist
+  property :artist, :predicate => RDF::URI.new('http://example.org/vocab/artist'), :type => :artist
 end
 
 class Artist < Spira::Base
   configure :base_uri => 'http://example.org/artists'
   property :name, :predicate => RDF::Vocab::DC.title, :type => XSD.string
-  has_many :cds,  :predicate => URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
+  has_many :cds,  :predicate => RDF::URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
 end
 ```
 
@@ -211,7 +211,7 @@ A class with a `type` set is assigned an `RDF.type` on creation and saving.
 
 ```ruby
 class Album < Spira::Base
-  type URI.new('http://example.org/types/album')
+  type RDF::URI.new('http://example.org/types/album')
   property :name,   :predicate => RDF::Vocab::DC.title
 end
 
@@ -263,7 +263,7 @@ A class with a `default_vocabulary` set will transparently create predicates for
 
 ```ruby
 class Song < Spira::Base
-  configure :default_vocabulary => URI.new('http://example.org/vocab'),
+  configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
             :base_uri => 'http://example.org/songs'
   property :title
   property :author, :type => :artist
