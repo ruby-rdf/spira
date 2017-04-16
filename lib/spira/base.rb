@@ -120,6 +120,11 @@ module Spira
     def initialize(props = {}, options = {})
       @subject = props.delete(:_subject) || RDF::Node.new
 
+      @new_record = true
+      if !options[:new_record].nil?
+        @new_record = options[:new_record]
+      end
+
       @attributes = {}
       reload props
 
