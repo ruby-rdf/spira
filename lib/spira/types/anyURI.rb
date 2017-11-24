@@ -21,7 +21,7 @@ module Spira::Types
       RDF::Literal.new(value, :datatype => XSD.anyURI)
     end
 
-    register_alias XSD.anyURI
+    register_alias RDF::XSD.anyURI
 
   end
 end
