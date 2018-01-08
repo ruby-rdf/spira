@@ -32,15 +32,15 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version      = '>= 2.2.2'
   gem.requirements               = []
 
-  gem.add_runtime_dependency     'rdf',            '>= 2.2', '< 4.0'
-  gem.add_runtime_dependency     'rdf-isomorphic', '>= 2.2', '< 4.0'
+  gem.add_runtime_dependency     'rdf',            '~> 3.0'
+  gem.add_runtime_dependency     'rdf-isomorphic', '~> 3.0'
   gem.add_runtime_dependency     'promise',        '~> 0.3.0'
-  gem.add_runtime_dependency     'activemodel',    '~> 5.0'
-  gem.add_runtime_dependency     'activesupport',  '~> 5.0'
+  gem.add_runtime_dependency     'activemodel',    '~> 5.1'
+  gem.add_runtime_dependency     'activesupport',  '~> 5.1'
 
-  gem.add_development_dependency 'rdf-spec',      '>= 2.2', '< 4.0'
-  gem.add_development_dependency 'rdf-turtle',    '>= 2.2', '< 4.0'
-  gem.add_development_dependency 'rdf-vocab',     '>= 2.2', '< 4.0'
+  gem.add_development_dependency 'rdf-spec',      '~> 3.0'
+  gem.add_development_dependency 'rdf-turtle',    '~> 3.0'
+  gem.add_development_dependency 'rdf-vocab',     '~> 3.0'
   gem.add_development_dependency 'rspec',         '~> 3.7'
   gem.add_development_dependency 'rspec-its',     '~> 1.2'
   gem.add_development_dependency 'yard',          '~> 0.9.12'
