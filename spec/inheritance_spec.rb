@@ -174,6 +174,8 @@ describe Spira do
     end
 
     context "when saved" do
+      before {Spira.repository = RDF::Repository.new}
+      
       before do
         @thing = RDF::URI('http://example.org/thing').as(MultiTypeThing)
         @thing.save!

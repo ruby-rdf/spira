@@ -1,15 +1,15 @@
 module Spira::Types
 
   ##
-  # A {Spira::Type} for Float values. Values will be associated with the
-  # `XSD.float` type.
+  # A {Spira::Type} for Double values.  Values will be associated with the
+  # `XSD.double` type.
   #
   # A {Spira::Resource} property can reference this type as
-  # `Spira::Types::Float`, `Float`, or `XSD.float`.
+  # `Spira::Types::Double`, `Double`, or `XSD.double`.
   #
   # @see Spira::Type
   # @see http://rdf.rubyforge.org/RDF/Literal.html
-  class Float
+  class Double
 
     include Spira::Type
 
@@ -18,9 +18,10 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value.to_f, :datatype => RDF::XSD.float)
+      RDF::Literal.new(value.to_f, :datatype => RDF::XSD.double)
     end
 
-    register_alias RDF::XSD.float
+    register_alias RDF::XSD.double
+
   end
 end
