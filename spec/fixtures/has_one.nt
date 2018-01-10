@@ -1,0 +1,10 @@
+<http://example.org/posts/post1> <http://purl.org/dc/terms/title> "An example of a post" .
+<http://example.org/posts/post1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Post> .
+<http://example.org/posts/post1> <http://rdfs.org/sioc/ns#has_creator> <http://example.org/user_accounts/user_account1> .
+
+<http://example.org/user_accounts/user_account1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#UserAccount> .
+<http://example.org/user_accounts/user_account1> <http://rdfs.org/sioc/ns#account_of> <http://example.org/people/person1> .
+<http://example.org/user_accounts/user_account1> <http://rdfs.org/sioc/ns#email> "user@example.org" .
+
+<http://example.org/people/person1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://example.org/people/person1> <http://xmlns.com/foaf/0.1/name> "Bob Smith" .

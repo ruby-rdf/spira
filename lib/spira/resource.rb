@@ -84,6 +84,7 @@ module Spira
         has_many "#{name}_native", opts.merge(:type => Spira::Types::Native)
       else
         unset_has_many(name)
+        unset_has_one(name)
         predicate = predicate_for(opts[:predicate], name)
         type = type_for(opts[:type])
         properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
@@ -124,6 +125,26 @@ module Spira
       end
     end
 
+    ##
+    # Registers a singular association to an instance of another Spira::Base
+    # subclass. Accepts the same options as `property`.
+    #
+    # Associations registered with `has_one` will define the builder method
+    # `build_association`: initialises a new instance of the associated class and
+    # assigns it to the property.
+    #
+    # @see #property
+    def has_one(name, opts = {})
+      property(name, opts)
+
+      reflections[name] = AssociationReflection.new(:has_one, name, opts)
+
+      define_method "build_#{name.to_s}" do |attributes = {}|
+        record = self.class.reflect_on_association(name).klass.new(attributes)
+        send "#{name}=", record
+      end
+    end
+
     private
 
     # Unset a has_many relation if it exists. Allow to redefine the cardinality of a relation in a subClass
@@ -134,6 +155,16 @@ module Spira
         reflections.delete(name)
         undef_method "#{name.to_s.singularize}_ids"
         undef_method "#{name.to_s.singularize}_ids="
+      end
+    end
+
+    # Unset a has_one relation if it exists. Allow to redefine the cardinality of a relation in a subclass
+    #
+    # @private
+    def unset_has_one(name)
+      if reflections[name]
+        reflections.delete(name)
+        undef_method "build_#{name.to_s}"
       end
     end
 
