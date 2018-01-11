@@ -366,16 +366,17 @@ module Spira
     # NB: "props" argument is ignored, it is handled in Base
     #
     def reload(props = {})
-      sts = self.class.repository.query(:subject => subject)
+      query = self.class.repository.query(:subject => subject)
+      return if query.nil?
+
+      sts = query.map(&:itself)
+
       self.class.properties.each do |name, options|
         name = name.to_s
-        if sts
-          objects = sts.select { |s| s.predicate == options[:predicate] }
-          attributes[name] = retrieve_attribute(name, options, objects)
-        end
+        objects = sts.select { |s| s.predicate == options[:predicate] }
+        attributes[name] = retrieve_attribute(name, options, objects)
       end
     end
-
 
     private
 
