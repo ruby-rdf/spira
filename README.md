@@ -115,12 +115,18 @@ class CD < Spira::Base
   configure :base_uri => 'http://example.org/cds'
   property :name,   :predicate => RDF::Vocab::DC.title,   :type => XSD.string
   property :artist, :predicate => RDF::URI.new('http://example.org/vocab/artist'), :type => :artist
+  has_one :label, :predicate => RDF::URI.new('http://example.org/vocab/label'), :type => :label
 end
 
 class Artist < Spira::Base
   configure :base_uri => 'http://example.org/artists'
   property :name, :predicate => RDF::Vocab::DC.title, :type => XSD.string
-  has_many :cds,  :predicate => RDF::URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
+  has_many :cds,  :predicate => RDF::URI.new('http://example.org/vocab/published_cd'), :type => :cd
+end
+
+class Label < Spira::Base
+  configure :base_uri => 'http://example.org/labels'
+  property :name,   :predicate => RDF::Vocab::DC.title,   :type => XSD.string
 end
 ```
 
@@ -133,8 +139,12 @@ cd = CD.for("queens-greatest-hits")
 cd.name = "Queen's greatest hits"
 artist = Artist.for("queen")
 artist.name = "Queen"
+label = Label.for("bfc")
+label.name = "Big Friendly Company"
 
+label.save!
 cd.artist = artist
+cd.label = label
 cd.save!
 artist.cds = [cd]
 artist.save!
@@ -142,6 +152,8 @@ artist.save!
 queen = Artist.for('queen')
 hits = CD.for 'queens-greatest-hits'
 hits.artist == artist == queen
+bfc = Label.for('bfc')
+hits.label == label == bfc
 ```
 
 ### URIs and Blank Nodes
@@ -257,6 +269,10 @@ A class declares property members with the `property` function.  See `Property O
 
 A class declares list members with the `has_many` function.  See `Property Options` for more information.
 
+#### has_one
+
+A class declares singular association members with the `has_one` function.  See `Property Options` for more information.
+
 #### default_vocabulary
 
 A class with a `default_vocabulary` set will transparently create predicates for defined properties:
@@ -282,13 +298,15 @@ dancing_queen.has_predicate?(RDF::URI.new('http://example.org/vocab/artist')) #=
 ### Property Options
 
 Spira classes can have properties that are either singular or a list.  For a
-list, define the property with `has_many`, for a property with a single item,
-use `property`.  The semantics are otherwise the same.  A `has_many` property
-will always return a list, including an empty list for no value.  All options
-for `property` work for `has_many`.
+list, define the property with `has_many`.  For a property with a single item,
+use `has_one` for an associated Spira class, or `property` for any other type.
+The semantics are otherwise the same.  A `has_many` property will always return
+a list, including an empty list for no value.  All options for `property` work
+for `has_many` and `has_one`.
 
 ```ruby
 property :artist, :type => :artist    #=> cd.artist returns a single value
+has_one :label,   :type => :label     #=> cd.label returns a single value
 has_many :cds,    :type => :cd        #=> artist.cds returns an array
 ```
 
