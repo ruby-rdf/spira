@@ -47,6 +47,17 @@ describe Spira do
         expect(subject.changed_attributes).not_to include("name")
         expect(subject.changed_attributes).not_to include("age")
       end
+
+      it "should clear changes when dirty and reset_changes is called" do
+        subject.name = "Steve"
+        expect(subject.changed_attributes).to include("name")
+        subject.reset_changes
+        expect(subject.changed_attributes).not_to include("name")
+      end
+
+      it "should not raise error when not dirty and reset_changes is called" do
+        expect(subject.reset_changes).to_not raise_error(NoMethodError)
+      end
     end
 
     context "that are lists" do

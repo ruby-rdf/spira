@@ -285,7 +285,7 @@ module Spira
 
     def reset_changes
       @previously_changed = changes
-      @changed_attributes.clear
+      @changed_attributes.clear if @changed_attributes
     end
 
     def write_attribute(name, value)
