@@ -3,20 +3,20 @@ require "spec_helper"
 describe "Spira resources" do
 
   before :all do
-    
+
     class ::CDs < RDF::Vocabulary('http://example.org/')
       property :artist
       property :cds
       property :artists
       property :has_cd
     end
-    
+
     class ::CD < Spira::Base
       configure :base_uri => CDs.cds
       property :name,   :predicate => RDF::Vocab::DC.title,   :type => String
       property :artist, :predicate => CDs.artist, :type => 'Artist'
     end
-    
+
     class ::Artist < Spira::Base
       configure :base_uri => CDs.artists
       property :name, :predicate => RDF::Vocab::DC.title, :type => String
@@ -45,7 +45,7 @@ describe "Spira resources" do
         test.name = RootNSTest.new
         test.name.save!
         test.save!
-        
+
         test = subject.as(RootNSTest)
         expect(test.name).to be_a RootNSTest
       end
@@ -86,7 +86,7 @@ describe "Spira resources" do
           class A < Spira::Base
           end
         end
-      end 
+      end
 
       it "should find a class based on the string version of the name" do
         test = NSTest::Z.new
@@ -129,7 +129,7 @@ describe "Spira resources" do
   context "with a one-to-many relationship" do
     subject(:artist) {Artist.for "nirvana"}
     subject(:cd) {CD.for 'nevermind'}
-  
+
     before :each do
       Spira.repository = RDF::Repository.load(fixture('relations.nt'))
       @cd = CD.for 'nevermind'
@@ -188,7 +188,7 @@ describe "Spira resources" do
     before {Spira.repository = invalid_repo}
 
     context "when accessing a field named for a non-existant class" do
-      
+
       before do
         class ::RelationsTestA < Spira::Base
           configure :base_uri => CDs.cds
@@ -218,7 +218,7 @@ describe "Spira resources" do
           property :invalid, :predicate => RDF::Vocab::DC.title, :type => 'Object'
         end
       end
-    
+
       it "should should raise a TypeError when saving an object with the invalid property" do
         expect { RelationsTestB.new(:invalid => Object.new).save! }.to raise_error TypeError
       end

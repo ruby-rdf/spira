@@ -8,12 +8,12 @@ describe Spira, :ruby => "1.9" do
   before :all do
     class PsychPerson < Spira::Base
       configure :base_uri => "http://example.org/example/people"
-      property :name, :predicate => RDFS.label
+      property :name, :predicate => RDF::RDFS.label
       property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
     end
-    
+
     class PsychEmployee < Spira::Base
-      property :name, :predicate => RDFS.label
+      property :name, :predicate => RDF::RDFS.label
       property :age,  :predicate => RDF::Vocab::FOAF.age, :type => Integer
     end
 

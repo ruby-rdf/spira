@@ -7,7 +7,7 @@ describe 'Resources with data not associated with a model' do
       configure :base_uri => "http://example.org/example"
 
       property :property, :predicate => RDF::Vocab::FOAF.age, :type => Integer
-      has_many :list,     :predicate => RDFS.label
+      has_many :list,     :predicate => RDF::RDFS.label
     end
   end
   let(:extra_repo) {RDF::Repository.load(fixture('non_model_data.nt'))}

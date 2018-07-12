@@ -74,7 +74,7 @@ describe 'Default URIs' do
   context "classes without a base URI" do
     before :all do
       class ::NoBaseURITest < Spira::Base
-        property :name, :predicate => RDFS.label
+        property :name, :predicate => RDF::RDFS.label
       end
     end
 
