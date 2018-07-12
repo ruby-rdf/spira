@@ -1,5 +1,5 @@
 require "spec_helper"
-# These classes are to test finding based on rdfs.type
+# These classes are to test finding based on RDF::RDFS.type
 
 
 class Cars < RDF::Vocabulary('http://example.org/cars/')
@@ -19,16 +19,16 @@ describe 'models with a defined rdf type' do
   before :all do
     class ::Car < Spira::Base
       type Cars.car
-      property :name, :predicate => RDFS.label
+      property :name, :predicate => RDF::RDFS.label
     end
-    
+
     class ::Van < Spira::Base
       type Cars.van
-      property :name, :predicate => RDFS.label
+      property :name, :predicate => RDF::RDFS.label
     end
-    
+
     class ::Wagon < Spira::Base
-      property :name, :predicate => RDFS.label
+      property :name, :predicate => RDF::RDFS.label
     end
 
     class ::MultiCar < Spira::Base
@@ -51,7 +51,7 @@ describe 'models with a defined rdf type' do
     it "should provide a class method which returns the type" do
       expect(Car).to respond_to :type
     end
-    
+
     it "should return the correct type" do
       expect(Car.type).to eql Cars.car
     end

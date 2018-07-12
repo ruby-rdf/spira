@@ -32,8 +32,6 @@ module Spira
     # @return [RDF::URI]
     attr_reader :subject
 
-    attr_accessor :attributes
-
     class << self
       attr_reader :reflections, :properties
 
@@ -119,21 +117,26 @@ module Spira
     # @see RDF::Node#as
     def initialize(props = {}, options = {})
       @subject = props.delete(:_subject) || RDF::Node.new
+      @attrs = {}
 
-      @attributes = {}
       reload props
 
       yield self if block_given?
     end
 
+    # Returns the attributes
+    def attributes
+      @attrs
+    end
+
     # Freeze the attributes hash such that associations are still accessible, even on destroyed records.
     def freeze
-      @attributes.freeze; self
+      @attrs.freeze; self
     end
 
     # Returns +true+ if the attributes hash has been frozen.
     def frozen?
-      @attributes.frozen?
+      @attrs.frozen?
     end
 
     ##
@@ -257,7 +260,7 @@ module Spira
     # @param [RDF::Resource] new_subject
     # @return [Spira::Base] copy
     def copy(new_subject)
-      self.class.new(attributes.merge(:_subject => new_subject))
+      self.class.new(@attrs.merge(:_subject => new_subject))
     end
 
     ##
@@ -284,20 +287,19 @@ module Spira
     private
 
     def reset_changes
-      @previously_changed = changes
-      @changed_attributes.clear
+      clear_changes_information
     end
 
     def write_attribute(name, value)
       name = name.to_s
       if self.class.properties[name]
-        if attributes[name].is_a?(Promise)
-          changed_attributes[name] = attributes[name] unless changed_attributes.include?(name)
-          attributes[name] = value
+        if @attrs[name].is_a?(Promise)
+          changed_attributes[name] = @attrs[name] unless changed_attributes.include?(name)
+          @attrs[name] = value
         else
           if value != read_attribute(name)
             attribute_will_change!(name)
-            attributes[name] = value
+            @attrs[name] = value
           end
         end
       else
@@ -309,7 +311,7 @@ module Spira
     # Get the current value for the given attribute
     #
     def read_attribute(name)
-      value = attributes[name.to_s]
+      value = @attrs[name.to_s]
 
       refl = self.class.reflections[name]
       if refl && !value

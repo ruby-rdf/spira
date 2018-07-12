@@ -8,7 +8,7 @@ describe 'A Spira resource' do
   class ::Bank < Spira::Base
     configure :default_vocabulary => RDF::URI.new('http://example.org/banks/vocab')
 
-    property :title, :predicate => RDFS.label
+    property :title, :predicate => RDF::RDFS.label
     property :balance, :type => Integer
 
     validate :validate_bank
