@@ -20,7 +20,7 @@ module Spira::Types
       RDF::Literal.new(value, :datatype => XSD.date)
     end
 
-    register_alias XSD.date
+    register_alias RDF::XSD.date
 
   end
 end
