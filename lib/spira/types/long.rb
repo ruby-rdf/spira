@@ -21,7 +21,7 @@ module Spira::Types
       RDF::Literal.new(value, :datatype => XSD.long)
     end
 
-    register_alias XSD.long
+    register_alias RDF::XSD.long
 
   end
 end

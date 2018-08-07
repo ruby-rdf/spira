@@ -21,7 +21,7 @@ module Spira::Types
       RDF::Literal.new(value, :datatype => XSD.nonPositiveInteger)
     end
 
-    register_alias XSD.nonPositiveInteger
+    register_alias RDF::XSD.nonPositiveInteger
 
   end
 end
