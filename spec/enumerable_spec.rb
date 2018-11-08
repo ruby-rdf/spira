@@ -56,7 +56,7 @@ describe Spira::Base do
     # @see lib/rdf/spec/enumerable.rb in rdf-spec
     it_behaves_like 'an RDF::Enumerable' do
       before(:each) do
-        @statements = enumerable_repository
+        @rdf_enumerable_iv_statements = enumerable_repository
       end
       let(:enumerable) {  person }
     end
