@@ -21,6 +21,7 @@ A changelog is available in the [CHANGES.md](CHANGES.md) file.
 
 ```ruby
 require 'spira'
+require 'rdf/vocab'
 
 class Person < Spira::Base
 
@@ -112,6 +113,7 @@ without the `RDF::` prefix.  For example:
 
 ```ruby
 require 'spira'
+require 'rdf/vocab'
     
 class CD < Spira::Base
   configure :base_uri => 'http://example.org/cds'
@@ -212,6 +214,9 @@ CD.for RDF::URI.new('http://example.org/cds/queens-greatest-hits')
 A class with a `type` set is assigned an `RDF.type` on creation and saving.
 
 ```ruby
+require 'spira'
+require 'rdf/vocab'
+
 class Album < Spira::Base
   type RDF::URI.new('http://example.org/types/album')
   property :name,   :predicate => RDF::Vocab::DC.title
