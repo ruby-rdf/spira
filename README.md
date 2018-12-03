@@ -15,7 +15,7 @@ or to create a new store of RDF data based on simple defaults.
 
 An introductory blog post is at <http://blog.datagraph.org/2010/05/spira>
 
-A changelog is available in the [CHANGES.md](CHANGES.md) file.
+A changelog is available in the {file:CHANGES.md} file.
 
 ### Example
 
