@@ -474,6 +474,10 @@ All model objects are fully-functional as `RDF::Enumerable`, `RDF::Queryable`,
 and `RDF::Mutable`.  This lets you manipulate objects on the RDF statement
 level.  You can also access attributes that are not defined as properties.
 
+## Documentation
+
+<https://www.rubydoc.info/github/ruby-rdf/spira>
+
 ## Support
 
 There are a number of ways to ask for help.  In declining order of preference:
