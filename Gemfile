@@ -23,8 +23,3 @@ group :test do
   gem 'guard-rspec' #, '~> 3.1.0'
   gem 'guard-ctags-bundler' #, '~> 1.4.0'
 end
-
-#group :debug do
-#  gem "debugger", :platforms => [:mri_19, :mri_20]
-#  gem "ruby-debug", :platforms => [:jruby]
-#end
