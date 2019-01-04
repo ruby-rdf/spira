@@ -311,7 +311,7 @@ module Spira
       if block_given?
         self.class.properties.each do |name, property|
           if value = read_attribute(name)
-            if self.class.reflect_on_association(name)
+            if self.class.reflections[name] && self.class.reflections[name].macro == :has_many
               value.each do |val|
                 node = build_rdf_value(val, property[:type])
                 yield RDF::Statement.new(subject, property[:predicate], node) if valid_object?(node)
@@ -399,7 +399,7 @@ module Spira
       repo = self.class.repository
       self.class.properties.each do |name, property|
         value = read_attribute name
-        if self.class.reflect_on_association(name)
+        if self.class.reflections[name] && self.class.reflections[name].macro == :has_many
           # TODO: for now, always persist associations,
           #       as it's impossible to reliably determine
           #       whether the "association property" was changed
@@ -444,7 +444,7 @@ module Spira
 
     # Directly retrieve an attribute value from the storage
     def retrieve_attribute(name, options, sts)
-      if self.class.reflections[name]
+      if self.class.reflections[name] && self.class.reflections[name].macro == :has_many
         sts.inject([]) do |values, statement|
           if statement.predicate == options[:predicate]
             values << build_value(statement.object, options[:type])
