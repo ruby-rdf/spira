@@ -17,10 +17,10 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => XSD.gYear)
+      RDF::Literal.new(value, datatype: XSD.gYear)
     end
 
-    register_alias XSD.gYear
+    register_alias RDF::XSD.gYear
 
   end
 end

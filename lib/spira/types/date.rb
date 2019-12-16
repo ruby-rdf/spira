@@ -17,10 +17,10 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => XSD.date)
+      RDF::Literal.new(value, datatype: XSD.date)
     end
 
-    register_alias XSD.date
+    register_alias RDF::XSD.date
 
   end
 end

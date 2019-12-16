@@ -18,10 +18,10 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => XSD.long)
+      RDF::Literal.new(value, datatype: XSD.long)
     end
 
-    register_alias XSD.long
+    register_alias RDF::XSD.long
 
   end
 end

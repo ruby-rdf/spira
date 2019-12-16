@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe 'A Spira resource' do
   let(:uri) {RDF::URI.intern('http://example.org/bank1')}
-  let(:valid) {V2.for(uri, :title => 'xyz')}
-  let(:invalid) {V2.for(uri, :title => 'not xyz')}
+  let(:valid) {V2.for(uri, title: 'xyz')}
+  let(:invalid) {V2.for(uri, title: 'not xyz')}
 
   class ::Bank < Spira::Base
-    configure :default_vocabulary => RDF::URI.new('http://example.org/banks/vocab')
+    configure default_vocabulary: RDF::URI.new('http://example.org/banks/vocab')
 
-    property :title, :predicate => RDF::RDFS.label
-    property :balance, :type => Integer
+    property :title, predicate: RDF::RDFS.label
+    property :balance, type: Integer
 
     validate :validate_bank
 
@@ -25,7 +25,7 @@ describe 'A Spira resource' do
 
   context "when validating" do
     class ::V2 < Spira::Base
-      property :title, :predicate => RDF::Vocab::DC.title
+      property :title, predicate: RDF::Vocab::DC.title
       validate :title_is_bad
 
       def title_is_bad
@@ -92,8 +92,8 @@ describe 'A Spira resource' do
 
       before :all do
         class ::V1 < Spira::Base
-          property :title, :predicate => RDF::Vocab::DC.title
-          validates_inclusion_of :title, :in => ["xyz"]
+          property :title, predicate: RDF::Vocab::DC.title
+          validates_inclusion_of :title, in: ["xyz"]
         end
       end
 
@@ -114,7 +114,7 @@ describe 'A Spira resource' do
       before :all do
         class ::V4 < Spira::Base
           type RDF::Vocab::FOAF.Person
-          property :name, :predicate => RDF::Vocab::DC.title
+          property :name, predicate: RDF::Vocab::DC.title
           validates_uniqueness_of :name
         end
       end
@@ -150,7 +150,7 @@ describe 'A Spira resource' do
     describe "validates_presence_of" do
       before :all do
         class ::V2 < Spira::Base
-          property :title, :predicate => RDF::Vocab::DC.title
+          property :title, predicate: RDF::Vocab::DC.title
           validates_presence_of :title
         end
       end
@@ -170,7 +170,7 @@ describe 'A Spira resource' do
     describe "validates_numericality_of" do
       before :all do
         class ::V3 < Spira::Base
-          property :title, :predicate => RDF::Vocab::DC.title, :type => Integer
+          property :title, predicate: RDF::Vocab::DC.title, type: Integer
           validates_numericality_of :title
         end
       end

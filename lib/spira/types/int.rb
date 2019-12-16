@@ -18,10 +18,10 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => XSD.int)
+      RDF::Literal.new(value, datatype: XSD.int)
     end
 
-    register_alias XSD.int
+    register_alias RDF::XSD.int
 
   end
 end

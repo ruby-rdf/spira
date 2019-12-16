@@ -21,7 +21,7 @@ describe Spira::Types::Float do
 
   context "when unserializing" do
     it "should unserialize XSD floats to floats" do
-      value = Spira::Types::Float.unserialize(RDF::Literal.new(5, :datatype => RDF::XSD.float))
+      value = Spira::Types::Float.unserialize(RDF::Literal.new(5, datatype: RDF::XSD.float))
       expect(value).to be_a Float
       expect(value).to eql 5.0
     end

@@ -18,7 +18,7 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value.to_f, :datatype => RDF::XSD.float)
+      RDF::Literal.new(value.to_f, datatype: RDF::XSD.float)
     end
 
     register_alias RDF::XSD.float

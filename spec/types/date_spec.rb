@@ -12,13 +12,13 @@ describe Spira::Types::Date do
       expect(serialized).to be_a RDF::Literal
       expect(serialized).to have_datatype
       expect(serialized.datatype).to eql RDF::XSD.date
-      expect(serialized).to eql RDF::Literal.new(@date, :datatype => RDF::XSD.date)
+      expect(serialized).to eql RDF::Literal.new(@date, datatype: RDF::XSD.date)
     end
   end
 
   context "when unserializing" do
     it "should unserialize XSD dates to dates" do
-      value = Spira::Types::Date.unserialize(RDF::Literal.new(@date, :datatype => RDF::XSD.date))
+      value = Spira::Types::Date.unserialize(RDF::Literal.new(@date, datatype: RDF::XSD.date))
       expect(value).to equal @date
     end
   end

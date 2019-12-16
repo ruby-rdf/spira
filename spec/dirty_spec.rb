@@ -4,9 +4,9 @@ describe Spira do
 
   before :all do
     class ::DirtyTest < Spira::Base
-      property :name,  :predicate => RDF::RDFS.label
-      property :age,   :predicate => RDF::Vocab::FOAF.age,  :type => Integer
-      has_many :items, :predicate => RDF::RDFS.seeAlso
+      property :name,  predicate: RDF::RDFS.label
+      property :age,   predicate: RDF::Vocab::FOAF.age,  type: Integer
+      has_many :items, predicate: RDF::RDFS.seeAlso
     end
   end
 

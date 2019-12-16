@@ -12,21 +12,21 @@ describe "Spira resources" do
     end
 
     class ::CD < Spira::Base
-      configure :base_uri => CDs.cds
-      property :name,   :predicate => RDF::Vocab::DC.title,   :type => String
-      property :artist, :predicate => CDs.artist, :type => 'Artist'
+      configure base_uri: CDs.cds
+      property :name,   predicate: RDF::Vocab::DC.title,   type: String
+      property :artist, predicate: CDs.artist, type: 'Artist'
     end
 
     class ::Artist < Spira::Base
-      configure :base_uri => CDs.artists
-      property :name, :predicate => RDF::Vocab::DC.title, :type => String
-      has_many :cds, :predicate => CDs.has_cd, :type => :CD
-      has_many :teams, :predicate => CDs.teams, :type => :Team
+      configure base_uri: CDs.artists
+      property :name, predicate: RDF::Vocab::DC.title, type: String
+      has_many :cds, predicate: CDs.has_cd, type: :CD
+      has_many :teams, predicate: CDs.teams, type: :Team
     end
 
     class ::Team < Spira::Base
-      configure :base_uri => CDs.teams
-      has_many :artists, :predicate => CDs.artist, :type => 'Artist'
+      configure base_uri: CDs.teams
+      has_many :artists, predicate: CDs.artist, type: 'Artist'
     end
   end
 
@@ -34,7 +34,7 @@ describe "Spira resources" do
     context "in the root namespace" do
       before :all do
         class ::RootNSTest < Spira::Base
-          property :name, :predicate => RDF::Vocab::DC.title, :type => 'RootNSTest'
+          property :name, predicate: RDF::Vocab::DC.title, type: 'RootNSTest'
         end
         Spira.repository = RDF::Repository.new
       end
@@ -55,7 +55,7 @@ describe "Spira resources" do
       before :all do
         module ::NSTest
           class X < Spira::Base
-            property :name, :predicate => RDF::Vocab::DC.title, :type => 'Y'
+            property :name, predicate: RDF::Vocab::DC.title, type: 'Y'
           end
           class Y < Spira::Base
           end
@@ -79,7 +79,7 @@ describe "Spira resources" do
       before :all do
         module ::NSTest
           class Z < Spira::Base
-            property :name, :predicate => RDF::Vocab::DC.title, :type => 'NSTestA::A'
+            property :name, predicate: RDF::Vocab::DC.title, type: 'NSTestA::A'
           end
         end
         module ::NSTestA
@@ -173,7 +173,7 @@ describe "Spira resources" do
     it "should make a valid statement referencing the assigned objects URI" do
       @kurt = Artist.for('kurt cobain')
       cd.artist = @kurt
-      cd.query(:predicate => CDs.artist) do |statement|
+      cd.query({predicate: CDs.artist}) do |statement|
         expect(statement.subject).to eq cd.uri
         expect(statement.predicate).to eq CDs.artist
         expect(statement.object).to eq @kurt.uri
@@ -191,8 +191,8 @@ describe "Spira resources" do
 
       before do
         class ::RelationsTestA < Spira::Base
-          configure :base_uri => CDs.cds
-          property :invalid, :predicate => CDs.artist, :type => :non_existant_type
+          configure base_uri: CDs.cds
+          property :invalid, predicate: CDs.artist, type: :non_existant_type
         end
 
         invalid_repo.insert(RDF::Statement.new(RDF::URI.new(CDs.cds.to_s + "/invalid_b"), CDs.artist, "whatever"))
@@ -200,7 +200,7 @@ describe "Spira resources" do
 
       it "should raise a NameError when saving an object with the invalid property" do
         expect {
-          RelationsTestA.for('invalid_a', :invalid => Object.new).save!
+          RelationsTestA.for('invalid_a', invalid: Object.new).save!
         }.to raise_error NameError
       end
 
@@ -215,12 +215,12 @@ describe "Spira resources" do
     context "when accessing a field for a class that is not a Spira::Resource" do
       before :all do
         class ::RelationsTestB < Spira::Base
-          property :invalid, :predicate => RDF::Vocab::DC.title, :type => 'Object'
+          property :invalid, predicate: RDF::Vocab::DC.title, type: 'Object'
         end
       end
 
       it "should should raise a TypeError when saving an object with the invalid property" do
-        expect { RelationsTestB.new(:invalid => Object.new).save! }.to raise_error TypeError
+        expect { RelationsTestB.new(invalid: Object.new).save! }.to raise_error TypeError
       end
 
       it "should raise a TypeError when accessing the invalid property on an existing object" do

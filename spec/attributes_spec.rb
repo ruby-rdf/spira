@@ -5,14 +5,14 @@ describe "RDF::Resource attributes" do
     Spira.repository = RDF::Repository.new
 
     class Person < Spira::Base
-      property :name, :predicate => RDF::RDFS.label
-      has_many :friends, :predicate => RDF::Vocab::FOAF.knows, :type => :Person
+      property :name, predicate: RDF::RDFS.label
+      has_many :friends, predicate: RDF::Vocab::FOAF.knows, type: :Person
     end
 
-    friend = Person.new(:name => "Dick")
+    friend = Person.new(name: "Dick")
     friend.save!
 
-    p = Person.new(:name => "Charlie")
+    p = Person.new(name: "Charlie")
     p.friends << friend
     p.save!
   end
@@ -27,7 +27,7 @@ describe "RDF::Resource attributes" do
     end
 
     it "should reload list attributes from the repository" do
-      friend = Person.new(:name => "Bob")
+      friend = Person.new(name: "Bob")
       friend.save!
       person.friends << friend
 
@@ -42,7 +42,7 @@ describe "RDF::Resource attributes" do
     context "via #update_attributes" do
       it "should raise a NoMethodError" do
         expect {
-          person.update_attributes(:nonexisting_attribute => 0)
+          person.update_attributes({nonexisting_attribute: 0})
         }.to raise_error NoMethodError
       end
     end

@@ -6,9 +6,9 @@ describe Spira do
 
   before :all do
     class ::UpdateTest < Spira::Base
-      configure :base_uri => "http://example.org/example/people"
-      property :name, :predicate => RDF::RDFS.label
-      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+      configure base_uri: "http://example.org/example/people"
+      property :name, predicate: RDF::RDFS.label
+      property :age,  predicate: RDF::Vocab::FOAF.age,  type: Integer
     end
   end
 
@@ -38,18 +38,18 @@ describe Spira do
 
     context "via #update" do
       it "should allow setting a single property" do
-        test.update_attributes(:name => "Testing")
+        test.update_attributes(name: "Testing")
         expect(test.name).to eql "Testing"
       end
 
       it "should allow setting multiple properties" do
-        test.update_attributes(:name => "Testing", :age => 10)
+        test.update_attributes(name: "Testing", age: 10)
         expect(test.name).to eql "Testing"
         expect(test.age).to eql 10
       end
 
       it "should return self on success" do
-        expect(test.update_attributes(:name => "Testing", :age => 10)).to eql test
+        expect(test.update_attributes(name: "Testing", age: 10)).to eql test
       end
     end
   end
@@ -77,10 +77,10 @@ describe Spira do
       it "should delete all existing statements for updated properties to the repository" do
         update_repo << RDF::Statement.new(test_uri, RDF::RDFS.label, 'Test 1')
         update_repo << RDF::Statement.new(test_uri, RDF::RDFS.label, 'Test 2')
-        expect(update_repo.query(:subject => test_uri, :predicate => RDF::RDFS.label).count).to eql 3
+        expect(update_repo.query({subject: test_uri, predicate: RDF::RDFS.label}).count).to eql 3
         test.name = "Save"
         test.save!
-        expect(update_repo.query(:subject => test_uri, :predicate => RDF::RDFS.label).count).to eql 1
+        expect(update_repo.query({subject: test_uri, predicate: RDF::RDFS.label}).count).to eql 1
         expect(update_repo).to have_statement(RDF::Statement.new(test_uri, RDF::RDFS.label, 'Save'))
       end
 
@@ -97,15 +97,15 @@ describe Spira do
         test.save!
         test.age = 17
         test.save!
-        expect(update_repo.query(:subject => test_uri, :predicate => RDF::Vocab::FOAF.age).size).to eql 1
-        expect(update_repo.first_value(:subject => test_uri, :predicate => RDF::Vocab::FOAF.age)).to eql "17"
+        expect(update_repo.query({subject: test_uri, predicate: RDF::Vocab::FOAF.age}).size).to eql 1
+        expect(update_repo.first_value({subject: test_uri, predicate: RDF::Vocab::FOAF.age})).to eql "17"
       end
 
       it "should not remove non-model data" do
         update_repo << RDF::Statement.new(test_uri, RDF.type, RDF::URI('http://example.org/type'))
         test.name = "Testing 1 2 3"
         test.save!
-        expect(update_repo.query(:subject => test_uri, :predicate => RDF.type).size).to eql 1
+        expect(update_repo.query({subject: test_uri, predicate: RDF.type}).size).to eql 1
       end
 
       it "should not be changed afterwards" do
@@ -117,7 +117,7 @@ describe Spira do
       it "removes items set to nil from the repository" do
         test.name = nil
         test.save!
-        expect(update_repo.query(:subject => test_uri, :predicate => RDF::RDFS.label).size).to eql 0
+        expect(update_repo.query({subject: test_uri, predicate: RDF::RDFS.label}).size).to eql 0
       end
 
     end

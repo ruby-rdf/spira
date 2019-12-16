@@ -18,7 +18,7 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => XSD.anyURI)
+      RDF::Literal.new(value, datatype: XSD.anyURI)
     end
 
     register_alias RDF::XSD.anyURI

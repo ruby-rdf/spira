@@ -5,6 +5,7 @@ gem 'rdf', github: "ruby-rdf/rdf", branch: "develop"
 
 group :development, :test do
   gem 'ebnf',           github: "dryruby/ebnf",             branch: "develop"
+  gem 'json-ld',            github: "ruby-rdf/json-ld",             branch: "develop"
   gem 'rdf-isomorphic', github: "ruby-rdf/rdf-isomorphic",  branch: "develop"
   gem 'rdf-spec',       github: "ruby-rdf/rdf-spec",        branch: "develop"
   gem 'rdf-turtle',     github: "ruby-rdf/rdf-turtle",      branch: "develop"
@@ -17,14 +18,9 @@ group :development, :test do
 end
 
 group :test do
-  gem 'coveralls', :require => false
-  gem 'simplecov', '~> 0.10', :require => false
+  gem 'simplecov',  platforms: :mri
+  gem 'coveralls',  '~> 0.8', platforms: :mri
   gem 'guard' #, '~> 2.13.0'
   gem 'guard-rspec' #, '~> 3.1.0'
   gem 'guard-ctags-bundler' #, '~> 1.4.0'
 end
-
-#group :debug do
-#  gem "debugger", :platforms => [:mri_19, :mri_20]
-#  gem "ruby-debug", :platforms => [:jruby]
-#end

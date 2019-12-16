@@ -93,7 +93,7 @@ module Spira
       end
 
       def instantiate_record(subj)
-        new(:_subject => id_for(subj))
+        new(_subject: id_for(subj))
       end
 
     end # class methods
@@ -260,7 +260,7 @@ module Spira
     # @param [RDF::Resource] new_subject
     # @return [Spira::Base] copy
     def copy(new_subject)
-      self.class.new(@attrs.merge(:_subject => new_subject))
+      self.class.new(@attrs.merge(_subject: new_subject))
     end
 
     ##
@@ -336,7 +336,7 @@ module Spira
     end
 
     def serialize_localized_property(value, locale)
-      RDF::Literal.new(value, :language => locale)
+      RDF::Literal.new(value, language: locale)
     end
 
     def unserialize_localized_properties(values, locale)
@@ -352,7 +352,7 @@ module Spira
     end
 
     def serialize_hash_localized_properties(values)
-      values.map { |lang, property| RDF::Literal.new(property, :language => lang) }
+      values.map { |lang, property| RDF::Literal.new(property, language: lang) }
     end
 
     # Build a Ruby value from an RDF value.

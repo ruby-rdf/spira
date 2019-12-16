@@ -15,8 +15,8 @@ module Spira
     #
     def configure(options = {})
       singleton_class.class_eval do
-        { :base_uri => options[:base_uri],
-          :default_vocabulary => options[:default_vocabulary]
+        { base_uri: options[:base_uri],
+          default_vocabulary: options[:default_vocabulary]
         }.each do |name, value|
           # redefine reader methods only when required,
           # otherwise, use the ancestor methods
@@ -61,11 +61,11 @@ module Spira
     # represents an RDF predicate.
     #
     # @example A simple string property
-    #     property :name, :predicate => RDF::Vocab::FOAF.name, :type => String
+    #     property :name, predicate: RDF::Vocab::FOAF.name, type: String
     # @example A property which defaults to {Spira::Types::Any}
-    #     property :name, :predicate => RDF::Vocab::FOAF.name
+    #     property :name, predicate: RDF::Vocab::FOAF.name
     # @example An integer property
-    #     property :age,  :predicate => RDF::Vocab::FOAF.age, :type => Integer
+    #     property :age,  predicate: RDF::Vocab::FOAF.age, type: Integer
     # @param  [Symbol] name The name of this property
     # @param  [Hash{Symbol => Any}] opts property options
     # @option opts [RDF::URI]            :predicate The RDF predicate which will refer to this property
@@ -81,12 +81,12 @@ module Spira
       if opts.delete(:localized)
         raise 'Only Spira::Types::Any properties can accept the :localized option' unless type_for(opts[:type]) == Spira::Types::Any
         define_localized_property_methods(name, opts)
-        has_many "#{name}_native", opts.merge(:type => Spira::Types::Native)
+        has_many "#{name}_native", opts.merge(type: Spira::Types::Native)
       else
         unset_has_many(name)
         predicate = predicate_for(opts[:predicate], name)
         type = type_for(opts[:type])
-        properties[name] = HashWithIndifferentAccess.new(:predicate => predicate, :type => type)
+        properties[name] = HashWithIndifferentAccess.new(predicate: predicate, type: type)
 
         define_attribute_method name
         define_method "#{name}=" do |arg|

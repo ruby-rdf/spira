@@ -20,7 +20,7 @@ module Spira
       # @param [Hash] args
       #   args can contain:
       #     :conditions - Hash of properties and values
-      #     :limit      - Fixnum, limiting the amount of returned records
+      #     :limit      - Integer, limiting the amount of returned records
       # @return [Spira::Base, Array]
       def find(scope, *args)
         case scope
@@ -73,7 +73,7 @@ module Spira
           #       cannot handle such patterns, we iterate across types "manually"
           types.each do |tp|
             break if limit.zero?
-            q = conditions_to_query(conditions.merge(:type => tp))
+            q = conditions_to_query(conditions.merge(type: tp))
             repository.query(q) do |solution|
               break if limit.zero?
               if offset.zero?
@@ -112,24 +112,24 @@ module Spira
       #
       # ==== Examples
       #   # Create a single new object
-      #   User.create(:first_name => 'Jamie')
+      #   User.create(first_name: 'Jamie')
       #
       #   # Create a single new object using the :admin mass-assignment security role
-      #   User.create({ :first_name => 'Jamie', :is_admin => true }, :as => :admin)
+      #   User.create({ first_name: 'Jamie', is_admin: true }, as: :admin)
       #
       #   # Create a single new object bypassing mass-assignment security
-      #   User.create({ :first_name => 'Jamie', :is_admin => true }, :without_protection => true)
+      #   User.create({ first_name: 'Jamie', is_admin: true }, without_protection: true)
       #
       #   # Create an Array of new objects
-      #   User.create([{ :first_name => 'Jamie' }, { :first_name => 'Jeremy' }])
+      #   User.create([{ first_name: 'Jamie' }, { first_name: 'Jeremy' }])
       #
       #   # Create a single object and pass it into a block to set other attributes.
-      #   User.create(:first_name => 'Jamie') do |u|
+      #   User.create(first_name: 'Jamie') do |u|
       #     u.is_admin = false
       #   end
       #
       #   # Creating an Array of new objects using a block, where the block is executed for each object:
-      #   User.create([{ :first_name => 'Jamie' }, { :first_name => 'Jeremy' }]) do |u|
+      #   User.create([{ first_name: 'Jamie' }, { first_name: 'Jeremy' }]) do |u|
       #     u.is_admin = false
       #   end
       def create(attributes = nil, options = {}, &block)
@@ -192,7 +192,7 @@ module Spira
       # @param [Hash{Symbol => Any}] attributes Initial attributes
       # @return [Spira::Base] the newly created instance
       def project(subject, attributes = {}, &block)
-        new(attributes.merge(:_subject => subject), &block)
+        new(attributes.merge(_subject: subject), &block)
       end
 
       ##
@@ -342,7 +342,7 @@ module Spira
     # Update multiple attributes of this repository.
     #
     # @example Update multiple attributes
-    #     person.update_attributes(:name => 'test', :age => 10)
+    #     person.update_attributes(name: 'test', age: 10)
     #     #=> person
     #     person.name
     #     #=> 'test'
@@ -366,7 +366,7 @@ module Spira
     # NB: "props" argument is ignored, it is handled in Base
     #
     def reload(props = {})
-      sts = self.class.repository.query(:subject => subject)
+      sts = self.class.repository.query({subject: subject})
       self.class.properties.each do |name, options|
         name = name.to_s
         if sts

@@ -7,9 +7,9 @@ require "spec_helper"
 describe Spira do
 
   class ::Concept < Spira::Base
-    configure :base_uri => "http://example.org/example/"
-    property :label, :predicate => RDF::RDFS.label, :localized => true
-    property :num_employees, :predicate => RDF::URI.new('http://example.org/example/identifier')
+    configure base_uri: "http://example.org/example/"
+    property :label, predicate: RDF::RDFS.label, localized: true
+    property :num_employees, predicate: RDF::URI.new('http://example.org/example/identifier')
   end
 
   let(:company) {
@@ -75,14 +75,14 @@ describe Spira do
 
     describe "the _native setter" do
       it "should be locale independant" do
-        company.label_native = [RDF::Literal.new('Company', :language => :en)]
+        company.label_native = [RDF::Literal.new('Company', language: :en)]
         expect(company.label_native.length).to eql 1
       end
     end
 
     describe "the _with_locales setter" do
       it "should be locale independant" do
-        company.label_with_locales = { :en => 'Company', :fr => 'Société' }
+        company.label_with_locales = { en: 'Company', fr: 'Société' }
         expect(company.label_native.length).to eql 2
       end
     end

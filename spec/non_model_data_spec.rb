@@ -4,10 +4,10 @@ describe 'Resources with data not associated with a model' do
 
   before :all do
     class ::ExtraDataTest < Spira::Base
-      configure :base_uri => "http://example.org/example"
+      configure base_uri: "http://example.org/example"
 
-      property :property, :predicate => RDF::Vocab::FOAF.age, :type => Integer
-      has_many :list,     :predicate => RDF::RDFS.label
+      property :property, predicate: RDF::Vocab::FOAF.age, type: Integer
+      has_many :list,     predicate: RDF::RDFS.label
     end
   end
   let(:extra_repo) {RDF::Repository.load(fixture('non_model_data.nt'))}
@@ -21,7 +21,7 @@ describe 'Resources with data not associated with a model' do
       expect { ExtraDataTest.for('example2') }.not_to raise_error
     end
 
-    its(:property) {is_expected.to be_a Fixnum}
+    its(:property) {is_expected.to be_a Integer}
 
     it "should load one of the available property examples as the property" do
       expect([15,20]).to include subject.property
@@ -34,7 +34,7 @@ describe 'Resources with data not associated with a model' do
 
     it "should not delete non-model data on Resource#!destroy" do
       subject.destroy!
-      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.name).count).to eql 1
+      expect(extra_repo.query({subject: subject.uri, predicate: RDF::Vocab::FOAF.name}).count).to eql 1
     end
 
   end
@@ -45,15 +45,15 @@ describe 'Resources with data not associated with a model' do
     it "should save model data" do
       subject.property = 17
       subject.save!
-      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.age).count).to eql 1
-      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.age).to_i).to eql 17
+      expect(extra_repo.query({subject: subject.uri, predicate: RDF::Vocab::FOAF.age}).count).to eql 1
+      expect(extra_repo.first_value({subject: subject.uri, predicate: RDF::Vocab::FOAF.age}).to_i).to eql 17
     end
 
     it "should not affect non-model data" do
       subject.property = 17
       subject.save!
-      expect(extra_repo.query(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.name).count).to eql 1
-      expect(extra_repo.first_value(:subject => subject.uri, :predicate => RDF::Vocab::FOAF.name)).to eql "Not in the model"
+      expect(extra_repo.query({subject: subject.uri, predicate: RDF::Vocab::FOAF.name}).count).to eql 1
+      expect(extra_repo.first_value({subject: subject.uri, predicate: RDF::Vocab::FOAF.name})).to eql "Not in the model"
     end
   end
 
