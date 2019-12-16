@@ -4,8 +4,8 @@ describe 'Spira resources' do
 
   before :all do
     class ::HookTest < ::Spira::Base
-      property :name, :predicate => RDF::Vocab::FOAF.name
-      property :age,  :predicate => RDF::Vocab::FOAF.age
+      property :name, predicate: RDF::Vocab::FOAF.name
+      property :age,  predicate: RDF::Vocab::FOAF.age
     end
   end
   subject {RDF::URI.intern('http://example.org/test')}
@@ -118,7 +118,7 @@ describe 'Spira resources' do
     it "calls the after_update method after updating a field" do
       test = subject.as(AfterUpdateTest)
       expect(test.age).to be_nil
-      test.update_attributes(:name => "A new name")
+      test.update_attributes(name: "A new name")
       expect(test.age).to eql 15
     end
 
@@ -275,7 +275,7 @@ describe 'Spira resources' do
       subject = RDF::URI.new('http://example.org/test1').as(::PrivateHookTest)
 
       subject.save
-      subject.update_attributes(:name => "Jay")
+      subject.update_attributes(name: "Jay")
       subject.destroy
 
       expect(Counter.called_methods).to include "add_bc_counter"

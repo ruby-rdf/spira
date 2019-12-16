@@ -8,15 +8,15 @@ describe Spira::Types::Int do
       expect(serialized).to be_a RDF::Literal
       expect(serialized).to have_datatype
       expect(serialized.datatype).to eql RDF::XSD.int
-      expect(serialized).to eql RDF::Literal.new(5, :datatype => RDF::XSD.int)
+      expect(serialized).to eql RDF::Literal.new(5, datatype: RDF::XSD.int)
     end
   end
 
   context "when unserializing" do
     it "should unserialize XSD int to integers" do
       [5, "5"].each do |num|
-        value = Spira::Types::Int.unserialize(RDF::Literal.new(num, :datatype => RDF::XSD.int))
-        expect(value).to be_a Fixnum
+        value = Spira::Types::Int.unserialize(RDF::Literal.new(num, datatype: RDF::XSD.int))
+        expect(value).to be_a Integer
         expect(value).to eql num.to_i
       end
     end

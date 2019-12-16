@@ -8,17 +8,17 @@ describe Spira::Base do
     Spira.repository = ::RDF::Repository.new
 
     class ::EnumerableSpec < Spira::Base
-      configure :base_uri => "http://example.org/example/people"
+      configure base_uri: "http://example.org/example/people"
 
-      property :name, :predicate => RDF::RDFS.label
-      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+      property :name, predicate: RDF::RDFS.label
+      property :age,  predicate: RDF::Vocab::FOAF.age,  type: Integer
     end
 
     class ::EnumerableWithAssociationsSpec < Spira::Base
-      configure :base_uri => "http://example.org/example/people"
+      configure base_uri: "http://example.org/example/people"
 
-      property :name, :predicate => RDF::RDFS.label
-      has_many :friends, :predicate => RDF::Vocab::FOAF.knows, :type => :EnumerableWithAssociationsSpec
+      property :name, predicate: RDF::RDFS.label
+      has_many :friends, predicate: RDF::Vocab::FOAF.knows, type: :EnumerableWithAssociationsSpec
     end
   end
 

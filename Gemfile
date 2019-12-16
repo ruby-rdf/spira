@@ -17,8 +17,8 @@ group :development, :test do
 end
 
 group :test do
-  gem 'coveralls', :require => false
-  gem 'simplecov', '~> 0.10', :require => false
+  gem 'simplecov',  platforms: :mri
+  gem 'coveralls',  '~> 0.8', platforms: :mri
   gem 'guard' #, '~> 2.13.0'
   gem 'guard-rspec' #, '~> 3.1.0'
   gem 'guard-ctags-bundler' #, '~> 1.4.0'

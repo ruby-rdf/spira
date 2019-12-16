@@ -35,7 +35,7 @@ task :console do
   sh "irb -rubygems -I lib -r spira -I spec/fixtures -r person -r event -r cds -r cars -r posts -I spec -r spec_helper -r loading"
 end
 
-task :default => [:spec]
+task default: [:spec]
 
 desc "Add analytics tracking information to yardocs"
 task :addanalytics do
@@ -64,6 +64,6 @@ EOC
 end
 
 desc "Upload docs to rubyforge"
-task :uploadyardocs => [:yardoc, :addanalytics] do
+task uploadyardocs: [:yardoc, :addanalytics] do
   `rsync -av doc/yard/* bhuga@rubyforge.org:/var/www/gforge-projects/spira`
 end

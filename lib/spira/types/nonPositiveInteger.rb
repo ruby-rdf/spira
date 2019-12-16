@@ -18,7 +18,7 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value, :datatype => XSD.nonPositiveInteger)
+      RDF::Literal.new(value, datatype: XSD.nonPositiveInteger)
     end
 
     register_alias RDF::XSD.nonPositiveInteger

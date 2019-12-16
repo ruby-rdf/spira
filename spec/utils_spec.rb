@@ -2,9 +2,9 @@ require "spec_helper"
 
 describe Spira::Utils do
   class ::Person < Spira::Base
-    configure :base_uri => "http://example.org/example/people"
-    property :name, :predicate => RDF::RDFS.label
-    property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+    configure base_uri: "http://example.org/example/people"
+    property :name, predicate: RDF::RDFS.label
+    property :age,  predicate: RDF::Vocab::FOAF.age,  type: Integer
   end
 
   let(:repository) do
@@ -60,8 +60,8 @@ describe Spira::Utils do
 
     it "deletes all data about the old subject" do
       subject.rename!(new_uri)
-      expect(repository.query(subject: test_uri).size).to eql 0
-      expect(repository.query(object: test_uri).size).to eql 0
+      expect(repository.query({subject: test_uri}).size).to eql 0
+      expect(repository.query({object: test_uri}).size).to eql 0
     end
   end
 end

@@ -19,16 +19,16 @@ describe 'models with a defined rdf type' do
   before :all do
     class ::Car < Spira::Base
       type Cars.car
-      property :name, :predicate => RDF::RDFS.label
+      property :name, predicate: RDF::RDFS.label
     end
 
     class ::Van < Spira::Base
       type Cars.van
-      property :name, :predicate => RDF::RDFS.label
+      property :name, predicate: RDF::RDFS.label
     end
 
     class ::Wagon < Spira::Base
-      property :name, :predicate => RDF::RDFS.label
+      property :name, predicate: RDF::RDFS.label
     end
 
     class ::MultiCar < Spira::Base
@@ -79,12 +79,12 @@ describe 'models with a defined rdf type' do
     it "should not include a type statement on dump" do
       # NB: declaring an object with a type does not get the type statement in the DB
       # until the object is persisted!
-      expect(subject).not_to have_statement(:predicate => RDF.type, :object => Car.type)
+      expect(subject).not_to have_statement(predicate: RDF.type, object: Car.type)
     end
 
     it "should not be able to assign type" do
       expect {
-        Car.for(RDF::URI.new('http://example.org/cars/newcar2'), :type => Cars.van)
+        Car.for(RDF::URI.new('http://example.org/cars/newcar2'), type: Cars.van)
       }.to raise_error NoMethodError
     end
 
@@ -103,13 +103,13 @@ describe 'models with a defined rdf type' do
   context "when saving" do
     it "should save a type for resources which don't have one in the data store" do
       car2.save!
-      expect(subject.query(:subject => Cars.car2, :predicate => RDF.type, :object => Cars.car).count).to eql 1
+      expect(subject.query({subject: Cars.car2, predicate: RDF.type, object: Cars.car}).count).to eql 1
     end
 
     it "should save a type for newly-created resources which in the data store" do
       car3 = Car.for(Cars.car3)
       car3.save!
-      expect(subject.query(:subject => Cars.car3, :predicate => RDF.type, :object => Cars.car).count).to eql 1
+      expect(subject.query({subject: Cars.car3, predicate: RDF.type, object: Cars.car}).count).to eql 1
     end
   end
 
@@ -130,10 +130,10 @@ describe 'models with a defined rdf type' do
     end
 
     it "should maintain all triples related to this object on save" do
-      original_triples = subject.query(:subject => Cars.car1)
+      original_triples = subject.query({subject: Cars.car1})
       car1.name = 'testing123'
       car1.save!
-      expect(subject.query(:subject => Cars.car1).count).to eql original_triples.size
+      expect(subject.query({subject: Cars.car1}).count).to eql original_triples.size
     end
   end
 

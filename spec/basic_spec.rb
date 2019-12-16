@@ -7,14 +7,14 @@ describe Spira do
 
   before :all do
     class ::Person < Spira::Base
-      configure :base_uri => "http://example.org/example/people"
-      property :name, :predicate => RDF::RDFS.label
-      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+      configure base_uri: "http://example.org/example/people"
+      property :name, predicate: RDF::RDFS.label
+      property :age,  predicate: RDF::Vocab::FOAF.age,  type: Integer
     end
 
     class Employee < Spira::Base
-      property :name, :predicate => RDF::RDFS.label
-      property :age,  :predicate => RDF::Vocab::FOAF.age, :type => Integer
+      property :name, predicate: RDF::RDFS.label
+      property :age,  predicate: RDF::Vocab::FOAF.age, type: Integer
     end
   end
 
@@ -44,7 +44,7 @@ describe Spira do
         end
 
         context "with attributes given" do
-          let(:alice) {Person.for 'alice', :age => 30, :name => 'Alice'}
+          let(:alice) {Person.for 'alice', age: 30, name: 'Alice'}
 
           it "should have properties if it had them as attributes on creation" do
             expect(alice.age).to eql 30
@@ -74,7 +74,7 @@ describe Spira do
       end
 
       context "with attributes given" do
-        let(:bob) {Person.for 'bob',   :name => 'Bob Smith II'}
+        let(:bob) {Person.for 'bob',   name: 'Bob Smith II'}
 
         it "should overwrite existing properties with given attributes" do
           expect(bob.name).to eql "Bob Smith II"

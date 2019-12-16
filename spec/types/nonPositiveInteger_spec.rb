@@ -15,8 +15,8 @@ describe Spira::Types::NonPositiveInteger do
   context "when unserializing" do
     it "should unserialize XSD non positive integers to integers" do
       [-5, "-5"].each do |num|
-        value = Spira::Types::NonPositiveInteger.unserialize(RDF::Literal.new(num, :datatype => RDF::XSD.nonPositiveInteger))
-        expect(value).to be_a Fixnum
+        value = Spira::Types::NonPositiveInteger.unserialize(RDF::Literal.new(num, datatype: RDF::XSD.nonPositiveInteger))
+        expect(value).to be_a Integer
         expect(value).to eql num.to_i
       end
     end

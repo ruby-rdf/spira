@@ -23,7 +23,7 @@ describe Spira::Types::Double do
 
   context "when unserializing" do
     it "should unserialize XSD doubles to floats" do
-      value = Spira::Types::Double.unserialize(RDF::Literal.new(5, :datatype => RDF::XSD.double))
+      value = Spira::Types::Double.unserialize(RDF::Literal.new(5, datatype: RDF::XSD.double))
       expect(value).to be_a Float
       expect(value).to eql 5.0
     end

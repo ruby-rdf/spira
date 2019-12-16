@@ -25,10 +25,10 @@ require 'rdf/vocab'
 
 class Person < Spira::Base
 
-  configure :base_uri => "http://example.org/example/people"
+  configure base_uri: "http://example.org/example/people"
 
-  property :name, :predicate => RDF::Vocab::FOAF.name, :type => String
-  property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+  property :name, predicate: RDF::Vocab::FOAF.name, type: String
+  property :age,  predicate: RDF::Vocab::FOAF.age,  type: Integer
 
 end
 
@@ -116,15 +116,15 @@ require 'spira'
 require 'rdf/vocab'
     
 class CD < Spira::Base
-  configure :base_uri => 'http://example.org/cds'
-  property :name,   :predicate => RDF::Vocab::DC.title,   :type => XSD.string
-  property :artist, :predicate => RDF::URI.new('http://example.org/vocab/artist'), :type => :artist
+  configure base_uri: 'http://example.org/cds'
+  property :name,   predicate: RDF::Vocab::DC.title,   type: XSD.string
+  property :artist, predicate: RDF::URI.new('http://example.org/vocab/artist'), type: :artist
 end
 
 class Artist < Spira::Base
-  configure :base_uri => 'http://example.org/artists'
-  property :name, :predicate => RDF::Vocab::DC.title, :type => XSD.string
-  has_many :cds,  :predicate => RDF::URI.new('http://example.org/vocab/published_cd'), :type => XSD.string
+  configure base_uri: 'http://example.org/artists'
+  property :name, predicate: RDF::Vocab::DC.title, type: XSD.string
+  has_many :cds,  predicate: RDF::URI.new('http://example.org/vocab/published_cd'), type: XSD.string
 end
 ```
 
@@ -219,7 +219,7 @@ require 'rdf/vocab'
 
 class Album < Spira::Base
   type RDF::URI.new('http://example.org/types/album')
-  property :name,   :predicate => RDF::Vocab::DC.title
+  property :name,   predicate: RDF::Vocab::DC.title
 end
 
 Spira.repository = RDF::Repository.new
@@ -270,10 +270,10 @@ A class with a `default_vocabulary` set will transparently create predicates for
 
 ```ruby
 class Song < Spira::Base
-  configure :default_vocabulary => RDF::URI.new('http://example.org/vocab'),
-            :base_uri => 'http://example.org/songs'
+  configure default_vocabulary: RDF::URI.new('http://example.org/vocab'),
+            base_uri: 'http://example.org/songs'
   property :title
-  property :author, :type => :artist
+  property :author, type: :artist
 end
 
 Spira.repository = RDF::Repository.new
@@ -295,8 +295,8 @@ will always return a list, including an empty list for no value.  All options
 for `property` work for `has_many`.
 
 ```ruby
-property :artist, :type => :artist    #=> cd.artist returns a single value
-has_many :cds,    :type => :cd        #=> artist.cds returns an array
+property :artist, type: :artist    #=> cd.artist returns a single value
+has_many :cds,    type: :cd        #=> artist.cds returns an array
 ```
 
 Property always takes a symbol name as a name, and a variable list of options.  The supported options are:
@@ -315,7 +315,7 @@ properties having a single item, ie defined with `property`.
 
 ```ruby
 class Article < Spira::Base
-  property :label, :localized => true
+  property :label, localized: true
 end
 
 Spira.repository = RDF::Repository.new
@@ -375,8 +375,8 @@ Classes can now use this particular type like so:
 
 ```ruby
 class Test < Spira::Base
-  property :test1, :type => Integer
-  property :test2, :type => RDF::XSD.integer
+  property :test1, type: Integer
+  property :test2, type: RDF::XSD.integer
 end
 ```
 
@@ -411,7 +411,7 @@ module MyModule
 end
 
 class MyClass < Spira::Base
-  property :property1, :type => MyModule::MyType
+  property :property1, type: MyModule::MyType
 end
 ```
 

@@ -8,13 +8,13 @@ describe 'Default URIs' do
 
     before :all do
       class ::BaseURITest < Spira::Base
-        configure :base_uri => "http://example.org/example"
-        property :name, :predicate => RDF::RDFS.label
+        configure base_uri: "http://example.org/example"
+        property :name, predicate: RDF::RDFS.label
       end
 
       class ::HashBaseURITest < Spira::Base
-        configure :base_uri => "http://example.org/example#"
-        property :name, :predicate => RDF::RDFS.label
+        configure base_uri: "http://example.org/example#"
+        property :name, predicate: RDF::RDFS.label
       end
     end
 
@@ -74,7 +74,7 @@ describe 'Default URIs' do
   context "classes without a base URI" do
     before :all do
       class ::NoBaseURITest < Spira::Base
-        property :name, :predicate => RDF::RDFS.label
+        property :name, predicate: RDF::RDFS.label
       end
     end
 

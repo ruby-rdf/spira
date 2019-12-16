@@ -30,9 +30,9 @@ describe Spira::Types::Boolean do
 
   context "when unserializing" do
     it "should unserialize XSD booleans to booleans" do
-      value = Spira::Types::Boolean.unserialize(RDF::Literal.new(true, :datatype => RDF::XSD.boolean))
+      value = Spira::Types::Boolean.unserialize(RDF::Literal.new(true, datatype: RDF::XSD.boolean))
       expect(value).to equal true
-      value = Spira::Types::Boolean.unserialize(RDF::Literal.new(false, :datatype => RDF::XSD.boolean))
+      value = Spira::Types::Boolean.unserialize(RDF::Literal.new(false, datatype: RDF::XSD.boolean))
       expect(value).to equal false
     end
   end

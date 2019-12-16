@@ -2,19 +2,19 @@ require File.dirname(File.expand_path(__FILE__)) + '/spec_helper'
 
 # Tests serializing and de-serializing with Psych (YAML).
 
-describe Spira, :ruby => "1.9" do
+describe Spira, ruby: "1.9" do
   require 'psych'
 
   before :all do
     class PsychPerson < Spira::Base
-      configure :base_uri => "http://example.org/example/people"
-      property :name, :predicate => RDF::RDFS.label
-      property :age,  :predicate => RDF::Vocab::FOAF.age,  :type => Integer
+      configure base_uri: "http://example.org/example/people"
+      property :name, predicate: RDF::RDFS.label
+      property :age,  predicate: RDF::Vocab::FOAF.age,  type: Integer
     end
 
     class PsychEmployee < Spira::Base
-      property :name, :predicate => RDF::RDFS.label
-      property :age,  :predicate => RDF::Vocab::FOAF.age, :type => Integer
+      property :name, predicate: RDF::RDFS.label
+      property :age,  predicate: RDF::Vocab::FOAF.age, type: Integer
     end
 
     Spira.repository = RDF::Repository.load(fixture('bob.nt'))

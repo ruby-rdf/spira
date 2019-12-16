@@ -10,18 +10,18 @@ describe "has_many" do
     class ::Post < Spira::Base
       type RDF::URI.new('http://rdfs.org/sioc/types#Post')
 
-      has_many :comments, :predicate => RDF::Vocab::SIOC.has_reply, :type => :Comment
-      property :title,    :predicate => RDF::Vocab::DC.title
-      property :body,     :predicate => RDF::Vocab::SIOC.content
+      has_many :comments, predicate: RDF::Vocab::SIOC.has_reply, type: :Comment
+      property :title,    predicate: RDF::Vocab::DC.title
+      property :body,     predicate: RDF::Vocab::SIOC.content
     end
 
     class ::Comment < Spira::Base
       type RDF::URI.new('http://rdfs.org/sioc/types#Comment')
 
-      property :post,     :predicate => RDF::Vocab::SIOC.reply_of, :type => :Post
-      property :title,    :predicate => RDF::Vocab::DC.title
-      property :body,     :predicate => RDF::Vocab::SIOC.content
-      has_many :ratings,  :predicate => Posts.rating, :type => Integer
+      property :post,     predicate: RDF::Vocab::SIOC.reply_of, type: :Post
+      property :title,    predicate: RDF::Vocab::DC.title
+      property :body,     predicate: RDF::Vocab::SIOC.content
+      has_many :ratings,  predicate: Posts.rating, type: Integer
     end
   end
 
@@ -148,11 +148,11 @@ describe "has_many" do
     context "given all associations have a base_uri" do
       before do
         Post.class_eval {
-          configure :base_uri => "http://example.org/posts"
+          configure base_uri: "http://example.org/posts"
         }
 
         Comment.class_eval {
-          configure :base_uri => "http://example.org/comments"
+          configure base_uri: "http://example.org/comments"
         }
       end
 

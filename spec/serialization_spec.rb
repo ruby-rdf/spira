@@ -4,7 +4,7 @@ require "spec_helper"
 describe "serialization" do
   before :all do
     class SpiraResource < Spira::Base
-      property :name, :predicate => RDF::Vocab::FOAF.givenName, :type => XSD.string
+      property :name, predicate: RDF::Vocab::FOAF.givenName, type: XSD.string
     end
 
     Spira.repository = RDF::Repository.new
@@ -28,7 +28,7 @@ describe "serialization" do
 
   context "of UTF-8 literals" do
     it "should produce proper UTF-8 output" do
-      res = SpiraResource.create(:name => "日本語")
+      res = SpiraResource.create(name: "日本語")
       expect(res.reload.name).to eql "日本語"
     end
   end

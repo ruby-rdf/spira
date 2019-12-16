@@ -11,7 +11,7 @@ describe 'default vocabularies' do
     it "should allow a property without a predicate if there is a default vocabulary" do
       expect {
         class VocabTestX < Spira::Base
-          configure :default_vocabulary => RDF::URI.new('http://example.org/vocabulary/')
+          configure default_vocabulary: RDF::URI.new('http://example.org/vocabulary/')
           property :test
         end
       }.not_to raise_error
@@ -29,7 +29,7 @@ describe 'default vocabularies' do
     it "should raise a ResourceDelcarationError to set a predicate without a default vocabulary that is not an RDF::URI" do
       expect {
         class VocabTestY < Spira::Base
-          property :test, :predicate => "http://example.org/test"
+          property :test, predicate: "http://example.org/test"
         end
       }.to raise_error Spira::ResourceDeclarationError
     end
@@ -39,11 +39,11 @@ describe 'default vocabularies' do
 
     before :all do
       class ::Bubble < Spira::Base
-        configure :default_vocabulary => RDF::URI.new('http://example.org/vocab/'),
-                  :base_uri => "http://example.org/bubbles/"
-        property :year, :type => Integer
+        configure default_vocabulary: RDF::URI.new('http://example.org/vocab/'),
+                  base_uri: "http://example.org/bubbles/"
+        property :year, type: Integer
         property :name
-        property :title, :predicate => RDF::Vocab::DC.title, :type => String
+        property :title, predicate: RDF::Vocab::DC.title, type: String
       end
     end
 
@@ -74,8 +74,8 @@ describe 'default vocabularies' do
         class ::DefaultVocabVocab < ::RDF::Vocabulary('http://example.org/test#') ; end
 
         class ::HashVocabTest < Spira::Base
-          configure :default_vocabulary => DefaultVocabVocab,
-                    :base_uri => "http://example.org/testing/"
+          configure default_vocabulary: DefaultVocabVocab,
+                    base_uri: "http://example.org/testing/"
           property :name
         end
       end

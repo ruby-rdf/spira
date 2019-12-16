@@ -1,4 +1,4 @@
-guard "ctags-bundler", :emacs => true do
+guard "ctags-bundler", emacs: true do
   watch(/^(lib|spec\/support)\/.*\.rb$/)
   watch("Gemfile.lock")
 end

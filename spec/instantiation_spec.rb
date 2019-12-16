@@ -6,7 +6,7 @@ describe Spira do
 
     before :all do
       class ::InstantiationTest < Spira::Base
-        property :name, :predicate => RDF::Vocab::FOAF.name
+        property :name, predicate: RDF::Vocab::FOAF.name
       end
     end
 
@@ -41,7 +41,7 @@ describe Spira do
       end
 
       it "should allow instantiation from a URI with attributes given" do
-        test = uri.as(InstantiationTest, :name => "a name")
+        test = uri.as(InstantiationTest, name: "a name")
         expect(test.name).to eql "a name"
       end
 
@@ -77,7 +77,7 @@ describe Spira do
       end
 
       it "should allow instantiation from a Node with attributes given" do
-        test = node.as(InstantiationTest, :name => "a name")
+        test = node.as(InstantiationTest, name: "a name")
         expect(test.name).to eql "a name"
       end
 

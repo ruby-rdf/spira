@@ -20,7 +20,7 @@ module Spira::Types
     end
 
     def self.serialize(value)
-      RDF::Literal.new(value.is_a?(BigDecimal) ? value.to_s('F') : value.to_s, :datatype => RDF::XSD.decimal)
+      RDF::Literal.new(value.is_a?(BigDecimal) ? value.to_s('F') : value.to_s, datatype: RDF::XSD.decimal)
     end
 
     register_alias RDF::XSD.decimal
