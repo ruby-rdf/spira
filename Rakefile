@@ -4,6 +4,18 @@ require 'rspec/core/rake_task'
 require 'bundler/gem_tasks'
 require 'yard'
 
+namespace :gem do
+  desc "Build the spira-#{File.read('VERSION').chomp}.gem file"
+  task :build do
+    sh "gem build spira.gemspec && mv spira-#{File.read('VERSION').chomp}.gem pkg/"
+  end
+
+  desc "Release the spira-#{File.read('VERSION').chomp}.gem file"
+  task :release do
+    sh "gem push pkg/spira-#{File.read('VERSION').chomp}.gem"
+  end
+end
+
 YARD::Rake::YardocTask.new
 
 desc 'Run specs'

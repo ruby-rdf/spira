@@ -12,3 +12,4 @@ gems.tags
 Gemfile.lock
 bin/
 /.bundle/
+/releases
