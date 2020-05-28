@@ -6,7 +6,7 @@ module Spira::Types
   # Its behavior is defined as 'What `RDF::Literal` does' for a given value.
   #
   # @see Spira::Type
-  # @see http://rdf.rubyforge.org/RDF/Literal.html
+  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html
   class Any
 
     include Spira::Type

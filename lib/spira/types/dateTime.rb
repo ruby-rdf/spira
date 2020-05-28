@@ -8,7 +8,7 @@ module Spira::Types
   # `Spira::Types::DateTime`, `DateTime`, or `XSD.dateTime`.
   #
   # @see Spira::Type
-  # @see http://rdf.rubyforge.org/RDF/Literal.html
+  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html
   class DateTime
     include Spira::Type
 

@@ -1,4 +1,4 @@
-# Spira [![Build Status](https://travis-ci.org/ruby-rdf/spira.png?branch=develop)](http://travis-ci.org/ruby-rdf/spira) [![Coverage Status](https://coveralls.io/repos/ruby-rdf/spira/badge.png?branch=develop)](https://coveralls.io/r/ruby-rdf/spira) [![Code Climate](https://codeclimate.com/github/ruby-rdf/spira.png)](https://codeclimate.com/github/ruby-rdf/spira) [![Dependency Status](https://gemnasium.com/ruby-rdf/spira.png)](https://gemnasium.com/ruby-rdf/spira)
+# Spira [![Build Status](https://travis-ci.org/ruby-rdf/spira.png?branch=develop)](https://travis-ci.org/ruby-rdf/spira) [![Coverage Status](https://coveralls.io/repos/ruby-rdf/spira/badge.png?branch=develop)](https://coveralls.io/r/ruby-rdf/spira) [![Code Climate](https://codeclimate.com/github/ruby-rdf/spira.png)](https://codeclimate.com/github/ruby-rdf/spira) [![Dependency Status](https://gemnasium.com/ruby-rdf/spira.png)](https://gemnasium.com/ruby-rdf/spira)
 
 It's time to breathe life into your linked data.
 
@@ -12,8 +12,6 @@ objects.  It gives you the ability to work in a resource-oriented way without
 losing access to statement-oriented nature of linked data, if you so choose.
 It can be used either to access existing RDF data in a resource-oriented way,
 or to create a new store of RDF data based on simple defaults.
-
-An introductory blog post is at <http://blog.datagraph.org/2010/05/spira>
 
 A changelog is available in the {file:CHANGES.md} file.
 
@@ -103,7 +101,7 @@ The easiest way to work with Spira is to install it via Rubygems:
 
     $ sudo gem install spira
 
-Downloads will be available on the github project page, as well as on Rubyforge.
+Downloads will be available on the github project page.
 
 ## Defining Model Classes
 
@@ -225,7 +223,7 @@ end
 Spira.repository = RDF::Repository.new
 
 rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
-# See RDF.rb at http://rdf.rubyforge.org/RDF/Enumerable.html for more information about #has_predicate?
+# See RDF.rb at https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable.html for more information about #has_predicate?
 rolling_stones.has_predicate?(RDF.type) #=> true
 Album.type #=> RDF::URI('http://example.org/types/album')
 ```
@@ -391,7 +389,7 @@ are implemented:
 
 The default type for a Spira property is `Spira::Types::Any`, which uses
 `RDF::Literal`'s automatic boxing/unboxing of XSD types as best it can.
-See [`RDF::Literal`](http://rdf.rubyforge.org/RDF/Literal.html) for more information.
+See [`RDF::Literal`](https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html) for more information.
 
 You can implement your own types as well.  Your class' serialize method should
 turn an RDF::Value into a ruby object, and vice versa.
@@ -506,5 +504,5 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
   of thumb, additions larger than about 15 lines of code), we need an
   explicit [public domain dedication][PDD] on record from you.
 
-[public-rdf-ruby w3c mailing list]:         http://lists.w3.org/Archives/Public/public-rdf-ruby/
-[RDF.rb]:          http://rubygems.org/gems/rdf
+[public-rdf-ruby w3c mailing list]:         https://lists.w3.org/Archives/Public/public-rdf-ruby/
+[RDF.rb]:          https://rubygems.org/gems/rdf

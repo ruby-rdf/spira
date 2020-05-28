@@ -74,8 +74,3 @@ EOC
     writer.flush
   end
 end
-
-desc "Upload docs to rubyforge"
-task uploadyardocs: [:yardoc, :addanalytics] do
-  `rsync -av doc/yard/* bhuga@rubyforge.org:/var/www/gforge-projects/spira`
-end

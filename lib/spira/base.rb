@@ -188,7 +188,7 @@ module Spira
     # an RDF level, and will work across subclasses as long as the attributes
     # are the same.
     #
-    # @see http://rdf.rubyforge.org/isomorphic/
+    # @see https://rubygems.org/gems/rdf-isomorphic/
     def ==(other)
       # TODO: define behavior for equality on subclasses.
       # TODO: should we compare attributes here?

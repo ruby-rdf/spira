@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.date               = Time.now.strftime('%Y-%m-%d')
 
   gem.name               = 'spira'
-  gem.homepage           = 'http://ruby-rdf.github.io/spira/'
+  gem.homepage           = 'https://ruby-rdf.github.io/spira/'
   gem.license            = 'Unlicense'
   gem.summary            = 'A framework for using the information in RDF.rb repositories as model objects.'
   gem.description        = 'Spira is a framework for using the information in RDF.rb repositories as model objects.'

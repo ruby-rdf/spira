@@ -1,4 +1,4 @@
-# Changelog for Spira <http://github.com/rdf-ruby/spira>
+# Changelog for Spira <https://github.com/rdf-ruby/spira>
 
 ## 0.3.0
  * General updates to bring up to date.
