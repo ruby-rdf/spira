@@ -27,16 +27,16 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency     'rdf',            '~> 3.1'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 3.1'
-  gem.add_runtime_dependency     'promise',        '~> 0.3.0'
+  gem.add_runtime_dependency     'promise',        '~> 0.3'
   gem.add_runtime_dependency     'activemodel',    '~> 5.0'
   gem.add_runtime_dependency     'activesupport',  '~> 5.0'
 
   gem.add_development_dependency 'rdf-spec',      '~> 3.1'
   gem.add_development_dependency 'rdf-turtle',    '~> 3.1'
   gem.add_development_dependency 'rdf-vocab',     '~> 3.1'
-  gem.add_development_dependency 'rspec',         '~> 3.9'
+  gem.add_development_dependency 'rspec',         '~> 3.10'
   gem.add_development_dependency 'rspec-its',     '~> 1.3'
-  gem.add_development_dependency 'yard',          '~> 0.9.20'
+  gem.add_development_dependency 'yard',          '~> 0.9'
 
   gem.post_install_message       = nil
 end

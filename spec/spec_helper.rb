@@ -4,15 +4,19 @@ require 'rdf/isomorphic'
 require 'rdf/ntriples'
 require 'rdf/turtle'
 require 'rdf/vocab'
-require 'simplecov'
-require 'coveralls'
 
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
-])
-SimpleCov.start do
-  add_filter '/.bundle/'
+begin
+  require 'simplecov'
+  require 'coveralls'
+
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    Coveralls::SimpleCov::Formatter
+  ])
+  SimpleCov.start do
+    add_filter '/.bundle/'
+  end
+rescue LoadError
 end
 
 require 'spira'
