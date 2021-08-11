@@ -18,8 +18,8 @@ group :development, :test do
 end
 
 group :test do
-  gem 'simplecov',  platforms: :mri
-  gem 'coveralls',  '~> 0.8', platforms: :mri
+  gem 'simplecov', '~> 0.21',  platforms: :mri
+  gem 'simplecov-lcov', '~> 0.8',  platforms: :mri
   gem 'guard' #, '~> 2.13.0'
   gem 'guard-rspec' #, '~> 3.1.0'
   gem 'guard-ctags-bundler' #, '~> 1.4.0'
