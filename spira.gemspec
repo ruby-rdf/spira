@@ -30,6 +30,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'promise',        '~> 0.3'
   gem.add_runtime_dependency     'activemodel',    '~> 5.0'
   gem.add_runtime_dependency     'activesupport',  '~> 5.0'
+  gem.add_runtime_dependency     'i18n',           '~> 1.7.1' # 1.8 incompatibility with later active support
 
   gem.add_development_dependency 'rdf-spec',      '~> 3.1'
   gem.add_development_dependency 'rdf-turtle',    '~> 3.1'

@@ -4,6 +4,7 @@ require 'rdf/isomorphic'
 require 'rdf/ntriples'
 require 'rdf/turtle'
 require 'rdf/vocab'
+require 'amazing_print'
 
 begin
   require 'simplecov'
