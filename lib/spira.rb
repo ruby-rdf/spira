@@ -65,10 +65,12 @@ module Spira
   #
   # @param [RDF::Repository] repo the repository to work on
   # @yield the block with the instructions while using the repository
+  # @return [RDF::Repository] the given repository
   def using_repository(repo)
     old_repository = Spira.repository
     Spira.repository = repo
     yield if block_given?
+    repo
   ensure
     Spira.repository = old_repository
   end
