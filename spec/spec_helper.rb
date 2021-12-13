@@ -1,3 +1,4 @@
+require "bundler/setup"
 require 'rdf/spec/enumerable'
 require 'rdf/spec'
 require 'rdf/isomorphic'

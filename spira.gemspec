@@ -22,19 +22,19 @@ Gem::Specification.new do |gem|
   gem.require_paths      = %w(lib)
   gem.has_yardoc         = true if gem.respond_to?(:has_yardoc)
 
-  gem.required_ruby_version      = '>= 2.4'
+  gem.required_ruby_version      = '>= 2.6'
   gem.requirements               = []
 
-  gem.add_runtime_dependency     'rdf',            '~> 3.1'
-  gem.add_runtime_dependency     'rdf-isomorphic', '~> 3.1'
+  gem.add_runtime_dependency     'rdf',            '~> 3.2'
+  gem.add_runtime_dependency     'rdf-isomorphic', '~> 3.2'
   gem.add_runtime_dependency     'promise',        '~> 0.3'
-  gem.add_runtime_dependency     'activemodel',    '~> 5.0'
-  gem.add_runtime_dependency     'activesupport',  '~> 5.0'
-  gem.add_runtime_dependency     'i18n',           '~> 1.7.1' # 1.8 incompatibility with later active support
+  gem.add_runtime_dependency     'activemodel',    '~> 6.1'
+  gem.add_runtime_dependency     'activesupport',  '~> 6.1'
+  gem.add_runtime_dependency     'i18n',           '~> 1.8'
 
-  gem.add_development_dependency 'rdf-spec',      '~> 3.1'
-  gem.add_development_dependency 'rdf-turtle',    '~> 3.1'
-  gem.add_development_dependency 'rdf-vocab',     '~> 3.1'
+  gem.add_development_dependency 'rdf-spec',      '~> 3.2'
+  gem.add_development_dependency 'rdf-turtle',    '~> 3.2'
+  gem.add_development_dependency 'rdf-vocab',     '~> 3.2'
   gem.add_development_dependency 'rspec',         '~> 3.10'
   gem.add_development_dependency 'rspec-its',     '~> 1.3'
   gem.add_development_dependency 'yard',          '~> 0.9'
