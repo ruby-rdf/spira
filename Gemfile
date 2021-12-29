@@ -11,7 +11,7 @@ group :development, :test do
   gem 'rdf-turtle',     github: "ruby-rdf/rdf-turtle",      branch: "develop"
   gem 'rdf-vocab',      github: "ruby-rdf/rdf-vocab",       branch: "develop"
   gem 'sxp',            github: "dryruby/sxp.rb",           branch: "develop"
-  gem 'rake',           '~> 10.0'
+  gem 'rake',           '~> 13.0'
   gem 'redcarpet',      '~> 3.2.2' unless RUBY_ENGINE == 'jruby'
   gem 'byebug',         platform: :mri
   gem 'psych',          platforms: [:mri, :rbx]

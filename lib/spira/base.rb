@@ -107,12 +107,16 @@ module Spira
     # Initialize a new Spira::Base instance of this resource class using
     # a new blank node subject.  Accepts a hash of arguments for initial
     # attributes.  To use a URI or existing blank node as a subject, use
-    # {Spira.for} instead.
+    # the `.for` method on the subclass instead.
+    #
+    # @example
+    #   class Person < Spira::Base; end
+    #   bob = Person.for("bob")
     #
     # @param [Hash{Symbol => Any}] props Default attributes for this instance
     # @yield [self] Executes a given block
     # @yieldparam [self] self The newly created instance
-    # @see Spira.for
+    # @see Spira::Persistence::ClassMethods#for
     # @see RDF::URI#as
     # @see RDF::Node#as
     def initialize(props = {}, options = {})

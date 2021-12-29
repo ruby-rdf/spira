@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
   gem.email              = 'blavender@gmail.com'
 
   gem.platform           = Gem::Platform::RUBY
-  gem.files              = %w(CHANGES.md AUTHORS README.md UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
+  gem.files              = %w(AUTHORS README.md UNLICENSE VERSION) + Dir.glob('lib/**/*.rb')
   gem.require_paths      = %w(lib)
   gem.has_yardoc         = true if gem.respond_to?(:has_yardoc)
 
