@@ -5,7 +5,7 @@ module Spira::Types
   # ruby representation.
   #
   # @see Spira::Type
-  # @see http://rdf.rubyforge.org/RDF/URI.html
+  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/URI.html
   class URI
 
     include Spira::Type

@@ -8,7 +8,7 @@ module Spira::Types
   # `Spira::Types::AnyURI`, `AnyURI`, or `XSD.anyURI`.
   #
   # @see Spira::Type
-  # @see http://rdf.rubyforge.org/RDF/Literal.html
+  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html
   class AnyURI
 
     include Spira::Type

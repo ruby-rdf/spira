@@ -9,8 +9,8 @@ require "rdf/vocab"
 # Spira is a framework for building projections of RDF data into Ruby classes.
 # It is built on top of RDF.rb.
 #
-# @see http://rdf.rubyforge.org
-# @see http://github.com/bhuga/spira
+# @see https://rubygems.org/gems/rdf
+# @see https://github.com/bhuga/spira
 # @see Spira::Resource
 
 module Spira
@@ -63,13 +63,14 @@ module Spira
 
   # Execute a block on a specific repository
   #
-  # @param [RDF::Repository] repository the repository to work on
-  # @param [Symbol] name the repository name
+  # @param [RDF::Repository] repo the repository to work on
   # @yield the block with the instructions while using the repository
+  # @return [RDF::Repository] the given repository
   def using_repository(repo)
     old_repository = Spira.repository
     Spira.repository = repo
     yield if block_given?
+    repo
   ensure
     Spira.repository = old_repository
   end

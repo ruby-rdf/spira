@@ -13,3 +13,4 @@ Gemfile.lock
 bin/
 /.bundle/
 /releases
+/.byebug_history

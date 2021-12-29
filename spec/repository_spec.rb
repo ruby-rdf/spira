@@ -21,6 +21,12 @@ describe Spira do
       expect(Spira.repository).to eql repo
     end
 
+    it "should return the given repository" do
+      return_value = Spira.using_repository(new_repo) {}
+
+      expect(return_value).to eql new_repo
+    end
+
     context "when the block raises an error" do
       it "should restore the original repository" do
         begin

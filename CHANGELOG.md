@@ -1,4 +1,9 @@
-# Changelog for Spira <http://github.com/rdf-ruby/spira>
+# Changelog for Spira <https://github.com/rdf-ruby/spira>
+  
+## [Unreleased]
+### Changed
+
+* Spira#using_repository now returns the given repository
 
 ## 0.3.0
  * General updates to bring up to date.

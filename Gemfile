@@ -11,15 +11,15 @@ group :development, :test do
   gem 'rdf-turtle',     github: "ruby-rdf/rdf-turtle",      branch: "develop"
   gem 'rdf-vocab',      github: "ruby-rdf/rdf-vocab",       branch: "develop"
   gem 'sxp',            github: "dryruby/sxp.rb",           branch: "develop"
-  gem 'rake',           '~> 10.0'
+  gem 'rake',           '~> 13.0'
   gem 'redcarpet',      '~> 3.2.2' unless RUBY_ENGINE == 'jruby'
   gem 'byebug',         platform: :mri
   gem 'psych',          platforms: [:mri, :rbx]
 end
 
 group :test do
-  gem 'simplecov',  platforms: :mri
-  gem 'coveralls',  '~> 0.8', platforms: :mri
+  gem 'simplecov', '~> 0.21',  platforms: :mri
+  gem 'simplecov-lcov', '~> 0.8',  platforms: :mri
   gem 'guard' #, '~> 2.13.0'
   gem 'guard-rspec' #, '~> 3.1.0'
   gem 'guard-ctags-bundler' #, '~> 1.4.0'
