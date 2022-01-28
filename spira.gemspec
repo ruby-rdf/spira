@@ -9,10 +9,17 @@ Gem::Specification.new do |gem|
   gem.date               = Time.now.strftime('%Y-%m-%d')
 
   gem.name               = 'spira'
-  gem.homepage           = 'https://ruby-rdf.github.io/spira/'
+  gem.homepage           = 'https://github.com/ruby-rdf/spira'
   gem.license            = 'Unlicense'
   gem.summary            = 'A framework for using the information in RDF.rb repositories as model objects.'
   gem.description        = 'Spira is a framework for using the information in RDF.rb repositories as model objects.'
+  gem.metadata           = {
+    "documentation_uri" => "https://ruby-rdf.github.io/spira",
+    "bug_tracker_uri"   => "https://github.com/ruby-rdf/spira/issues",
+    "homepage_uri"      => "https://github.com/ruby-rdf/spira",
+    "mailing_list_uri"  => "https://lists.w3.org/Archives/Public/public-rdf-ruby/",
+    "source_code_uri"   => "https://github.com/ruby-rdf/spira",
+  }
 
   gem.authors            = ['Ben Lavender']
   gem.email              = 'blavender@gmail.com'
