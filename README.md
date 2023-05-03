@@ -1,6 +1,6 @@
 # Spira
 
-[![Gem Version](https://badge.fury.io/rb/spira.png)](https://badge.fury.io/rb/spira)
+[![Gem Version](https://badge.fury.io/rb/spira.svg)](https://badge.fury.io/rb/spira)
 [![Build Status](https://github.com/ruby-rdf/spira/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/spira/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/spira/badge.png?branch=develop)](https://coveralls.io/r/ruby-rdf/spira)
 [![Code Climate](https://codeclimate.com/github/ruby-rdf/spira.png)](https://codeclimate.com/github/ruby-rdf/spira)
