@@ -155,7 +155,7 @@ describe Spira do
 
       it "should not query the repository when loading a parent and not accessing a child" do
         name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
-        expect(repo).to receive(:query).with(subject: uri).once.and_return(name_statements)
+        expect(repo).to receive(:query).with({subject: uri}).once.and_return(name_statements)
 
         test = uri.as(LoadTest)
         test.name
@@ -163,8 +163,8 @@ describe Spira do
 
       it "should query the repository when loading a parent and accessing a field on a child" do
         name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
-        expect(repo).to receive(:query).with(subject: uri).once.and_return(parent_statements)
-        expect(repo).to receive(:query).with(subject: child_uri).once.and_return(name_statements)
+        expect(repo).to receive(:query).with({subject: uri}).once.and_return(parent_statements)
+        expect(repo).to receive(:query).with({subject: child_uri}).once.and_return(name_statements)
 
         test = uri.as(LoadTest)
         test.child.name
@@ -172,8 +172,8 @@ describe Spira do
 
       it "should not re-query to access a child twice" do
         name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
-        expect(repo).to receive(:query).with(subject: uri).once.and_return(parent_statements)
-        expect(repo).to receive(:query).with(subject: child_uri).once.and_return(name_statements)
+        expect(repo).to receive(:query).with({subject: uri}).once.and_return(parent_statements)
+        expect(repo).to receive(:query).with({subject: child_uri}).once.and_return(name_statements)
 
         test = uri.as(LoadTest)
         2.times { test.child.name }
@@ -181,8 +181,8 @@ describe Spira do
 
       it "should re-query to access a child's parent from the child" do
         name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
-        expect(repo).to receive(:query).with(subject: uri).twice.and_return(parent_statements)
-        expect(repo).to receive(:query).with(subject: child_uri).once.and_return(child_statements)
+        expect(repo).to receive(:query).with({subject: uri}).twice.and_return(parent_statements)
+        expect(repo).to receive(:query).with({subject: child_uri}).once.and_return(child_statements)
 
         test = uri.as(LoadTest)
         3.times do
@@ -193,8 +193,8 @@ describe Spira do
       it "should re-query for children after a #reload" do
         parent_name_statements = parent_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
         child_name_statements = child_statements.select {|st| st.predicate == RDF::Vocab::FOAF.name }
-        expect(repo).to receive(:query).with(subject: uri).exactly(4).times.and_return(parent_statements)
-        expect(repo).to receive(:query).with(subject: child_uri).twice.and_return(child_statements)
+        expect(repo).to receive(:query).with({subject: uri}).exactly(4).times.and_return(parent_statements)
+        expect(repo).to receive(:query).with({subject: child_uri}).twice.and_return(child_statements)
 
         test = uri.as(LoadTest)
         expect(test.child.child.name).to eql "a name"
