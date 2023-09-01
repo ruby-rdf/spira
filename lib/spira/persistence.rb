@@ -171,7 +171,7 @@ module Spira
       # @yield [self] Executes a given block and calls `#save!`
       # @yieldparam [self] self The newly created instance
       # @return  [Spira::Base] The newly created instance
-      # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/URI.html
+      # @see https://ruby-rdf.github.io/rdf/RDF/URI.html
       def for(identifier, attributes = {}, &block)
         self.project(id_for(identifier), attributes, &block)
       end
@@ -205,7 +205,7 @@ module Spira
       # @param  [Any] identifier
       # @return [RDF::URI, RDF::Node]
       # @raise  [ArgumentError] If this class cannot create an identifier from the given argument
-      # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/URI.html
+      # @see https://ruby-rdf.github.io/rdf/RDF/URI.html
       # @see Spira.base_uri
       # @see Spira.for
       def id_for(identifier)
@@ -303,10 +303,10 @@ module Spira
     ##
     # Enumerate each RDF statement that makes up this projection.  This makes
     # each instance an `RDF::Enumerable`, with all of the nifty benefits
-    # thereof.  See <https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable.html> for
+    # thereof.  See <https://ruby-rdf.github.io/rdf/RDF/Enumerable.html> for
     # information on arguments.
     #
-    # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable.html
+    # @see https://ruby-rdf.github.io/rdf/RDF/Enumerable.html
     def each
       if block_given?
         self.class.properties.each do |name, property|
@@ -333,7 +333,7 @@ module Spira
     ##
     # The number of RDF::Statements this projection has.
     #
-    # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable.html#count
+    # @see https://ruby-rdf.github.io/rdf/RDF/Enumerable.html#count
     def count
       each.count
     end

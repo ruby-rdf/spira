@@ -32,7 +32,7 @@ module Spira
   # `Spira::Type`s include the RDF namespace and thus have all of the base RDF
   # vocabularies available to them without the `RDF::` prefix.
   #
-  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Value.html
+  # @see https://ruby-rdf.github.io/rdf/RDF/Value.html
   # @see Spira::Resource
   module Type
 

@@ -8,7 +8,7 @@ module Spira::Types
   # `Spira::Types::GYear`, `GYear`, or `XSD.gYear`.
   #
   # @see Spira::Type
-  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html
+  # @see https://ruby-rdf.github.io/rdf/RDF/Literal.html
   class GYear
     include Spira::Type
 

@@ -8,7 +8,7 @@ module Spira::Types
   # `Spira::Types::String`, `String`, or `XSD.string`.
   #
   # @see Spira::Type
-  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html
+  # @see https://ruby-rdf.github.io/rdf/RDF/Literal.html
   class String
 
     include Spira::Type

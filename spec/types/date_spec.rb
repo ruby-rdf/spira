@@ -19,7 +19,7 @@ describe Spira::Types::Date do
   context "when unserializing" do
     it "should unserialize XSD dates to dates" do
       value = Spira::Types::Date.unserialize(RDF::Literal.new(@date, datatype: RDF::XSD.date))
-      expect(value).to equal @date
+      expect(value).to eql @date
     end
   end
 

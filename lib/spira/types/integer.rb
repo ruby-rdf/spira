@@ -8,7 +8,7 @@ module Spira::Types
   # `Spira::Types::Integer`, `Integer`, or `XSD.integer`.
   #
   # @see Spira::Type
-  # @see https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html
+  # @see https://ruby-rdf.github.io/rdf/RDF/Literal.html
   class Integer
 
     include Spira::Type

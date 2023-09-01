@@ -1,6 +1,6 @@
 # Spira
 
-[![Gem Version](https://badge.fury.io/rb/spira.png)](https://badge.fury.io/rb/spira)
+[![Gem Version](https://badge.fury.io/rb/spira.svg)](https://badge.fury.io/rb/spira)
 [![Build Status](https://github.com/ruby-rdf/spira/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/spira/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/spira/badge.png?branch=develop)](https://coveralls.io/r/ruby-rdf/spira)
 [![Code Climate](https://codeclimate.com/github/ruby-rdf/spira.png)](https://codeclimate.com/github/ruby-rdf/spira)
@@ -226,7 +226,7 @@ end
 Spira.repository = RDF::Repository.new
 
 rolling_stones = Album.for RDF::URI.new('http://example.org/cds/rolling-stones-hits')
-# See RDF.rb at https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Enumerable.html for more information about #has_predicate?
+# See RDF.rb at https://ruby-rdf.github.io/rdf/RDF/Enumerable.html for more information about #has_predicate?
 rolling_stones.has_predicate?(RDF.type) #=> true
 Album.type #=> RDF::URI('http://example.org/types/album')
 ```
@@ -392,7 +392,7 @@ are implemented:
 
 The default type for a Spira property is `Spira::Types::Any`, which uses
 `RDF::Literal`'s automatic boxing/unboxing of XSD types as best it can.
-See [`RDF::Literal`](https://www.rubydoc.info/github/ruby-rdf/rdf/RDF/Literal.html) for more information.
+See [`RDF::Literal`](https://ruby-rdf.github.io/rdf/RDF/Literal.html) for more information.
 
 You can implement your own types as well.  Your class' serialize method should
 turn an RDF::Value into a ruby object, and vice versa.
@@ -477,7 +477,7 @@ level.  You can also access attributes that are not defined as properties.
 
 ## Documentation
 
-<https://www.rubydoc.info/github/ruby-rdf/spira>
+<https://ruby-rdf.github.io/spira>
 
 ## Support
 
