@@ -35,8 +35,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'rdf',            '~> 3.3'
   gem.add_runtime_dependency     'rdf-isomorphic', '~> 3.3'
   gem.add_runtime_dependency     'promise',        '~> 0.3'
-  gem.add_runtime_dependency     'activemodel',    '~> 7.0'
-  gem.add_runtime_dependency     'activesupport',  '~> 7.0'
+  gem.add_runtime_dependency     'activemodel',    '>= 7.0', '< 9'
+  gem.add_runtime_dependency     'activesupport',  '>= 7.0', '< 9'
   gem.add_runtime_dependency     'i18n',           '~> 1.14'
 
   gem.add_development_dependency 'rdf-spec',      '~> 3.3'
