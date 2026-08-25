@@ -478,6 +478,10 @@ level.  You can also access attributes that are not defined as properties.
 ## Documentation
 
 <https://ruby-rdf.github.io/spira>
+## Change Log
+
+
+See [Release Notes on GitHub](https://github.com/ruby-rdf/spira/releases)
 
 ## Support
 
