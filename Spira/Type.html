@@ -10,9 +10,9 @@
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Spira::Type";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -88,18 +90,18 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/spira/type.rb</dd>
+    <dd>lib/spira/type.rb
+</dd>
   </dl>
   
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-<p>Spira::Type can be included by classes to create new property types for Spira. These types are responsible for serialization a Ruby value into an <code>RDF::Value</code>, and deserialization of an <code>RDF::Value</code> into a Ruby value.</p>
-
+    <p>Spira::Type can be included by classes to create new property types for
+Spira.  These types are responsible for serialization a Ruby value into an
+<code>RDF::Value</code>, and deserialization of an <code>RDF::Value</code> into a Ruby value.</p>
 <p>A simple example:</p>
-
 <pre class="code ruby"><code class="ruby"><span class='kw'>class</span> <span class='const'>Integer</span>
 
   <span class='id identifier rubyid_include'>include</span> <span class='const'><span class='object_link'><a href="../Spira.html" title="Spira (module)">Spira</a></span></span><span class='op'>::</span><span class='const'>Type</span>
@@ -115,15 +117,14 @@
   <span class='id identifier rubyid_register_alias'>register_alias</span> <span class='const'>XSD</span><span class='period'>.</span><span class='id identifier rubyid_integer'>integer</span>
 <span class='kw'>end</span>
 </code></pre>
-
-<p>This example will serialize and deserialize integers. It’s included with Spira by default. It allows either of the following forms to declare an integer property on a Spira resource:</p>
-
+<p>This example will serialize and deserialize integers.  It's included with
+Spira by default.  It allows either of the following forms to declare an
+integer property on a Spira resource:</p>
 <pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_property'>property</span> <span class='symbol'>:age</span><span class='comma'>,</span> <span class='label'>predicate:</span> <span class='const'><span class='object_link'><a href="../RDF.html" title="RDF (module)">RDF</a></span></span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>FOAF</span><span class='period'>.</span><span class='id identifier rubyid_age'>age</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='const'>Integer</span>
 <span class='id identifier rubyid_property'>property</span> <span class='symbol'>:age</span><span class='comma'>,</span> <span class='label'>predicate:</span> <span class='const'><span class='object_link'><a href="../RDF.html" title="RDF (module)">RDF</a></span></span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>FOAF</span><span class='period'>.</span><span class='id identifier rubyid_age'>age</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='const'><span class='object_link'><a href="../RDF.html" title="RDF (module)">RDF</a></span></span><span class='op'>::</span><span class='const'>XSD</span><span class='period'>.</span><span class='id identifier rubyid_integer'>integer</span>
 </code></pre>
-
-<p><code>Spira::Type</code>s include the RDF namespace and thus have all of the base RDF vocabularies available to them without the <code>RDF::</code> prefix.</p>
-
+<p><code>Spira::Type</code>s include the RDF namespace and thus have all of the base RDF
+vocabularies available to them without the <code>RDF::</code> prefix.</p>
 
   </div>
 </div>
@@ -163,13 +164,14 @@
   
   
   
+  
 
 </div>
 
       <div id="footer">
-  Generated on Fri Sep  1 21:19:55 2023 by
+  Generated on Tue Aug 25 07:11:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.34 (ruby-3.1.4).
+  0.9.45 (ruby-3.1.7).
 </div>
 
     </div>

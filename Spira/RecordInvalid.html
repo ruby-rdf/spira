@@ -10,9 +10,9 @@
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Spira::RecordInvalid";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -98,20 +100,22 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/spira/validations.rb</dd>
+    <dd>lib/spira/validations.rb
+</dd>
   </dl>
   
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-<p>= Spira RecordInvalid</p>
-
-<p>Raised by <code>save!</code> and <code>create!</code> when the record is invalid. Use the <code>record</code> method to retrieve the record which did not validate.</p>
-
-<p>begin  complex_operation_that_calls_save!_internally  rescue Spira:RecordInvalid: invalid  puts invalid.record.errors  end</p>
-
+    <h1 id="Spira_RecordInvalid">Spira RecordInvalid</h1>
+<p>Raised by <tt>save!</tt> and <tt>create!</tt> when the record is invalid. Use the
+<code>record</code> method to retrieve the record which did not validate.</p>
+<pre class="code ruby"><code class="ruby">begin
+complex_operation_that_calls_save!_internally
+rescue Spira:RecordInvalid: invalid
+puts invalid.record.errors
+end</code></pre>
 
   </div>
 </div>
@@ -147,9 +151,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute record.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the value of attribute record.</p></div></span>
   
 </li>
 
@@ -186,17 +188,17 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>A new instance of RecordInvalid.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>A new instance of RecordInvalid.</p></div></span>
   
 </li>
 
       
     </ul>
+    
   
 
 
+  
   
   
   
@@ -217,9 +219,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns a new instance of RecordInvalid.</p>
-
+    <p>Returns a new instance of RecordInvalid.</p>
 
   </div>
 </div>
@@ -273,9 +273,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the value of attribute record.</p>
-
+    <p>Returns the value of attribute record.</p>
 
   </div>
 </div>
@@ -309,9 +307,9 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Sep  1 21:19:56 2023 by
+  Generated on Tue Aug 25 07:11:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.34 (ruby-3.1.4).
+  0.9.45 (ruby-3.1.7).
 </div>
 
     </div>

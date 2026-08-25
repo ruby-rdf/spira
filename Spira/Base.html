@@ -10,9 +10,9 @@
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Spira::Base";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -104,16 +106,16 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/spira/base.rb</dd>
+    <dd>lib/spira/base.rb
+</dd>
   </dl>
   
 </div>
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-<p>Spira::Base aims to perform similar to ActiveRecord::Base You should inherit your models from it.</p>
-
+    <p>Spira::Base aims to perform similar to ActiveRecord::Base
+You should inherit your models from it.</p>
 
   </div>
 </div>
@@ -149,9 +151,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute properties.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the value of attribute properties.</p></div></span>
   
 </li>
 
@@ -178,9 +178,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute reflections.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the value of attribute reflections.</p></div></span>
   
 </li>
 
@@ -212,9 +210,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>This instance’s URI.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>This instance's URI.</p></div></span>
   
 </li>
 
@@ -249,9 +245,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The base URI for this class.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The base URI for this class.</p></div></span>
   
 </li>
 
@@ -273,9 +267,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The default vocabulary for this class.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The default vocabulary for this class.</p></div></span>
   
 </li>
 
@@ -347,6 +339,7 @@
 
       
     </ul>
+    
   
     <h2>
       Instance Method Summary
@@ -372,9 +365,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Compare this instance with another instance.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Compare this instance with another instance.</p></div></span>
   
 </li>
 
@@ -396,9 +387,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Assign attributes to the resource without persisting it.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Assign attributes to the resource without persisting it.</p></div></span>
   
 </li>
 
@@ -420,9 +409,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the attributes.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the attributes.</p></div></span>
   
 </li>
 
@@ -444,9 +431,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns a new instance of this class with the new subject instead of self.subject.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns a new instance of this class with the new subject instead of self.subject.</p></div></span>
   
 </li>
 
@@ -468,9 +453,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns a new instance of this class with the new subject instead of self.subject after saving the new copy to the repository.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns a new instance of this class with the new subject instead of self.subject after saving the new copy to the repository.</p></div></span>
   
 </li>
 
@@ -492,9 +475,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Freeze the attributes hash such that associations are still accessible, even on destroyed records.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Freeze the attributes hash such that associations are still accessible, even on destroyed records.</p></div></span>
   
 </li>
 
@@ -516,9 +497,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns <code>true</code> if the attributes hash has been frozen.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns <code>true</code> if the attributes hash has been frozen.</p></div></span>
   
 </li>
 
@@ -564,9 +543,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Initialize a new Spira::Base instance of this resource class using a new blank node subject.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Initialize a new Spira::Base instance of this resource class using a new blank node subject.</p></div></span>
   
 </li>
 
@@ -588,9 +565,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>A developer-friendly view of this projection.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>A developer-friendly view of this projection.</p></div></span>
   
 </li>
 
@@ -612,9 +587,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns true if the subject associated with this instance is a blank node.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns true if the subject associated with this instance is a blank node.</p></div></span>
   
 </li>
 
@@ -636,9 +609,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Assign all attributes from the given hash.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Assign all attributes from the given hash.</p></div></span>
   
 </li>
 
@@ -660,9 +631,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns true for :to_uri if this instance’s subject is a URI, and false if it is not.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns true for :to_uri if this instance's subject is a URI, and false if it is not.</p></div></span>
   
 </li>
 
@@ -684,9 +653,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the Node subject of this resource, if available.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the Node subject of this resource, if available.</p></div></span>
   
 </li>
 
@@ -708,9 +675,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the RDF representation of this resource.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the RDF representation of this resource.</p></div></span>
   
 </li>
 
@@ -732,9 +697,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the URI representation of this resource, if available.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the URI representation of this resource, if available.</p></div></span>
   
 </li>
 
@@ -756,9 +719,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The <code>RDF.type</code> associated with this class.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The <code>RDF.type</code> associated with this class.</p></div></span>
   
 </li>
 
@@ -780,9 +741,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>All <code>RDF.type</code> nodes associated with this class.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>All <code>RDF.type</code> nodes associated with this class.</p></div></span>
   
 </li>
 
@@ -804,17 +763,17 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Returns the RDF::URI associated with this instance if this instance’s subject is an RDF::URI, and nil otherwise.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Returns the RDF::URI associated with this instance if this instance's subject is an RDF::URI, and nil otherwise.</p></div></span>
   
 </li>
 
       
     </ul>
+    
   
 
 
+  
   
   
   
@@ -836,6 +795,7 @@
   
   
   
+  
   <h3 class="inherited">Methods included from <span class='object_link'><a href="Reflections.html" title="Spira::Reflections (module)">Reflections</a></span></h3>
   <p class="inherited"><span class='object_link'><a href="Reflections.html#reflect_on_association-instance_method" title="Spira::Reflections#reflect_on_association (method)">reflect_on_association</a></span>, <span class='object_link'><a href="Reflections.html#reflections-instance_method" title="Spira::Reflections#reflections (method)">reflections</a></span></p>
 
@@ -847,9 +807,11 @@
   
   
   
+  
   <h3 class="inherited">Methods included from <span class='object_link'><a href="Serialization.html" title="Spira::Serialization (module)">Serialization</a></span></h3>
   <p class="inherited"><span class='object_link'><a href="Serialization.html#encode_with-instance_method" title="Spira::Serialization#encode_with (method)">#encode_with</a></span>, <span class='object_link'><a href="Serialization.html#init_with-instance_method" title="Spira::Serialization#init_with (method)">#init_with</a></span></p>
 
+  
   
   
   
@@ -871,9 +833,13 @@
   
   
   
+  
   <h3 class="inherited">Methods included from <span class='object_link'><a href="Persistence.html" title="Spira::Persistence (module)">Persistence</a></span></h3>
   <p class="inherited"><span class='object_link'><a href="Persistence.html#count-instance_method" title="Spira::Persistence#count (method)">#count</a></span>, <span class='object_link'><a href="Persistence.html#destroy-instance_method" title="Spira::Persistence#destroy (method)">#destroy</a></span>, <span class='object_link'><a href="Persistence.html#destroy!-instance_method" title="Spira::Persistence#destroy! (method)">#destroy!</a></span>, <span class='object_link'><a href="Persistence.html#destroyed%3F-instance_method" title="Spira::Persistence#destroyed? (method)">#destroyed?</a></span>, <span class='object_link'><a href="Persistence.html#each-instance_method" title="Spira::Persistence#each (method)">#each</a></span>, <span class='object_link'><a href="Persistence.html#new_record%3F-instance_method" title="Spira::Persistence#new_record? (method)">#new_record?</a></span>, <span class='object_link'><a href="Persistence.html#persisted%3F-instance_method" title="Spira::Persistence#persisted? (method)">#persisted?</a></span>, <span class='object_link'><a href="Persistence.html#save-instance_method" title="Spira::Persistence#save (method)">#save</a></span>, <span class='object_link'><a href="Persistence.html#save!-instance_method" title="Spira::Persistence#save! (method)">#save!</a></span>, <span class='object_link'><a href="Persistence.html#update_attributes-instance_method" title="Spira::Persistence#update_attributes (method)">#update_attributes</a></span></p>
 
+  
+  
+  
   
   
   
@@ -916,16 +882,17 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Initialize a new Spira::Base instance of this resource class using a new blank node subject. Accepts a hash of arguments for initial attributes. To use a URI or existing blank node as a subject, use the <code>.for</code> method on the subclass instead.</p>
-
+    <p>Initialize a new Spira::Base instance of this resource class using
+a new blank node subject.  Accepts a hash of arguments for initial
+attributes.  To use a URI or existing blank node as a subject, use
+the <code>.for</code> method on the subclass instead.</p>
 
   </div>
 </div>
 <div class="tags">
   
   <div class="examples">
-    <p class="tag_title">Examples:</p>
+    <h4 class="tag_title">Examples:</h4>
     
       
       <pre class="example code"><code><span class='kw'>class</span> <span class='const'>Person</span> <span class='op'>&lt;</span> <span class='const'><span class='object_link'><a href="../Spira.html" title="Spira (module)">Spira</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="Spira::Base (class)">Base</a></span></span><span class='semicolon'>;</span> <span class='kw'>end</span>
@@ -947,9 +914,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>Default attributes for this instance</p>
-</div>
+        <div class='inline'><p>Default attributes for this instance</p></div>
       
     </li>
   
@@ -966,9 +931,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>Executes a given block</p>
-</div>
+        <div class='inline'><p>Executes a given block</p></div>
       
     </li>
   
@@ -986,9 +949,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>The newly created instance</p>
-</div>
+        <div class='inline'><p>The newly created instance</p></div>
       
     </li>
   
@@ -1054,9 +1015,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the value of attribute properties.</p>
-
+    <p>Returns the value of attribute properties.</p>
 
   </div>
 </div>
@@ -1097,9 +1056,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the value of attribute reflections.</p>
-
+    <p>Returns the value of attribute reflections.</p>
 
   </div>
 </div>
@@ -1145,9 +1102,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>This instance’s URI.</p>
-
+    <p>This instance's URI.</p>
 
   </div>
 </div>
@@ -1206,9 +1161,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The base URI for this class. Attempts to create instances for non-URI objects will be appended to this base URI.</p>
-
+    <p>The base URI for this class.  Attempts to create instances for non-URI
+objects will be appended to this base URI.</p>
 
   </div>
 </div>
@@ -1264,9 +1218,10 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The default vocabulary for this class. Setting a default vocabulary will allow properties to be defined without a <code>:predicate</code> option. Predicates will instead be created by appending the property name to the given string.</p>
-
+    <p>The default vocabulary for this class.  Setting a default vocabulary
+will allow properties to be defined without a <code>:predicate</code> option.
+Predicates will instead be created by appending the property name to
+the given string.</p>
 
   </div>
 </div>
@@ -1442,9 +1397,9 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Compare this instance with another instance. The comparison is done on an RDF level, and will work across subclasses as long as the attributes are the same.</p>
-
+    <p>Compare this instance with another instance.  The comparison is done on
+an RDF level, and will work across subclasses as long as the attributes
+are the same.</p>
 
   </div>
 </div>
@@ -1506,9 +1461,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Assign attributes to the resource without persisting it.</p>
-
+    <p>Assign attributes to the resource
+without persisting it.</p>
 
   </div>
 </div>
@@ -1553,9 +1507,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the attributes</p>
-
+    <p>Returns the attributes</p>
 
   </div>
 </div>
@@ -1594,9 +1546,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns a new instance of this class with the new subject instead of self.subject</p>
-
+    <p>Returns a new instance of this class with the new subject instead of self.subject</p>
 
   </div>
 </div>
@@ -1628,9 +1578,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>copy</p>
-</div>
+        <div class='inline'><p>copy</p></div>
       
     </li>
   
@@ -1668,9 +1616,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns a new instance of this class with the new subject instead of self.subject after saving the new copy to the repository.</p>
-
+    <p>Returns a new instance of this class with the new subject instead of
+self.subject after saving the new copy to the repository.</p>
 
   </div>
 </div>
@@ -1702,9 +1649,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>copy</p>
-</div>
+        <div class='inline'><p>copy</p></div>
       
     </li>
   
@@ -1742,9 +1687,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Freeze the attributes hash such that associations are still accessible, even on destroyed records.</p>
-
+    <p>Freeze the attributes hash such that associations are still accessible, even on destroyed records.</p>
 
   </div>
 </div>
@@ -1783,9 +1726,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns <code>true</code> if the attributes hash has been frozen.</p>
-
+    <p>Returns <code>true</code> if the attributes hash has been frozen.</p>
 
   </div>
 </div>
@@ -1867,9 +1808,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>A developer-friendly view of this projection</p>
-
+    <p>A developer-friendly view of this projection</p>
 
   </div>
 </div>
@@ -1908,9 +1847,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns true if the subject associated with this instance is a blank node.</p>
-
+    <p>Returns true if the subject associated with this instance is a blank node.</p>
 
   </div>
 </div>
@@ -1962,9 +1899,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Assign all attributes from the given hash.</p>
-
+    <p>Assign all attributes from the given hash.</p>
 
   </div>
 </div>
@@ -2009,9 +1944,9 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns true for :to_uri if this instance’s subject is a URI, and false if it is not. Returns true for :to_node if this instance’s subject is a Node, and false if it is not. Calls super otherwise.</p>
-
+    <p>Returns true for :to_uri if this instance's subject is a URI, and false if it is not.
+Returns true for :to_node if this instance's subject is a Node, and false if it is not.
+Calls super otherwise.</p>
 
   </div>
 </div>
@@ -2077,9 +2012,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the Node subject of this resource, if available. If this resource’s subject is a URI, raises a NoMethodError.</p>
-
+    <p>Returns the Node subject of this resource, if available.  If this
+resource's subject is a URI, raises a NoMethodError.</p>
 
   </div>
 </div>
@@ -2144,9 +2078,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the RDF representation of this resource.</p>
-
+    <p>Returns the RDF representation of this resource.</p>
 
   </div>
 </div>
@@ -2198,9 +2130,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the URI representation of this resource, if available. If this resource’s subject is a BNode, raises a NoMethodError.</p>
-
+    <p>Returns the URI representation of this resource, if available.  If this
+resource's subject is a BNode, raises a NoMethodError.</p>
 
   </div>
 </div>
@@ -2265,11 +2196,9 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The <code>RDF.type</code> associated with this class.</p>
-
-<p>This just takes a first type from “types” list, so make sure you know what you’re doing if you use it.</p>
-
+    <p>The <code>RDF.type</code> associated with this class.</p>
+<p>This just takes a first type from &quot;types&quot; list,
+so make sure you know what you're doing if you use it.</p>
 
   </div>
 </div>
@@ -2286,9 +2215,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>The RDF type associated with this instance’s class.</p>
-</div>
+        <div class='inline'><p>The RDF type associated with this instance's class.</p></div>
       
     </li>
   
@@ -2326,9 +2253,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>All <code>RDF.type</code> nodes associated with this class.</p>
-
+    <p>All <code>RDF.type</code> nodes associated with this class.</p>
 
   </div>
 </div>
@@ -2345,9 +2270,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>The RDF type associated with this instance’s class.</p>
-</div>
+        <div class='inline'><p>The RDF type associated with this instance's class.</p></div>
       
     </li>
   
@@ -2385,9 +2308,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Returns the RDF::URI associated with this instance if this instance’s subject is an RDF::URI, and nil otherwise.</p>
-
+    <p>Returns the RDF::URI associated with this instance if this instance's
+subject is an RDF::URI, and nil otherwise.</p>
 
   </div>
 </div>
@@ -2433,9 +2355,9 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Sep  1 21:19:56 2023 by
+  Generated on Tue Aug 25 07:11:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.34 (ruby-3.1.4).
+  0.9.45 (ruby-3.1.7).
 </div>
 
     </div>

@@ -10,9 +10,9 @@
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Spira::Validations";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -93,8 +95,9 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/spira/validations.rb<span class="defines">,<br />
+    <dd>lib/spira/validations.rb<span class="defines">,<br>
   lib/spira/validations/uniqueness.rb</span>
+
 </dd>
   </dl>
   
@@ -166,9 +169,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The validation process on save can be skipped by passing <code>validate: false</code>.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The validation process on save can be skipped by passing <tt>validate: false</tt>.</p></div></span>
   
 </li>
 
@@ -190,9 +191,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Attempts to save the record just like Base#save but will raise a <code>RecordInvalid</code> exception instead of returning false if the record is not valid.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Attempts to save the record just like Base#save but will raise a <code>RecordInvalid</code> exception instead of returning false if the record is not valid.</p></div></span>
   
 </li>
 
@@ -214,14 +213,13 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Runs all the validations within the specified context.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Runs all the validations within the specified context.</p></div></span>
   
 </li>
 
       
     </ul>
+    
   
 
 
@@ -275,9 +273,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The validation process on save can be skipped by passing <code>validate: false</code>. The regular Base#save method is replaced with this when the validations module is mixed in, which it is by default.</p>
-
+    <p>The validation process on save can be skipped by passing <tt>validate: false</tt>. The regular Base#save method is
+replaced with this when the validations module is mixed in, which it is by default.</p>
 
   </div>
 </div>
@@ -316,9 +313,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Attempts to save the record just like Base#save but will raise a <code>RecordInvalid</code> exception instead of returning false if the record is not valid.</p>
-
+    <p>Attempts to save the record just like Base#save but will raise a <code>RecordInvalid</code> exception instead of returning false
+if the record is not valid.</p>
 
   </div>
 </div>
@@ -357,13 +353,12 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Runs all the validations within the specified context. Returns true if no errors are found, false otherwise.</p>
-
-<p>If the argument is false (default is <code>nil</code>), the context is set to <code>:create</code> if <code>new_record?</code> is true, and to <code>:update</code> if it is not.</p>
-
-<p>Validations with no <code>:on</code> option will run no matter the context. Validations with some <code>:on</code> option will only run in the specified context.</p>
-
+    <p>Runs all the validations within the specified context. Returns true if no errors are found,
+false otherwise.</p>
+<p>If the argument is false (default is <code>nil</code>), the context is set to <tt>:create</tt> if
+<tt>new_record?</tt> is true, and to <tt>:update</tt> if it is not.</p>
+<p>Validations with no <tt>:on</tt> option will run no matter the context. Validations with
+some <tt>:on</tt> option will only run in the specified context.</p>
 
   </div>
 </div>
@@ -413,9 +408,9 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Sep  1 21:19:55 2023 by
+  Generated on Tue Aug 25 07:11:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.34 (ruby-3.1.4).
+  0.9.45 (ruby-3.1.7).
 </div>
 
     </div>

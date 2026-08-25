@@ -10,9 +10,9 @@
   
 </title>
 
-  <link rel="stylesheet" href="css/style.css" type="text/css" />
+  <link rel="stylesheet" href="css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="css/common.css" type="text/css" />
+  <link rel="stylesheet" href="css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Spira";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -78,8 +80,9 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/spira.rb<span class="defines">,<br />
-  lib/spira/base.rb,<br /> lib/spira/type.rb,<br /> lib/spira/types.rb,<br /> lib/spira/utils.rb,<br /> lib/spira/version.rb,<br /> lib/spira/resource.rb,<br /> lib/spira/exceptions.rb,<br /> lib/spira/persistence.rb,<br /> lib/spira/reflections.rb,<br /> lib/spira/validations.rb,<br /> lib/spira/serialization.rb,<br /> lib/spira/validations/uniqueness.rb</span>
+    <dd>lib/spira.rb<span class="defines">,<br>
+  lib/spira/base.rb,<br> lib/spira/type.rb,<br> lib/spira/types.rb,<br> lib/spira/utils.rb,<br> lib/spira/version.rb,<br> lib/spira/resource.rb,<br> lib/spira/exceptions.rb,<br> lib/spira/persistence.rb,<br> lib/spira/reflections.rb,<br> lib/spira/validations.rb,<br> lib/spira/serialization.rb,<br> lib/spira/validations/uniqueness.rb</span>
+
 </dd>
   </dl>
   
@@ -87,9 +90,8 @@
 
 <h2>Overview</h2><div class="docstring">
   <div class="discussion">
-    
-<p>Spira is a framework for building projections of RDF data into Ruby classes. It is built on top of RDF.rb.</p>
-
+    <p>Spira is a framework for building projections of RDF data into Ruby classes.
+It is built on top of RDF.rb.</p>
 
   </div>
 </div>
@@ -151,9 +153,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The RDF::Repository used (reader).</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The RDF::Repository used (reader).</p></div></span>
   
 </li>
 
@@ -175,9 +175,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The RDF::Repository used (reader).</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The RDF::Repository used (reader).</p></div></span>
   
 </li>
 
@@ -199,9 +197,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Alias a property type to another.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Alias a property type to another.</p></div></span>
   
 </li>
 
@@ -223,9 +219,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The list of all property types available for Spira resources.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The list of all property types available for Spira resources.</p></div></span>
   
 </li>
 
@@ -247,14 +241,13 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Execute a block on a specific repository.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Execute a block on a specific repository.</p></div></span>
   
 </li>
 
       
     </ul>
+    
   
 
 
@@ -274,9 +267,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The RDF::Repository used (reader)</p>
-
+    <p>The RDF::Repository used (reader)</p>
 
   </div>
 </div>
@@ -335,9 +326,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The RDF::Repository used (reader)</p>
-
+    <p>The RDF::Repository used (reader)</p>
 
   </div>
 </div>
@@ -396,9 +385,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Alias a property type to another. This allows a range of options to be specified for a property type which all reference one Spira::Type</p>
-
+    <p>Alias a property type to another.  This allows a range of options to be
+specified for a property type which all reference one Spira::Type</p>
 
   </div>
 </div>
@@ -416,9 +404,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>The new symbol or reference</p>
-</div>
+        <div class='inline'><p>The new symbol or reference</p></div>
       
     </li>
   
@@ -432,9 +418,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>The type the new symbol should refer to</p>
-</div>
+        <div class='inline'><p>The type the new symbol should refer to</p></div>
       
     </li>
   
@@ -486,9 +470,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The list of all property types available for Spira resources</p>
-
+    <p>The list of all property types available for Spira resources</p>
 
   </div>
 </div>
@@ -547,9 +529,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Execute a block on a specific repository</p>
-
+    <p>Execute a block on a specific repository</p>
 
   </div>
 </div>
@@ -567,9 +547,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>the repository to work on</p>
-</div>
+        <div class='inline'><p>the repository to work on</p></div>
       
     </li>
   
@@ -586,9 +564,7 @@
       
       
         
-        <div class='inline'>
-<p>the block with the instructions while using the repository</p>
-</div>
+        <div class='inline'><p>the block with the instructions while using the repository</p></div>
       
     </li>
   
@@ -604,9 +580,7 @@
       
       
         &mdash;
-        <div class='inline'>
-<p>the given repository</p>
-</div>
+        <div class='inline'><p>the given repository</p></div>
       
     </li>
   
@@ -648,9 +622,9 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Sep  1 21:19:55 2023 by
+  Generated on Tue Aug 25 07:11:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.34 (ruby-3.1.4).
+  0.9.45 (ruby-3.1.7).
 </div>
 
     </div>

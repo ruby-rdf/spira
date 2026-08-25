@@ -10,9 +10,9 @@
   
 </title>
 
-  <link rel="stylesheet" href="../css/style.css" type="text/css" />
+  <link rel="stylesheet" href="../css/style.css" type="text/css">
 
-  <link rel="stylesheet" href="../css/common.css" type="text/css" />
+  <link rel="stylesheet" href="../css/common.css" type="text/css">
 
 <script type="text/javascript">
   pathId = "Spira::Persistence";
@@ -27,6 +27,8 @@
 
   </head>
   <body>
+    <div id="main_progress" aria-hidden="true"></div>
+
     <div class="nav_wrap">
       <iframe id="nav" src="../class_list.html?1"></iframe>
       <div id="resizer"></div>
@@ -88,7 +90,8 @@
   
   <dl>
     <dt>Defined in:</dt>
-    <dd>lib/spira/persistence.rb</dd>
+    <dd>lib/spira/persistence.rb
+</dd>
   </dl>
   
 </div>
@@ -135,9 +138,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>The number of RDF::Statements this projection has.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>The number of RDF::Statements this projection has.</p></div></span>
   
 </li>
 
@@ -225,9 +226,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Enumerate each RDF statement that makes up this projection.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Enumerate each RDF statement that makes up this projection.</p></div></span>
   
 </li>
 
@@ -249,9 +248,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>A resource is considered to be new if the repository does not have statements where subject == resource type.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>A resource is considered to be new if the repository does not have statements where subject == resource type.</p></div></span>
   
 </li>
 
@@ -295,9 +292,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Reload all attributes for this instance.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Reload all attributes for this instance.</p></div></span>
   
 </li>
 
@@ -363,14 +358,13 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>Update multiple attributes of this repository.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'><p>Update multiple attributes of this repository.</p></div></span>
   
 </li>
 
       
     </ul>
+    
   
 
 
@@ -391,9 +385,7 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>The number of RDF::Statements this projection has.</p>
-
+    <p>The number of RDF::Statements this projection has.</p>
 
   </div>
 </div>
@@ -555,9 +547,10 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Enumerate each RDF statement that makes up this projection. This makes each instance an <code>RDF::Enumerable</code>, with all of the nifty benefits thereof. See <a href="https://ruby-rdf.github.io/rdf/RDF/Enumerable.html">ruby-rdf.github.io/rdf/RDF/Enumerable.html</a> for information on arguments.</p>
-
+    <p>Enumerate each RDF statement that makes up this projection.  This makes
+each instance an <code>RDF::Enumerable</code>, with all of the nifty benefits
+thereof.  See <a href="https://ruby-rdf.github.io/rdf/RDF/Enumerable.html">https://ruby-rdf.github.io/rdf/RDF/Enumerable.html</a> for
+information on arguments.</p>
 
   </div>
 </div>
@@ -641,9 +634,8 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>A resource is considered to be new if the repository does not have statements where subject == resource type</p>
-
+    <p>A resource is considered to be new if the repository
+does not have statements where subject == resource type</p>
 
   </div>
 </div>
@@ -753,11 +745,10 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Reload all attributes for this instance. This resource will block if the underlying repository blocks the next time it accesses attributes.</p>
-
-<p>NB: “props” argument is ignored, it is handled in Base</p>
-
+    <p>Reload all attributes for this instance.
+This resource will block if the underlying repository
+blocks the next time it accesses attributes.</p>
+<p>NB: &quot;props&quot; argument is ignored, it is handled in Base</p>
 
   </div>
 </div>
@@ -870,21 +861,17 @@
   
 </h3><div class="docstring">
   <div class="discussion">
-    
-<p>Update multiple attributes of this repository.</p>
-
+    <p>Update multiple attributes of this repository.</p>
 
   </div>
 </div>
 <div class="tags">
   
   <div class="examples">
-    <p class="tag_title">Examples:</p>
+    <h4 class="tag_title">Examples:</h4>
     
       
-        <p class="example_title"><div class='inline'>
-<p>Update multiple attributes</p>
-</div></p>
+        <h5 class="example_title"><div class='inline'><p>Update multiple attributes</p></div></h5>
       
       <pre class="example code"><code><span class='id identifier rubyid_person'>person</span><span class='period'>.</span><span class='id identifier rubyid_update_attributes'>update_attributes</span><span class='lparen'>(</span><span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>test</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='label'>age:</span> <span class='int'>10</span><span class='rparen'>)</span>
 <span class='comment'>#=&gt; person
@@ -967,9 +954,9 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Sep  1 21:19:55 2023 by
+  Generated on Tue Aug 25 07:11:57 2026 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.34 (ruby-3.1.4).
+  0.9.45 (ruby-3.1.7).
 </div>
 
     </div>
